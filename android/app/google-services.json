@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "160863676221",
+    "project_id": "as-shopsync",
+    "storage_bucket": "as-shopsync.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160863676221:android:f99b71c26d255a7a688754",
+        "android_client_info": {
+          "package_name": "com.aadishsamir.shopsync"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "160863676221-levmvhj0j8ae1b7peiodun6hb8s1jspc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZk684FxerVghyIEcgakbux2C47aN0VUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "160863676221-ic6gtbtmj06u3gssef6lfbncrm204m0f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "160863676221-fmilsomod5rlgrgd7t9eckllbfmvhmmq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.shopSync"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,31 @@
+name: shopsync
+description: "ShopSync - Sync shopping lists with family and friends"
+publish_to: 'none'
+
+version: 1.0.0+3
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  firebase_core: ^3.12.1
+  firebase_auth: ^5.5.1
+  cloud_firestore: ^5.6.5
+  google_sign_in: ^6.2.2
+  url_launcher: ^6.3.1
+  package_info_plus: ^8.3.0
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - ./assets/
+    - ./assets/logos/continue_google.png
