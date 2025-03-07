@@ -147,16 +147,17 @@ class WelcomeScreen extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.green[800],
+                    backgroundColor: Colors.green[50],
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 3,
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.login),
+                      Icon(Icons.login, color: Colors.green.shade800),
                       SizedBox(width: 8),
                       Text(
                         'Log In',
@@ -176,15 +177,16 @@ class WelcomeScreen extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.green[800],
+                    backgroundColor: Colors.green[50],
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.person_add),
+                      Icon(Icons.person_add, color: Colors.green.shade800),
                       SizedBox(width: 8),
                       Text(
                         'Sign Up',

@@ -134,41 +134,42 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     title: const Text('Completed'),
                     value: completed,
                     onChanged: (value) => _updateTask({'completed': value}),
+                    activeColor: Colors.green,
                   ),
                 ),
                 const SizedBox(height: 16),
 
                 // Priority
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Priority',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SegmentedButton<String>(
-                          segments: const [
-                            ButtonSegment(value: 'low', label: Text('Low')),
-                            ButtonSegment(value: 'medium', label: Text('Medium')),
-                            ButtonSegment(value: 'high', label: Text('High')),
-                          ],
-                          selected: {priority},
-                          onSelectionChanged: (Set<String> newSelection) {
-                            _updateTask({'priority': newSelection.first});
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                // Card(
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(16),
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         const Text(
+                //           'Priority',
+                //           style: TextStyle(
+                //             fontSize: 16,
+                //             fontWeight: FontWeight.bold,
+                //           ),
+                //         ),
+                //         const SizedBox(height: 8),
+                //         SegmentedButton<String>(
+                //           segments: const [
+                //             ButtonSegment(value: 'low', label: Text('Low')),
+                //             ButtonSegment(value: 'medium', label: Text('Medium')),
+                //             ButtonSegment(value: 'high', label: Text('High')),
+                //           ],
+                //           selected: {priority},
+                //           onSelectionChanged: (Set<String> newSelection) {
+                //             _updateTask({'priority': newSelection.first});
+                //           },
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                // const SizedBox(height: 16),
 
                 // Deadline
                 Card(

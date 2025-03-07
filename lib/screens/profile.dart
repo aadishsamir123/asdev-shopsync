@@ -208,7 +208,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               'Display Name',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey[700],
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors
+                                        .white70 // White color with some transparency for dark mode
+                                    : Colors.grey[700],
+                                // Grey color for light mode
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -217,8 +222,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ? TextFormField(
                                     controller: _nameController,
                                     decoration: InputDecoration(
-                                      filled: true,
-                                      fillColor: Colors.grey[50],
+                                      filled: false,
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(
@@ -263,7 +267,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               'Email Address',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey[700],
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors
+                                        .white70 // White color with some transparency for dark mode
+                                    : Colors.grey[700],
+                                // Grey color for light mode
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

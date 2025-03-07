@@ -103,7 +103,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         TextFormField(
                           controller: _emailController,
-                          style: const TextStyle(fontSize: 16),
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.green.shade800),
                           decoration: InputDecoration(
                             labelText: 'Email',
                             labelStyle: TextStyle(color: Colors.green[800]),
@@ -127,7 +128,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: _passwordController,
-                          style: const TextStyle(fontSize: 16),
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.green.shade800),
                           decoration: InputDecoration(
                             labelText: 'Password',
                             labelStyle: TextStyle(color: Colors.green[800]),

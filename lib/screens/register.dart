@@ -130,7 +130,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         TextFormField(
                           controller: _nameController,
-                          style: const TextStyle(fontSize: 16),
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.green.shade800),
                           decoration: InputDecoration(
                             labelText: 'Name',
                             labelStyle: TextStyle(color: Colors.green[800]),
@@ -153,7 +154,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: _emailController,
-                          style: const TextStyle(fontSize: 16),
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.green.shade800),
                           decoration: InputDecoration(
                             labelText: 'Email',
                             labelStyle: TextStyle(color: Colors.green[800]),
@@ -177,7 +179,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: _passwordController,
-                          style: const TextStyle(fontSize: 16),
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.green.shade800),
                           decoration: InputDecoration(
                             labelText: 'Password',
                             labelStyle: TextStyle(color: Colors.green[800]),
@@ -214,7 +217,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: _confirmPasswordController,
-                          style: const TextStyle(fontSize: 16),
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.green.shade800),
                           decoration: InputDecoration(
                             labelText: 'Confirm Password',
                             labelStyle: TextStyle(color: Colors.green[800]),

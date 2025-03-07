@@ -21,6 +21,19 @@ class _HomeScreenState extends State<HomeScreen> {
   final _newItemController = TextEditingController();
   bool _isReorderingMode = false;
 
+  String _standardizePriority(String? priority) {
+    switch (priority?.toLowerCase()) {
+      case 'high':
+        return 'high';
+      case 'medium':
+        return 'medium';
+      case 'low':
+        return 'low';
+      default:
+        return 'low';
+    }
+  }
+
   Future<void> _signOut() async {
     await _auth.signOut();
     if (!mounted) return;
@@ -108,7 +121,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       'addedBy': user.uid,
                       'addedByName': user.displayName,
                       'addedAt': FieldValue.serverTimestamp(),
-                      'order': -1, // Will be first item
+                      'priority': _standardizePriority('low'),
+                      // Default priority
+                      'deadline': null,
+                      // Default deadline
                     });
 
                     _newItemController.clear();
@@ -549,6 +565,34 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildPriorityIndicator(String? priority) {
+    final Color color;
+    switch (_standardizePriority(priority)) {
+      case 'high':
+        color = Colors.red[700]!;
+        break;
+      case 'medium':
+        color = Colors.orange[700]!;
+        break;
+      case 'low':
+        color = Colors.grey[400]!;
+        break;
+      default:
+        color = Colors.grey[400]!;
+    }
+    return Container(
+      width: 4,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(4),
+          bottomLeft: Radius.circular(4),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 1024;
@@ -643,11 +687,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           case 'share':
                             _showShareMenu();
                             break;
-                          case 'reorder':
-                          setState(() {
-                            _isReorderingMode = !_isReorderingMode;
-                          });
-                          break;
+                          // case 'reorder':
+                          //   setState(() {
+                          //     _isReorderingMode = !_isReorderingMode;
+                          //   });
+                          //   break;
                         }
                       },
                     );
@@ -829,8 +873,8 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: const Icon(Icons.announcement_outlined),
               title: const Text('Release Notes'),
               onTap: () async {
-                final Uri url =
-                    Uri.parse('https://as-shopsync.releasenotes.io');
+                final Uri url = Uri.parse(
+                    'https://github.com/aadishsamir123/asdev-shopsync/releases');
                 if (!await launchUrl(url)) {
                   if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -1046,6 +1090,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         .doc(_selectedListId)
                         .collection('items')
                         .orderBy('completed')
+                        .orderBy('deadline',
+                            descending: false) // Show upcoming deadlines first
+                        .orderBy('priority',
+                            descending: true) // high -> medium -> low
                         .orderBy('addedAt', descending: true)
                         .snapshots(),
                     builder: (context, snapshot) {
@@ -1216,15 +1264,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
 
                       return ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 20),
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
                           final doc = snapshot.data!.docs[index];
                           final docData = doc.data() as Map<String, dynamic>;
-                          final isCompleted = docData.containsKey('completed') ? docData['completed'] : false;
+                          final isCompleted = docData.containsKey('completed')
+                              ? docData['completed']
+                              : false;
                           final name = docData['name'] ?? 'Untitled Task';
                           final addedByName = docData['addedByName'];
-                          final priority = docData.containsKey('priority') ? docData['priority'] : null;
+                          final priority = docData.containsKey('priority')
+                              ? docData['priority']
+                              : null;
 
                           return Card(
                             key: Key(doc.id),
@@ -1251,14 +1304,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
                                         color: isCompleted
-                                            ? Colors.grey[600]
-                                            : Colors.black,
+                                            ? (Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Colors.grey[
+                                                    500] // Dark mode, darker grey
+                                                : Colors.grey[
+                                                    600]) // Light mode, normal grey
+                                            : (Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Colors
+                                                    .white // Dark mode, white text
+                                                : Colors.black),
+                                        // Light mode, black text
                                         decoration: isCompleted
                                             ? TextDecoration.lineThrough
                                             : null,
                                       ),
                                     ),
-                                  ]
+                                  ],
                                 ),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1298,7 +1361,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                   ],
                                 ),
-                                // ... rest of the ListTile implementation ...
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(
+                                        isCompleted
+                                            ? Icons.check_circle
+                                            : Icons.circle_outlined,
+                                        color: isCompleted
+                                            ? Colors.green[800]
+                                            : Colors.grey[400],
+                                      ),
+                                      onPressed: () => _toggleTaskCompletion(
+                                        _selectedListId!,
+                                        doc.id,
+                                        isCompleted,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.red[300],
+                                      ),
+                                      onPressed: () =>
+                                          _deleteTask(_selectedListId!, doc.id),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           );
