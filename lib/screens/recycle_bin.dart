@@ -49,7 +49,9 @@ class RecycleBinScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Recycle Bin'),
-        backgroundColor: Colors.green[800],
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey[900]
+            : Colors.green[800],
         foregroundColor: Colors.white,
       ),
       body: StreamBuilder<QuerySnapshot>(

@@ -79,7 +79,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Task Details'),
-        backgroundColor: Colors.green[800],
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey[900]
+            : Colors.green[800],
         foregroundColor: Colors.white,
       ),
       body: StreamBuilder<DocumentSnapshot>(

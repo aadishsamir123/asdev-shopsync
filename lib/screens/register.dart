@@ -14,20 +14,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
   String _errorMessage = '';
   bool _isLoading = false;
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
 
   Future<void> _register() async {
-    // Basic validation
-    if (_passwordController.text != _confirmPasswordController.text) {
-      setState(() {
-        _errorMessage = 'Passwords do not match';
-      });
-      return;
-    }
 
     setState(() {
       _isLoading = true;
@@ -213,45 +204,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           obscureText: _obscurePassword,
                           textInputAction: TextInputAction.next,
-                        ),
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          controller: _confirmPasswordController,
-                          style: TextStyle(
-                              fontSize: 16, color: Colors.green.shade800),
-                          decoration: InputDecoration(
-                            labelText: 'Confirm Password',
-                            labelStyle: TextStyle(color: Colors.green[800]),
-                            prefixIcon: Icon(Icons.lock_outline,
-                                color: Colors.green[800]),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscureConfirmPassword
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: Colors.green[800],
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscureConfirmPassword =
-                                      !_obscureConfirmPassword;
-                                });
-                              },
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade300),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.green[800]!),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey.shade50,
-                          ),
-                          obscureText: _obscureConfirmPassword,
-                          textInputAction: TextInputAction.done,
                         ),
                         const SizedBox(height: 20),
                         if (_errorMessage.isNotEmpty)

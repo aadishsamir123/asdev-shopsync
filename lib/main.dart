@@ -7,6 +7,7 @@ import 'screens/login.dart';
 import 'screens/register.dart';
 import 'screens/home.dart';
 import 'screens/profile.dart';
+import 'services/update_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,8 +44,23 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// This widget checks authentication state and routes accordingly
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    // Check for updates after widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      UpdateService.checkForUpdate(context);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
