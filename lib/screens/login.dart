@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
       );
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.of(context).pop();
     } on FirebaseAuthException catch (e) {
       setState(() {
         _errorMessage = e.message ?? 'An error occurred during login';
@@ -223,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 15),
                         TextButton(
                           onPressed: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>

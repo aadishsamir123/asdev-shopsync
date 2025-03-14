@@ -19,7 +19,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscurePassword = true;
 
   Future<void> _register() async {
-
     setState(() {
       _isLoading = true;
       _errorMessage = '';
@@ -46,7 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await userCredential.user?.updateDisplayName(_nameController.text.trim());
 
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.of(context).pop();
     } on FirebaseAuthException catch (e) {
       setState(() {
         _errorMessage = e.message ?? 'An error occurred during registration';

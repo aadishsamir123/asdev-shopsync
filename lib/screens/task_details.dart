@@ -179,7 +179,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     title: const Text('Deadline'),
                     subtitle: Text(
                       _selectedDeadline != null
-                          ? DateFormat('MMM dd, yyyy - hh:mm a').format(_selectedDeadline!)
+                          ? DateFormat('MMM dd, yyyy - hh:mm a')
+                              .format(_selectedDeadline!)
                           : 'No deadline set',
                     ),
                     trailing: Row(
@@ -188,7 +189,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                         if (_selectedDeadline != null)
                           IconButton(
                             icon: const Icon(Icons.clear),
-                            onPressed: () => _updateTask({'deadline': FieldValue.delete()}),
+                            onPressed: () =>
+                                _updateTask({'deadline': FieldValue.delete()}),
                           ),
                         IconButton(
                           icon: const Icon(Icons.edit_calendar),
@@ -222,7 +224,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                             hintText: 'Add description...',
                             border: OutlineInputBorder(),
                           ),
-                          onChanged: (value) => _updateTask({'description': value}),
+                          onChanged: (value) =>
+                              _updateTask({'description': value}),
                         ),
                       ],
                     ),

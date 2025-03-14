@@ -7,7 +7,8 @@ class RecycleBinScreen extends StatelessWidget {
 
   const RecycleBinScreen({super.key, required this.listId});
 
-  Future<void> _restoreItem(String itemId, Map<String, dynamic> itemData) async {
+  Future<void> _restoreItem(
+      String itemId, Map<String, dynamic> itemData) async {
     final batch = FirebaseFirestore.instance.batch();
 
     // Add back to original items collection
@@ -146,7 +147,8 @@ class RecycleBinScreen extends StatelessWidget {
                         tooltip: 'Restore item',
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_forever, color: Colors.red),
+                        icon:
+                            const Icon(Icons.delete_forever, color: Colors.red),
                         onPressed: () => _deletePermanently(doc.id),
                         tooltip: 'Delete permanently',
                       ),
