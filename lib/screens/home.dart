@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'recycle_bin.dart';
 import 'task_details.dart';
 import 'create_task.dart';
+import '/services/export_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -713,7 +714,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
               actions: _selectedListId != null
-                  ? [
+                  ? <Widget>[
                       // Share button
                       Material(
                         color: Colors.transparent,
@@ -728,7 +729,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Colors.white.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Icon(Icons.share),
+                              child: const Icon(Icons.people),
                             ),
                             onPressed: _showShareMenu,
                             tooltip: 'Share List',
@@ -809,6 +810,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
                                       PopupMenuItem(
+                                        value: 'export',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.share,
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black),
+                                            SizedBox(width: 12),
+                                            Text('Export List'),
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem(
                                         value: 'close',
                                         child: Row(
                                           children: [
@@ -822,7 +838,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
                                     ],
-                                  ).then((value) {
+                                  ).then((value) async {
                                     if (value == null) return;
                                     switch (value) {
                                       case 'edit':
@@ -843,6 +859,40 @@ class _HomeScreenState extends State<HomeScreen> {
                                         setState(() {
                                           _selectedListId = null;
                                         });
+                                        break;
+                                      case 'export':
+                                        try {
+                                          final listData = await _firestore
+                                              .collection('lists')
+                                              .doc(_selectedListId)
+                                              .get();
+                                          final listName =
+                                              listData.data()?['name'] ??
+                                                  'Shopping List';
+
+                                          await ExportService.exportList(
+                                              _selectedListId!, listName);
+
+                                          if (!mounted) return;
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'List exported successfully'),
+                                              backgroundColor: Colors.green,
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          if (!mounted) return;
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Error exporting list: $e'),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
                                         break;
                                     }
                                   });
