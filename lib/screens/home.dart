@@ -169,6 +169,90 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _deleteList(String listId) async {
+    // Show confirmation dialog first
+    final shouldDelete = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Delete List'),
+            content: const Text(
+              'Are you sure you want to delete this list? This action cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.grey[700]),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.red[700],
+                ),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!shouldDelete || !mounted) return;
+
+    try {
+      // Delete all items in the list
+      final itemsSnapshot = await _firestore
+          .collection('lists')
+          .doc(listId)
+          .collection('items')
+          .get();
+
+      final recycleBinSnapshot = await _firestore
+          .collection('lists')
+          .doc(listId)
+          .collection('recycled_items')
+          .get();
+
+      final batch = _firestore.batch();
+
+      // Delete items
+      for (var doc in itemsSnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+
+      // Delete recycled items
+      for (var doc in recycleBinSnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+
+      // Delete the list document itself
+      batch.delete(_firestore.collection('lists').doc(listId));
+
+      await batch.commit();
+
+      setState(() {
+        _selectedListId = null;
+      });
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('List deleted successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting list: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   Future<void> _addTask(String listId) async {
     Navigator.push(
       context,
@@ -777,9 +861,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
-                                    items: [
+                                    items: <PopupMenuEntry<String>>[
                                       if (isOwner)
-                                        PopupMenuItem(
+                                        PopupMenuItem<String>(
                                           value: 'edit',
                                           child: Row(
                                             children: [
@@ -794,7 +878,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ],
                                           ),
                                         ),
-                                      PopupMenuItem(
+                                      PopupMenuItem<String>(
                                         value: 'recycle',
                                         child: Row(
                                           children: [
@@ -809,7 +893,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ],
                                         ),
                                       ),
-                                      PopupMenuItem(
+                                      PopupMenuItem<String>(
                                         value: 'export',
                                         child: Row(
                                           children: [
@@ -824,7 +908,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ],
                                         ),
                                       ),
-                                      PopupMenuItem(
+                                      PopupMenuItem<String>(
                                         value: 'close',
                                         child: Row(
                                           children: [
@@ -837,6 +921,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ],
                                         ),
                                       ),
+                                      if (isOwner) ...[
+                                        const PopupMenuDivider(),
+                                        PopupMenuItem<String>(
+                                          value: 'delete',
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.delete_forever,
+                                                  color: Colors.red[700]),
+                                              const SizedBox(width: 12),
+                                              Text(
+                                                'Delete List',
+                                                style: TextStyle(
+                                                    color: Colors.red[700]),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ],
                                   ).then((value) async {
                                     if (value == null) return;
@@ -893,6 +995,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                           );
                                         }
+                                        break;
+                                      case 'delete':
+                                        await _deleteList(_selectedListId!);
                                         break;
                                     }
                                   });
