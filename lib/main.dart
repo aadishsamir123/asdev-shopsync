@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
@@ -18,6 +19,32 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // Set system UI overlay style
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: ThemeData.estimateBrightnessForColor(
+                WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                        Brightness.dark
+                    ? Colors.grey[900]!
+                    : Colors.white,
+              ) ==
+              Brightness.dark
+          ? Colors.grey[900]
+          : Colors.white,
+      systemNavigationBarIconBrightness:
+          WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                  Brightness.dark
+              ? Brightness.light
+              : Brightness.dark,
+      statusBarIconBrightness:
+          WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                  Brightness.dark
+              ? Brightness.light
+              : Brightness.dark,
+    ),
+  );
+
   runApp(ShopSync());
 }
 
@@ -37,14 +64,13 @@ class ShopSync extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
       ),
-      darkTheme: ThemeData(
+      darkTheme: ThemeData.dark(
         // pageTransitionsTheme: const PageTransitionsTheme(
         //   builders: {
         //     TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
         //   },
         // ),
         useMaterial3: true,
-        colorScheme: ColorScheme.dark(primary: Colors.green),
       ),
       // themeMode: themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: const AuthWrapper(),

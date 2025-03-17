@@ -1844,6 +1844,42 @@ class _HomeScreenState extends State<HomeScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
+                                        if (docData['location'] != null)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 4, bottom: 4),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.location_on_outlined,
+                                                  size: 14,
+                                                  color: Theme.of(context)
+                                                              .brightness ==
+                                                          Brightness.dark
+                                                      ? Colors.grey[400]
+                                                      : Colors.grey[900],
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Flexible(
+                                                  child: Text(
+                                                    docData['location']
+                                                            ['name'] ??
+                                                        '',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Theme.of(context)
+                                                                  .brightness ==
+                                                              Brightness.dark
+                                                          ? Colors.grey[400]
+                                                          : Colors.grey[900],
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         if (docData.containsKey('deadline') &&
                                             docData['deadline'] != null)
                                           Padding(
@@ -1854,7 +1890,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 Icon(
                                                   Icons.schedule,
                                                   size: 14,
-                                                  color: Colors.grey[600],
+                                                  color: Theme.of(context)
+                                                              .brightness ==
+                                                          Brightness.dark
+                                                      ? Colors.grey[400]
+                                                      : Colors.grey[900],
                                                 ),
                                                 const SizedBox(width: 4),
                                                 Text(
@@ -1866,7 +1906,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               .toDate()),
                                                   style: TextStyle(
                                                     fontSize: 12,
-                                                    color: Colors.grey[600],
+                                                    color: Theme.of(context)
+                                                                .brightness ==
+                                                            Brightness.dark
+                                                        ? Colors.grey[400]
+                                                        : Colors.grey[900],
                                                   ),
                                                 ),
                                               ],
@@ -1881,7 +1925,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                               'Added by ${docData['addedByName']}',
                                               style: TextStyle(
                                                 fontSize: 12,
-                                                color: Colors.grey[600],
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.grey[400]
+                                                    : Colors.grey[900],
                                               ),
                                             ),
                                           ),
