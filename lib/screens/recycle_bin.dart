@@ -1,6 +1,7 @@
 // lib/screens/recycle_bin.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class RecycleBinScreen extends StatelessWidget {
   final String listId;
@@ -47,13 +48,13 @@ class RecycleBinScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recycle Bin'),
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? Colors.grey[900]
-            : Colors.green[800],
+        backgroundColor: isDark ? Colors.grey[900] : Colors.green[800],
         foregroundColor: Colors.white,
+        title: const Text('Recycle Bin'),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -69,51 +70,32 @@ class RecycleBinScreen extends StatelessWidget {
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Empty state illustration
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.green[900]
-                            : Colors.green[50],
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.delete_outline,
-                        size: 64,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.green[100]
-                            : Colors.green[800]?.withOpacity(0.7),
-                      ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.delete_outline,
+                    size: 64,
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Recycle Bin is Empty',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.grey[800],
                     ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Recycle Bin is Empty',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.green[300]
-                            : Colors.green[800],
-                      ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Items you delete will appear here',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: isDark ? Colors.grey[400] : Colors.grey[600],
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Items you delete will appear here',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.grey[400]
-                            : Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           }
@@ -124,33 +106,88 @@ class RecycleBinScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final doc = snapshot.data!.docs[index];
               final itemData = doc.data() as Map<String, dynamic>;
+              final deletedAt = (itemData['deletedAt'] as Timestamp).toDate();
 
               return Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
-                  title: Text(
-                    itemData['name'],
-                    style: const TextStyle(
-                      decoration: TextDecoration.lineThrough,
-                    ),
-                  ),
-                  subtitle: Text(
-                    'Deleted by ${itemData['deletedByName']}',
-                    style: TextStyle(fontSize: 12),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
+                elevation: 2,
+                margin: const EdgeInsets.only(bottom: 12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.restore, color: Colors.green[800]),
-                        onPressed: () => _restoreItem(doc.id, itemData),
-                        tooltip: 'Restore item',
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              itemData['name'],
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? Colors.white : Colors.grey[800],
+                                decoration: TextDecoration.lineThrough,
+                                decorationColor:
+                                    isDark ? Colors.white54 : Colors.black54,
+                              ),
+                            ),
+                          ),
+                          TextButton.icon(
+                            icon: Icon(Icons.restore, color: Colors.green[600]),
+                            label: Text(
+                              'Restore',
+                              style: TextStyle(color: Colors.green[600]),
+                            ),
+                            onPressed: () => _restoreItem(doc.id, itemData),
+                          ),
+                          const SizedBox(width: 8),
+                          TextButton.icon(
+                            icon: const Icon(Icons.delete_forever,
+                                color: Colors.red),
+                            label: const Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () => _deletePermanently(doc.id),
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        icon:
-                            const Icon(Icons.delete_forever, color: Colors.red),
-                        onPressed: () => _deletePermanently(doc.id),
-                        tooltip: 'Delete permanently',
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.person_outline,
+                            size: 16,
+                            color: isDark ? Colors.grey[400] : Colors.grey[600],
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Deleted by: ${itemData['deletedByName']}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color:
+                                  isDark ? Colors.grey[400] : Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            size: 16,
+                            color: isDark ? Colors.grey[400] : Colors.grey[600],
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Deleted on: ${DateFormat('MMM dd, yyyy').format(deletedAt)}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color:
+                                  isDark ? Colors.grey[400] : Colors.grey[600],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

@@ -18,21 +18,66 @@ class TaskDetailsScreen extends StatefulWidget {
   State<TaskDetailsScreen> createState() => _TaskDetailsScreenState();
 }
 
-class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
+class DottedLinePainter extends CustomPainter {
+  final Color color;
+
+  DottedLinePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+
+    final dotSize = 2.0;
+    final spacingSize = 2.0;
+    var currentX = 0.0;
+
+    while (currentX < size.width) {
+      canvas.drawLine(
+        Offset(currentX, 0),
+        Offset(currentX + dotSize, 0),
+        paint,
+      );
+      currentX += dotSize + spacingSize;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _TaskDetailsScreenState extends State<TaskDetailsScreen>
+    with SingleTickerProviderStateMixin {
   final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
+  late TextEditingController _nameController;
   late TextEditingController _descriptionController;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
   DateTime? _selectedDeadline;
   String? _priority;
 
   @override
   void initState() {
     super.initState();
+    _nameController = TextEditingController();
     _descriptionController = TextEditingController();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    _animationController.forward();
   }
 
   @override
   void dispose() {
+    _animationController.dispose();
+    _nameController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
@@ -47,7 +92,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   }
 
   Future<void> _selectDeadline() async {
-    final DateTime? picked = await showDatePicker(
+    final date = await showDatePicker(
       context: context,
       initialDate: _selectedDeadline ?? DateTime.now(),
       firstDate: DateTime.now(),
@@ -58,15 +103,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           data: Theme.of(context).copyWith(
             colorScheme: isDark
                 ? ColorScheme.dark(
-                    primary: Colors.green[800]!, // header background color
-                    onPrimary: Colors.white, // header text color
-                    onSurface: Colors.white, // body text color
-                    surface: Colors.grey[900]!, // calendar background
+                    primary: Colors.green[800]!,
+                    onPrimary: Colors.white,
+                    onSurface: Colors.white,
+                    surface: Colors.grey[900]!,
                   )
                 : ColorScheme.light(
-                    primary: Colors.green[800]!, // header background color
-                    onPrimary: Colors.white, // header text color
-                    onSurface: Colors.black, // body text color
+                    primary: Colors.green[800]!,
+                    onPrimary: Colors.white,
+                    onSurface: Colors.black,
                   ),
           ),
           child: child!,
@@ -74,8 +119,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
       },
     );
 
-    if (picked != null) {
-      final TimeOfDay? timePicked = await showTimePicker(
+    if (date != null) {
+      final time = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
         builder: (context, child) {
@@ -94,53 +139,61 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       onPrimary: Colors.white,
                       onSurface: Colors.black,
                     ),
-              timePickerTheme: TimePickerThemeData(
-                dialBackgroundColor:
-                    isDark ? Colors.grey[800] : Colors.green[50],
-                hourMinuteTextColor: Colors.green[300],
-                dayPeriodTextColor: Colors.green[300],
-                dayPeriodBorderSide: BorderSide.none,
-                dayPeriodShape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                dayPeriodColor: MaterialStateColor.resolveWith((states) {
-                  if (states.contains(MaterialState.selected)) {
-                    return Colors.green[800]!;
-                  }
-                  return Colors.transparent;
-                }),
-              ),
             ),
             child: child!,
           );
         },
       );
 
-      if (timePicked != null) {
-        setState(() {
-          _selectedDeadline = DateTime(
-            picked.year,
-            picked.month,
-            picked.day,
-            timePicked.hour,
-            timePicked.minute,
-          );
-        });
-        await _updateTask({'deadline': _selectedDeadline});
+      if (time != null && mounted) {
+        final deadline = DateTime(
+          date.year,
+          date.month,
+          date.day,
+          time.hour,
+          time.minute,
+        );
+        await _updateTask({'deadline': deadline});
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Task Details'),
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? Colors.grey[900]
-            : Colors.green[800],
-        foregroundColor: Colors.white,
-      ),
+          title: Text(
+            'Task Details',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: isDark ? Colors.grey[900] : Colors.green[800],
+          elevation: 0,
+          leading: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.grey[800]!.withOpacity(0.5)
+                    : Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.grey[700]!
+                      : Colors.white.withOpacity(0.3),
+                ),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+                tooltip: 'Go Back',
+              ),
+            ),
+          )),
       body: StreamBuilder<DocumentSnapshot>(
         stream: _firestore
             .collection('lists')
@@ -154,203 +207,338 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           }
 
           final task = snapshot.data!.data() as Map<String, dynamic>? ?? {};
-
-          // Safely get values with null checks
           final name = task['name'] ?? 'Untitled Task';
           final description = task['description'] ?? '';
           final addedByName = task['addedByName'] ?? 'Unknown';
           final completed = task['completed'] ?? false;
-          final priority = task['priority'] ?? 'low';
-
-          // Safely update controllers and state
           _descriptionController.text = description;
           _selectedDeadline = task['deadline']?.toDate();
-          _priority = priority;
+          _nameController.text = name;
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Task Name
-                Card(
-                  child: ListTile(
-                    title: Text(
-                      name,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: Text('Added by $addedByName'),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Status
-                Card(
-                  child: SwitchListTile(
-                    title: const Text('Completed'),
-                    value: completed,
-                    onChanged: (value) => _updateTask({'completed': value}),
-                    activeColor: Colors.green[800],
-                    inactiveThumbColor:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? Colors.grey[300]
-                            : Colors.grey[800],
-                    inactiveTrackColor:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? Colors.grey[900]
-                            : Colors.grey[100],
-                    trackOutlineColor:
-                        MaterialStateProperty.resolveWith<Color?>(
-                      (states) =>
-                          Theme.of(context).brightness == Brightness.dark
-                              ? Colors.grey[200]
-                              : Colors.grey[900],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Priority
-                // Card(
-                //   child: Padding(
-                //     padding: const EdgeInsets.all(16),
-                //     child: Column(
-                //       crossAxisAlignment: CrossAxisAlignment.start,
-                //       children: [
-                //         const Text(
-                //           'Priority',
-                //           style: TextStyle(
-                //             fontSize: 16,
-                //             fontWeight: FontWeight.bold,
-                //           ),
-                //         ),
-                //         const SizedBox(height: 8),
-                //         SegmentedButton<String>(
-                //           segments: const [
-                //             ButtonSegment(value: 'low', label: Text('Low')),
-                //             ButtonSegment(value: 'medium', label: Text('Medium')),
-                //             ButtonSegment(value: 'high', label: Text('High')),
-                //           ],
-                //           selected: {priority},
-                //           onSelectionChanged: (Set<String> newSelection) {
-                //             _updateTask({'priority': newSelection.first});
-                //           },
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-                // const SizedBox(height: 16),
-
-                // Deadline
-                Card(
-                  child: InkWell(
-                    onTap: _selectDeadline,
-                    child: ListTile(
-                      title: const Text('Deadline'),
-                      subtitle: Text(
-                        _selectedDeadline != null
-                            ? DateFormat('MMM dd, yyyy - hh:mm a')
-                                .format(_selectedDeadline!)
-                            : 'No deadline set',
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (_selectedDeadline != null)
-                            IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () => _updateTask(
-                                  {'deadline': FieldValue.delete()}),
-                            ),
-                          const Icon(Icons.edit_calendar),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Store location
-                Card(
-                  child: InkWell(
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (context) => LocationSelector(
-                          initialLocation: task['location'],
-                          onLocationSelected: (location) {
-                            if (location.isEmpty) {
-                              _updateTask({'location': FieldValue.delete()});
-                            } else {
-                              _updateTask({'location': location});
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      children: [
+                        TextField(
+                          controller: _nameController,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.only(bottom: 8),
+                          ),
+                          onSubmitted: (value) {
+                            if (value.trim().isNotEmpty) {
+                              _updateTask({'name': value.trim()});
                             }
                           },
                         ),
-                      );
-                    },
-                    child: ListTile(
-                      title: const Text('Store Location'),
-                      subtitle: Text(
-                        task['location'] != null
-                            ? '${task['location']['name']}\n${task['location']['address']}'
-                            : 'No location set',
-                      ),
-                      trailing: const Icon(Icons.location_on),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Description
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Description',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green[800],
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: CustomPaint(
+                            painter: DottedLinePainter(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.grey[600]!
+                                  : Colors.grey[300]!,
+                            ),
+                            size: Size(MediaQuery.of(context).size.width, 1),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: _descriptionController,
-                          maxLines: 5,
-                          decoration: InputDecoration(
-                            hintText: 'Add description...',
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green[800]!),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.green[800]!, width: 2),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green[200]!),
-                            ),
-                          ),
-                          cursorColor: Colors.green[800],
-                          style: TextStyle(color: Colors.green[900]),
-                          onChanged: (value) =>
-                              _updateTask({'description': value}),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 24),
+                    _buildStatusCard(completed),
+                    const SizedBox(height: 16),
+                    _buildDeadlineCard(),
+                    const SizedBox(height: 16),
+                    _buildLocationCard(task),
+                    const SizedBox(height: 16),
+                    _buildDescriptionCard(),
+                    const SizedBox(height: 16),
+                    _buildAddedByCard(addedByName),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildStatusCard(bool completed) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Card(
+      elevation: 8,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          gradient: LinearGradient(
+            colors: completed
+                ? [Colors.green[400]!, Colors.green[600]!]
+                : isDark
+                    ? [Colors.grey[800]!, Colors.grey[700]!]
+                    : [Colors.grey[100]!, Colors.grey[200]!],
+          ),
+        ),
+        child: ListTile(
+          title: Text(
+            'Status',
+            style: TextStyle(
+              color: completed
+                  ? Colors.white
+                  : isDark
+                      ? Colors.white
+                      : Colors.black87,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          trailing: Switch.adaptive(
+            value: completed,
+            onChanged: (value) => _updateTask({'completed': value}),
+            activeColor: Colors.white,
+            activeTrackColor: Colors.green[800],
+            inactiveThumbColor: isDark ? Colors.grey[300] : Colors.grey[50],
+            inactiveTrackColor: isDark ? Colors.grey[600] : Colors.grey[300],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDeadlineCard() {
+    return Card(
+      elevation: 8,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: InkWell(
+        onTap: _selectDeadline,
+        borderRadius: BorderRadius.circular(15),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.green[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.event, color: Colors.green[800]),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Deadline',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _selectedDeadline != null
+                          ? DateFormat('MMM dd, yyyy - hh:mm a')
+                              .format(_selectedDeadline!)
+                          : 'Set deadline',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+              if (_selectedDeadline != null)
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () =>
+                      _updateTask({'deadline': FieldValue.delete()}),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLocationCard(Map<String, dynamic> task) {
+    return Card(
+      elevation: 8,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: InkWell(
+        onTap: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => LocationSelector(
+              initialLocation: task['location'],
+              onLocationSelected: (location) {
+                if (location.isEmpty) {
+                  _updateTask({'location': FieldValue.delete()});
+                } else {
+                  _updateTask({'location': location});
+                }
+              },
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(15),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.green[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.location_on, color: Colors.green[800]),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Location',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      task['location'] != null
+                          ? '${task['location']['name']}\n${task['location']['address']}'
+                          : 'Set location',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDescriptionCard() {
+    return Card(
+      elevation: 8,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.green[100],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(Icons.description, color: Colors.green[800]),
+                ),
+                const SizedBox(width: 16),
+                const Text(
+                  'Description',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
               ],
             ),
-          );
-        },
+            const SizedBox(height: 16),
+            TextField(
+              controller: _descriptionController,
+              maxLines: 5,
+              decoration: InputDecoration(
+                hintText: 'Add description...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.green[200]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.green[800]!, width: 2),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.green[200]!),
+                ),
+                filled: true,
+                fillColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[850]
+                    : Colors.grey[50],
+              ),
+              onChanged: (value) => _updateTask({'description': value}),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddedByCard(String addedByName) {
+    return Card(
+      elevation: 8,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.green[100],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.person, color: Colors.green[800]),
+            ),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Added by',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  addedByName,
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

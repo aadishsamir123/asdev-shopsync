@@ -121,12 +121,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         },
                         child: const Text('English'),
                       ),
-                      SimpleDialogOption(
-                        onPressed: () {
-                          Navigator.pop(context, 'Spanish');
-                        },
-                        child: const Text('Spanish'),
-                      ),
                       // Add more languages here
                     ],
                   );
