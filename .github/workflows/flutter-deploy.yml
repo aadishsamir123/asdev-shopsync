@@ -39,7 +39,7 @@ jobs:
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> key.properties
-          echo "storeFile=app/release-key.jks" >> key.properties
+          echo "storeFile=release-key.jks" >> key.properties
         working-directory: android
 
       # Step 5: Get Flutter dependencies
