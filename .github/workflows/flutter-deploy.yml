@@ -30,15 +30,17 @@ jobs:
       # Step 3: Decode Keystore (from GitHub Secret)
       - name: Decode Keystore
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > release-key.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release-key.jks
+        working-directory: android
 
       # Step 4: Create key.properties (using GitHub secrets)
       - name: Create key.properties
         run: |
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=android/app/release-key.jks" >> android/key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> key.properties
+          echo "storeFile=app/release-key.jks" >> key.properties
+        working-directory: android
 
       # Step 5: Get Flutter dependencies
       - name: Get dependencies
