@@ -38,7 +38,7 @@ jobs:
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=release-key.jks" >> android/key.properties
+          echo "storeFile=android/app/release-key.jks" >> android/key.properties
 
       # Step 5: Get Flutter dependencies
       - name: Get dependencies
@@ -55,5 +55,5 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: com.aadishsamir.shopsync
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
-          track: alpha  # Change this to internal, beta, or production if needed
+          track: alpha
           status: completed
