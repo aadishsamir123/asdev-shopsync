@@ -30,7 +30,7 @@ jobs:
       # Step 3: Decode Keystore (from GitHub Secret)
       - name: Decode Keystore
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/release-key.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > release-key.jks
 
       # Step 4: Create key.properties (using GitHub secrets)
       - name: Create key.properties
