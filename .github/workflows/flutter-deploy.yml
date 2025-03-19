@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    environment: google-play-deploy
+    environment: google-play-deployment
     runs-on: ubuntu-latest
 
     steps:
