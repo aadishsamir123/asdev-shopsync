@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import '/widgets/loading_spinner.dart';
 
 class RecycleBinScreen extends StatelessWidget {
   final String listId;
@@ -65,7 +66,12 @@ class RecycleBinScreen extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CustomLoadingSpinner(
+                color: Colors.green,
+                size: 60.0,
+              ),
+            );
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {

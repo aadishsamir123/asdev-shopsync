@@ -11,6 +11,7 @@ import 'screens/profile.dart';
 import 'screens/settings.dart';
 import 'screens/maintenance_screen.dart';
 import 'screens/onboarding.dart';
+import 'widgets/loading_spinner.dart';
 import 'services/update_service.dart';
 import 'services/maintenance_service.dart';
 import 'services/shared_prefs.dart';
@@ -185,7 +186,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
-              child: CircularProgressIndicator(),
+              child: CustomLoadingSpinner(
+                color: Colors.green,
+                size: 60.0,
+              ),
             ),
           );
         }

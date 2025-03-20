@@ -232,7 +232,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   final List<OnboardingPage> _pages = [
     OnboardingPage(
       title: 'Welcome to ShopSync',
-      description: 'Your smart shopping companion',
+      description: 'Share shopping lists with family and friends',
       painter: (primary, secondary, animation) => AnimatedShoppingCartPainter(
         primaryColor: primary,
         secondaryColor: secondary,

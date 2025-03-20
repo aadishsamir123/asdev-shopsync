@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '/widgets/loading_spinner.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -178,9 +179,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               ? const SizedBox(
                                   height: 24,
                                   width: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
+                                  child: CustomLoadingSpinner(
+                                    color: Colors.green,
+                                    size: 24.0,
                                   ),
                                 )
                               : const Text(

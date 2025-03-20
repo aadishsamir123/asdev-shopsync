@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '/widgets/loading_spinner.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -572,9 +573,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ? const SizedBox(
                                       height: 24,
                                       width: 24,
-                                      child: CircularProgressIndicator(
+                                      child: CustomLoadingSpinner(
                                         color: Colors.white,
-                                        strokeWidth: 2,
+                                        size: 24.0,
                                       ),
                                     )
                                   : const Text('Save Changes'),

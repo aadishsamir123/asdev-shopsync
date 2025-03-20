@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'recycle_bin.dart';
 import 'task_details.dart';
 import 'create_task.dart';
+import '/widgets/loading_spinner.dart';
 import '/services/export_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -692,7 +693,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     .snapshots(),
                 builder: (context, listSnapshot) {
                   if (!listSnapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: CustomLoadingSpinner(
+                        color: Colors.green,
+                        size: 60.0,
+                      ),
+                    );
                   }
 
                   final members =
@@ -1292,7 +1298,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return const Center(
-                                child: CircularProgressIndicator());
+                              child: CustomLoadingSpinner(
+                                color: Colors.green,
+                                size: 60.0,
+                              ),
+                            );
                           }
 
                           return CustomScrollView(
@@ -1517,7 +1527,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return const Center(
-                                child: CircularProgressIndicator());
+                              child: CustomLoadingSpinner(
+                                color: Colors.green,
+                                size: 60.0,
+                              ),
+                            );
                           }
 
                           if (!snapshot.hasData ||
@@ -1959,7 +1973,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return const Center(
-                                child: CircularProgressIndicator());
+                              child: CustomLoadingSpinner(
+                                color: Colors.green,
+                                size: 60.0,
+                              ),
+                            );
                           }
 
                           if (snapshot.hasError) {
@@ -2184,309 +2202,300 @@ class _HomeScreenState extends State<HomeScreen> {
                                   _standardizePriority(docData['priority']);
 
                               return Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: Theme
-                                            .of(context)
-                                            .brightness == Brightness.dark
-                                            ? [
-                                          Colors.grey[900]!,
-                                          Colors.grey[850]!
-                                        ]
-                                            : [Colors.white, Colors.grey[50]!],
-                                      ),
-                                      borderRadius: BorderRadius.circular(16),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                      border: Border.all(
-                                        color: Theme
-                                            .of(context)
-                                            .brightness == Brightness.dark
-                                            ? Colors.grey[800]!
-                                            : Colors.grey[200]!,
-                                        width: 1,
-                                      ),
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? [
+                                              Colors.grey[900]!,
+                                              Colors.grey[850]!
+                                            ]
+                                          : [Colors.white, Colors.grey[50]!],
                                     ),
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(16),
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  TaskDetailsScreen(
-                                                    listId: _selectedListId!,
-                                                    taskId: doc.id,
-                                                  ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                    border: Border.all(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.grey[800]!
+                                          : Colors.grey[200]!,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(16),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                TaskDetailsScreen(
+                                              listId: _selectedListId!,
+                                              taskId: doc.id,
                                             ),
-                                          );
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 4,
-                                                height: 40,
-                                                decoration: BoxDecoration(
-                                                  color: priority == 'high'
-                                                      ? Colors.red[400]
-                                                      : priority == 'medium'
-                                                      ? Colors.orange[400]
-                                                      : Colors.blue[200],
-                                                  borderRadius: BorderRadius
-                                                      .circular(2),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 16),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment
-                                                      .start,
-                                                  children: [
-                                                    Text(
-                                                      name,
-                                                      style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight: FontWeight
-                                                            .w600,
-                                                        color: isCompleted
-                                                            ? Theme
-                                                            .of(context)
-                                                            .brightness ==
-                                                            Brightness.dark
-                                                            ? Colors.grey[500]
-                                                            : Colors.grey[600]
-                                                            : Theme
-                                                            .of(context)
-                                                            .brightness ==
-                                                            Brightness.dark
-                                                            ? Colors.white
-                                                            : Colors.grey[800],
-                                                        decoration: isCompleted
-                                                            ? TextDecoration
-                                                            .lineThrough
-                                                            : null,
-                                                      ),
-                                                    ),
-                                                    if (docData['location'] !=
-                                                        null ||
-                                                        docData['deadline'] !=
-                                                            null ||
-                                                        docData['addedByName'] !=
-                                                            null)
-                                                      const SizedBox(height: 8),
-                                                    Wrap(
-                                                      spacing: 12,
-                                                      children: [
-                                                        if (docData['location'] !=
-                                                            null)
-                                                          Row(
-                                                            mainAxisSize: MainAxisSize
-                                                                .min,
-                                                            children: [
-                                                              Icon(
-                                                                Icons
-                                                                    .location_on_outlined,
-                                                                size: 14,
-                                                                color: Theme
-                                                                    .of(context)
-                                                                    .brightness ==
-                                                                    Brightness
-                                                                        .dark
-                                                                    ? Colors
-                                                                    .grey[400]
-                                                                    : Colors
-                                                                    .grey[600],
-                                                              ),
-                                                              const SizedBox(
-                                                                  width: 4),
-                                                              Text(
-                                                                docData['location']['name'] ??
-                                                                    '',
-                                                                style: TextStyle(
-                                                                  fontSize: 12,
-                                                                  color: Theme
-                                                                      .of(
-                                                                      context)
-                                                                      .brightness ==
-                                                                      Brightness
-                                                                          .dark
-                                                                      ? Colors
-                                                                      .grey[400]
-                                                                      : Colors
-                                                                      .grey[600],
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        if (docData.containsKey(
-                                                            'deadline') &&
-                                                            docData['deadline'] !=
-                                                                null)
-                                                          Row(
-                                                            mainAxisSize: MainAxisSize
-                                                                .min,
-                                                            children: [
-                                                              Icon(
-                                                                Icons.schedule,
-                                                                size: 14,
-                                                                color: Theme
-                                                                    .of(context)
-                                                                    .brightness ==
-                                                                    Brightness
-                                                                        .dark
-                                                                    ? Colors
-                                                                    .grey[400]
-                                                                    : Colors
-                                                                    .grey[600],
-                                                              ),
-                                                              const SizedBox(
-                                                                  width: 4),
-                                                              Text(
-                                                                DateFormat(
-                                                                    'MMM dd, hh:mm a')
-                                                                    .format(
-                                                                  (docData['deadline'] as Timestamp)
-                                                                      .toDate(),
-                                                                ),
-                                                                style: TextStyle(
-                                                                  fontSize: 12,
-                                                                  color: Theme
-                                                                      .of(
-                                                                      context)
-                                                                      .brightness ==
-                                                                      Brightness
-                                                                          .dark
-                                                                      ? Colors
-                                                                      .grey[400]
-                                                                      : Colors
-                                                                      .grey[600],
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        if (docData['addedByName'] !=
-                                                            null)
-                                                          Row(
-                                                            mainAxisSize: MainAxisSize
-                                                                .min,
-                                                            children: [
-                                                              Icon(
-                                                                Icons
-                                                                    .person_outline,
-                                                                size: 14,
-                                                                color: Theme
-                                                                    .of(context)
-                                                                    .brightness ==
-                                                                    Brightness
-                                                                        .dark
-                                                                    ? Colors
-                                                                    .grey[400]
-                                                                    : Colors
-                                                                    .grey[600],
-                                                              ),
-                                                              const SizedBox(
-                                                                  width: 4),
-                                                              Text(
-                                                                docData['addedByName'],
-                                                                style: TextStyle(
-                                                                  fontSize: 12,
-                                                                  color: Theme
-                                                                      .of(
-                                                                      context)
-                                                                      .brightness ==
-                                                                      Brightness
-                                                                          .dark
-                                                                      ? Colors
-                                                                      .grey[400]
-                                                                      : Colors
-                                                                      .grey[600],
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: Theme
-                                                      .of(context)
-                                                      .brightness ==
-                                                      Brightness.dark
-                                                      ? Colors.grey[800]
-                                                      : Colors.grey[100],
-                                                  borderRadius: BorderRadius
-                                                      .circular(8),
-                                                ),
-                                                child: Row(
-                                                  mainAxisSize: MainAxisSize
-                                                      .min,
-                                                  children: [
-                                                    IconButton(
-                                                      icon: Icon(
-                                                        isCompleted
-                                                            ? Icons.check_circle
-                                                            : Icons
-                                                            .circle_outlined,
-                                                        color: isCompleted
-                                                            ? Colors.green[400]
-                                                            : Colors.grey[400],
-                                                      ),
-                                                      onPressed: () =>
-                                                          _toggleTaskCompletion(
-                                                            _selectedListId!,
-                                                            doc.id,
-                                                            isCompleted,
-                                                          ),
-                                                    ),
-                                                    Container(
-                                                      height: 24,
-                                                      width: 1,
-                                                      color: Theme
-                                                          .of(context)
-                                                          .brightness ==
-                                                          Brightness.dark
-                                                          ? Colors.grey[700]
-                                                          : Colors.grey[300],
-                                                    ),
-                                                    IconButton(
-                                                      icon: Icon(
-                                                        Icons.delete_outline,
-                                                        color: Colors.red[300],
-                                                      ),
-                                                      onPressed: () =>
-                                                          _deleteTask(
-                                                              _selectedListId!,
-                                                              doc.id),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
                                           ),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 4,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                color: priority == 'high'
+                                                    ? Colors.red[400]
+                                                    : priority == 'medium'
+                                                        ? Colors.orange[400]
+                                                        : Colors.blue[200],
+                                                borderRadius:
+                                                    BorderRadius.circular(2),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 16),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    name,
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: isCompleted
+                                                          ? Theme.of(context)
+                                                                      .brightness ==
+                                                                  Brightness
+                                                                      .dark
+                                                              ? Colors.grey[500]
+                                                              : Colors.grey[600]
+                                                          : Theme.of(context)
+                                                                      .brightness ==
+                                                                  Brightness
+                                                                      .dark
+                                                              ? Colors.white
+                                                              : Colors
+                                                                  .grey[800],
+                                                      decoration: isCompleted
+                                                          ? TextDecoration
+                                                              .lineThrough
+                                                          : null,
+                                                    ),
+                                                  ),
+                                                  if (docData['location'] != null ||
+                                                      docData['deadline'] !=
+                                                          null ||
+                                                      docData['addedByName'] !=
+                                                          null)
+                                                    const SizedBox(height: 8),
+                                                  Wrap(
+                                                    spacing: 12,
+                                                    children: [
+                                                      if (docData['location'] !=
+                                                          null)
+                                                        Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Icon(
+                                                              Icons
+                                                                  .location_on_outlined,
+                                                              size: 14,
+                                                              color: Theme.of(context)
+                                                                          .brightness ==
+                                                                      Brightness
+                                                                          .dark
+                                                                  ? Colors
+                                                                      .grey[400]
+                                                                  : Colors.grey[
+                                                                      600],
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 4),
+                                                            Text(
+                                                              docData['location']
+                                                                      [
+                                                                      'name'] ??
+                                                                  '',
+                                                              style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: Theme.of(context)
+                                                                            .brightness ==
+                                                                        Brightness
+                                                                            .dark
+                                                                    ? Colors.grey[
+                                                                        400]
+                                                                    : Colors.grey[
+                                                                        600],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      if (docData.containsKey(
+                                                              'deadline') &&
+                                                          docData['deadline'] !=
+                                                              null)
+                                                        Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Icon(
+                                                              Icons.schedule,
+                                                              size: 14,
+                                                              color: Theme.of(context)
+                                                                          .brightness ==
+                                                                      Brightness
+                                                                          .dark
+                                                                  ? Colors
+                                                                      .grey[400]
+                                                                  : Colors.grey[
+                                                                      600],
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 4),
+                                                            Text(
+                                                              DateFormat(
+                                                                      'MMM dd, hh:mm a')
+                                                                  .format(
+                                                                (docData['deadline']
+                                                                        as Timestamp)
+                                                                    .toDate(),
+                                                              ),
+                                                              style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: Theme.of(context)
+                                                                            .brightness ==
+                                                                        Brightness
+                                                                            .dark
+                                                                    ? Colors.grey[
+                                                                        400]
+                                                                    : Colors.grey[
+                                                                        600],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      if (docData[
+                                                              'addedByName'] !=
+                                                          null)
+                                                        Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Icon(
+                                                              Icons
+                                                                  .person_outline,
+                                                              size: 14,
+                                                              color: Theme.of(context)
+                                                                          .brightness ==
+                                                                      Brightness
+                                                                          .dark
+                                                                  ? Colors
+                                                                      .grey[400]
+                                                                  : Colors.grey[
+                                                                      600],
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 4),
+                                                            Text(
+                                                              docData[
+                                                                  'addedByName'],
+                                                              style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: Theme.of(context)
+                                                                            .brightness ==
+                                                                        Brightness
+                                                                            .dark
+                                                                    ? Colors.grey[
+                                                                        400]
+                                                                    : Colors.grey[
+                                                                        600],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.grey[800]
+                                                    : Colors.grey[100],
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  IconButton(
+                                                    icon: Icon(
+                                                      isCompleted
+                                                          ? Icons.check_circle
+                                                          : Icons
+                                                              .circle_outlined,
+                                                      color: isCompleted
+                                                          ? Colors.green[400]
+                                                          : Colors.grey[400],
+                                                    ),
+                                                    onPressed: () =>
+                                                        _toggleTaskCompletion(
+                                                      _selectedListId!,
+                                                      doc.id,
+                                                      isCompleted,
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    height: 24,
+                                                    width: 1,
+                                                    color: Theme.of(context)
+                                                                .brightness ==
+                                                            Brightness.dark
+                                                        ? Colors.grey[700]
+                                                        : Colors.grey[300],
+                                                  ),
+                                                  IconButton(
+                                                    icon: Icon(
+                                                      Icons.delete_outline,
+                                                      color: Colors.red[300],
+                                                    ),
+                                                    onPressed: () =>
+                                                        _deleteTask(
+                                                            _selectedListId!,
+                                                            doc.id),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
                                   ),
-                                );
-                              },
-                            );
+                                ),
+                              );
+                            },
+                          );
                         },
                       ),
               ),
@@ -2515,7 +2524,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
-                        return const Center(child: CircularProgressIndicator());
+                        return const Center(
+                          child: CustomLoadingSpinner(
+                            color: Colors.green,
+                            size: 60.0,
+                          ),
+                        );
                       }
 
                       final totalItems = snapshot.data!.docs.length;

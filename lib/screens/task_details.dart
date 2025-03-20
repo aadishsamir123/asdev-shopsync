@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import '/widgets/place_selector.dart';
+import '/widgets/loading_spinner.dart';
 
 class TaskDetailsScreen extends StatefulWidget {
   final String listId;
@@ -203,7 +203,12 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CustomLoadingSpinner(
+                color: Colors.green,
+                size: 60.0,
+              ),
+            );
           }
 
           final task = snapshot.data!.data() as Map<String, dynamic>? ?? {};
