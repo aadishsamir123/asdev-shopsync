@@ -7,35 +7,50 @@ on:
 
 jobs:
   build:
-    environment: google-play-deploy
+    environment: google-play-deployment
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 1: Set up JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+          
+      # Step 2: Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.27.1'
 
+      # Step 3: Decode Keystore (from GitHub Secret)
       - name: Decode Keystore
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/release-key.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release-key.jks
+        working-directory: android
 
+      # Step 4: Create key.properties (using GitHub secrets)
       - name: Create key.properties
         run: |
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=release-key.jks" >> android/key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> key.properties
+          echo "storeFile=release-key.jks" >> key.properties
+        working-directory: android
 
+      # Step 5: Get Flutter dependencies
       - name: Get dependencies
         run: flutter pub get
 
+      # Step 6: Build AAB (Android App Bundle) for release
       - name: Build AAB
         run: flutter build appbundle --release
 
+      # Step 7: Upload the generated AAB to Google Play Console
       - name: Upload to Google Play
         uses: r0adkll/upload-google-play@v1
         with:
