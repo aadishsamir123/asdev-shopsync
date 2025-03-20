@@ -10,8 +10,10 @@ import 'screens/home.dart';
 import 'screens/profile.dart';
 import 'screens/settings.dart';
 import 'screens/maintenance_screen.dart';
+import 'screens/onboarding.dart';
 import 'services/update_service.dart';
 import 'services/maintenance_service.dart';
+import 'services/shared_prefs.dart';
 // import 'services/theme_notifier.dart';
 
 void main() async {
@@ -48,6 +50,40 @@ void main() async {
   runApp(ShopSync());
 }
 
+class CustomPageTransitionsBuilder extends PageTransitionsBuilder {
+  const CustomPageTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    if (route.fullscreenDialog) {
+      return child;
+    }
+
+    return FadeTransition(
+      opacity: CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeInOut,
+      ),
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(1.0, 0.0),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        )),
+        child: child,
+      ),
+    );
+  }
+}
+
 class ShopSync extends StatelessWidget {
   const ShopSync({super.key});
 
@@ -56,21 +92,19 @@ class ShopSync extends StatelessWidget {
     return MaterialApp(
       title: 'ShopSync',
       theme: ThemeData(
-        // pageTransitionsTheme: const PageTransitionsTheme(
-        //   builders: {
-        //     TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
-        //   },
-        // ),
-        useMaterial3: true,
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: CustomPageTransitionsBuilder(),
+          },
+        ),
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
       ),
-      darkTheme: ThemeData.dark(
-        // pageTransitionsTheme: const PageTransitionsTheme(
-        //   builders: {
-        //     TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
-        //   },
-        // ),
-        useMaterial3: true,
+      darkTheme: ThemeData.dark().copyWith(
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: CustomPageTransitionsBuilder(),
+          },
+        ),
       ),
       // themeMode: themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: const AuthWrapper(),
@@ -99,6 +133,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
     super.initState();
     // Check for updates after widget is built
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (await SharedPrefs.isFirstLaunch() && mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+        );
+        return;
+      }
       UpdateService.checkForUpdate(context);
       await _checkMaintenance();
     });
