@@ -1,57 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-// import 'package:google_sign_in/google_sign_in.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class WelcomeScreen extends StatelessWidget {
   WelcomeScreen({super.key});
-
-  // ValueNotifier to track loading state
-  final ValueNotifier<bool> _isGoogleSigningIn = ValueNotifier<bool>(false);
-
-  // Future<void> _signInWithGoogle(BuildContext context) async {
-  //   _isGoogleSigningIn.value = true;
-  //
-  //   try {
-  //     // Begin interactive sign in process
-  //     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
-  //
-  //     // If user cancels the sign-in flow
-  //     if (gUser == null) {
-  //       _isGoogleSigningIn.value = false;
-  //       return;
-  //     }
-  //
-  //     // Obtain auth details from the request
-  //     final GoogleSignInAuthentication gAuth = await gUser.authentication;
-  //
-  //     // Create a new credential for the user
-  //     final credential = GoogleAuthProvider.credential(
-  //       accessToken: gAuth.accessToken,
-  //       idToken: gAuth.idToken,
-  //     );
-  //
-  //     // Sign in with Firebase
-  //     await FirebaseAuth.instance.signInWithCredential(credential);
-  //
-  //     if (context.mounted) {
-  //       Navigator.pushReplacementNamed(context, '/home');
-  //     }
-  //   } catch (e) {
-  //     _isGoogleSigningIn.value = false;
-  //
-  //     if (context.mounted) {
-  //       debugPrint('Error signing in with Google: ${e.toString()}');
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text('Error signing in with Google: ${e.toString()}'),
-  //           backgroundColor: Colors.red,
-  //         ),
-  //       );
-  //     }
-  //   }
-  // }
 
   Future<String> _getVersionInfo() async {
     final packageInfo = await PackageInfo.fromPlatform();
@@ -60,198 +11,194 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF4CAF50), Color(0xFF2E7D32)],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: isDarkMode
+                ? [
+                    Colors.black,
+                    Color(0xFF1A1A1A),
+                  ]
+                : [
+                    const Color(0xFF4CAF50),
+                    const Color(0xFF2E7D32),
+                  ],
           ),
         ),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // App Logo
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.check_circle_outline,
-                    size: 80,
-                    color: Colors.white,
+                const Spacer(flex: 1),
+
+                // Logo and App Name Section
+                Hero(
+                  tag: 'app_logo',
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: isDarkMode
+                          ? Colors.green.withOpacity(0.15)
+                          : Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.check_circle_outline,
+                      size: 80,
+                      color: isDarkMode ? Colors.green[300] : Colors.white,
+                    ),
                   ),
                 ),
+
                 const SizedBox(height: 40),
 
-                // App Title with highlight
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Text(
-                      'ShopSync',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 42,
-                        fontWeight: FontWeight.bold,
-                        foreground: Paint()
-                          ..style = PaintingStyle.stroke
-                          ..color = Colors.white.withOpacity(0.3),
-                      ),
+                // App Title with Animation
+                ShaderMask(
+                  shaderCallback: (bounds) => LinearGradient(
+                    colors: isDarkMode
+                        ? [Colors.green[300]!, Colors.green[400]!]
+                        : [Colors.white, Colors.white70],
+                  ).createShader(bounds),
+                  child: Text(
+                    'ShopSync',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? Colors.green[300] : Colors.white,
                     ),
-                    const Text(
-                      'ShopSync',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 42,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
 
                 const SizedBox(height: 16),
 
-                // App Tagline
+                // Tagline
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    color: isDarkMode
+                        ? Colors.green.withOpacity(0.15)
+                        : Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: isDarkMode
+                          ? Colors.green.withOpacity(0.3)
+                          : Colors.white.withOpacity(0.3),
+                    ),
                   ),
-                  child: const Text(
-                    'Share shopping lists with family and friends',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
+                  child: Align(
+                    child: Text(
+                      'Share shopping lists with family and friends.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: isDarkMode ? Colors.green[100] : Colors.white,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 60),
+                const Spacer(flex: 2),
 
                 // Login Button
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/login');
-                  },
+                  onPressed: () => Navigator.pushNamed(context, '/login'),
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.green[800],
-                    backgroundColor: Colors.green[50],
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    foregroundColor:
+                        isDarkMode ? Colors.white : Colors.green[800],
+                    backgroundColor: isDarkMode ? Colors.green : Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 32),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    elevation: 3,
+                    elevation: 4,
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.login, color: Colors.green.shade800),
-                      SizedBox(width: 8),
+                      Icon(Icons.login, size: 24),
+                      SizedBox(width: 12),
                       Text(
                         'Log In',
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
                 // Sign Up Button
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/register');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.green[800],
-                    backgroundColor: Colors.green[50],
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                OutlinedButton(
+                  onPressed: () => Navigator.pushNamed(context, '/register'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor:
+                        isDarkMode ? Colors.green[300] : Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 32),
+                    side: BorderSide(
+                      color: isDarkMode ? Colors.green[300]! : Colors.white,
+                      width: 2,
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.person_add, color: Colors.green.shade800),
-                      SizedBox(width: 8),
+                      Icon(Icons.person_add, size: 24),
+                      SizedBox(width: 12),
                       Text(
                         'Sign Up',
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const Spacer(flex: 1),
 
-                // Google Sign-in Button with loading indicator
-                // ValueListenableBuilder<bool>(
-                //   valueListenable: _isGoogleSigningIn,
-                //   builder: (context, isLoading, _) {
-                //     return Material(
-                //       color: Colors.transparent,
-                //       child: InkWell(
-                //         onTap: isLoading ? null : () => _signInWithGoogle(context),
-                //         borderRadius: BorderRadius.circular(8),
-                //         splashColor: Colors.grey.withOpacity(0.3),
-                //         highlightColor: Colors.grey.withOpacity(0.1),
-                //         child: Ink(
-                //           child: Padding(
-                //             padding: const EdgeInsets.symmetric(vertical: 8.0),
-                //             child: isLoading
-                //                 ? SizedBox(
-                //               height: 48,
-                //               child: Center(
-                //                 child: CircularProgressIndicator(
-                //                   color: Colors.white,
-                //                   strokeWidth: 3,
-                //                 ),
-                //               ),
-                //             )
-                //                 : Image.asset(
-                //               './assets/logos/continue_google.png',
-                //               height: 48,
-                //               fit: BoxFit.contain,
-                //             ),
-                //           ),
-                //         ),
-                //       ),
-                //     );
-                //   },
-                // ),
-
-                SizedBox(height: 40),
-
-                // Version info at bottom
+                // Version info
                 FutureBuilder<String>(
                   future: _getVersionInfo(),
                   builder: (context, snapshot) {
                     return Text(
                       snapshot.data ?? 'Loading version information...',
-                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white.withOpacity(0.7),
+                        color: isDarkMode
+                            ? Colors.green[100]?.withOpacity(0.7)
+                            : Colors.white.withOpacity(0.7),
                       ),
                     );
                   },
                 ),
+
+                const SizedBox(height: 20),
               ],
             ),
           ),

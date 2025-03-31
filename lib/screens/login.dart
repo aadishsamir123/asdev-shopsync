@@ -48,13 +48,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF4CAF50), Color(0xFF2E7D32)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isDarkMode
+                ? [
+                    Colors.black,
+                    Color(0xFF1A1A1A),
+                  ]
+                : [
+                    Colors.green.shade400,
+                    Colors.green.shade800,
+                    Colors.green.shade900,
+                  ],
           ),
         ),
         height: MediaQuery.of(context).size.height,
@@ -66,37 +77,50 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    icon: Icon(Icons.arrow_back,
+                        color: isDarkMode ? Colors.green[300] : Colors.white,
+                        size: 28),
                     onPressed: () => Navigator.pop(context),
                   ),
                   const SizedBox(height: 40),
-                  const Text(
-                    'Welcome\nBack!',
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      height: 1.2,
+                  ShaderMask(
+                    shaderCallback: (bounds) => LinearGradient(
+                      colors: isDarkMode
+                          ? [Colors.green[300]!, Colors.green[400]!]
+                          : [Colors.white, Colors.white.withOpacity(0.9)],
+                    ).createShader(bounds),
+                    child: const Text(
+                      'Welcome\nBack!',
+                      style: TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        height: 1.1,
+                        letterSpacing: -0.5,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Sign in to continue with ShopSync',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white70,
+                      color: isDarkMode
+                          ? Colors.green[100]
+                          : Colors.white.withOpacity(0.85),
+                      letterSpacing: 0.3,
                     ),
                   ),
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 50),
                   Container(
                     padding: const EdgeInsets.all(28),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      color: isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
+                      borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 20,
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 30,
                           offset: const Offset(0, 10),
                         ),
                       ],
@@ -106,23 +130,48 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextFormField(
                           controller: _emailController,
                           style: TextStyle(
-                              fontSize: 16, color: Colors.green.shade800),
+                            fontSize: 16,
+                            color: isDarkMode
+                                ? Colors.green[300]
+                                : Colors.green.shade800,
+                            fontWeight: FontWeight.w500,
+                          ),
                           decoration: InputDecoration(
                             labelText: 'Email',
-                            labelStyle: TextStyle(color: Colors.green[800]),
-                            prefixIcon:
-                                Icon(Icons.email, color: Colors.green[800]),
+                            labelStyle: TextStyle(
+                              color: isDarkMode
+                                  ? Colors.green[300]
+                                  : Colors.green[800],
+                              fontSize: 15,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.email_outlined,
+                              color: isDarkMode
+                                  ? Colors.green[300]
+                                  : Colors.green[800],
+                              size: 22,
+                            ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide(
+                                color: isDarkMode
+                                    ? Colors.green.withOpacity(0.3)
+                                    : Colors.grey.shade200,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.green[800]!),
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide(
+                                color: isDarkMode
+                                    ? Colors.green[300]!
+                                    : Colors.green.shade800,
+                                width: 2,
+                              ),
                             ),
                             filled: true,
-                            fillColor: Colors.grey.shade50,
+                            fillColor: isDarkMode
+                                ? Colors.black.withOpacity(0.3)
+                                : Colors.grey.shade50,
                           ),
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
@@ -131,18 +180,36 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextFormField(
                           controller: _passwordController,
                           style: TextStyle(
-                              fontSize: 16, color: Colors.green.shade800),
+                            fontSize: 16,
+                            color: isDarkMode
+                                ? Colors.green[300]
+                                : Colors.green.shade800,
+                            fontWeight: FontWeight.w500,
+                          ),
                           decoration: InputDecoration(
                             labelText: 'Password',
-                            labelStyle: TextStyle(color: Colors.green[800]),
-                            prefixIcon:
-                                Icon(Icons.lock, color: Colors.green[800]),
+                            labelStyle: TextStyle(
+                              color: isDarkMode
+                                  ? Colors.green[300]
+                                  : Colors.green[800],
+                              fontSize: 15,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock_outline,
+                              color: isDarkMode
+                                  ? Colors.green[300]
+                                  : Colors.green[800],
+                              size: 22,
+                            ),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscureText
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: Colors.green[800],
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                                color: isDarkMode
+                                    ? Colors.green[300]
+                                    : Colors.green[800],
+                                size: 22,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -151,77 +218,89 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide(
+                                color: isDarkMode
+                                    ? Colors.green.withOpacity(0.3)
+                                    : Colors.grey.shade200,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.green[800]!),
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide(
+                                color: isDarkMode
+                                    ? Colors.green[300]!
+                                    : Colors.green.shade800,
+                                width: 2,
+                              ),
                             ),
                             filled: true,
-                            fillColor: Colors.grey.shade50,
+                            fillColor: isDarkMode
+                                ? Colors.black.withOpacity(0.3)
+                                : Colors.grey.shade50,
                           ),
                           obscureText: _obscureText,
                           textInputAction: TextInputAction.done,
                         ),
                         if (_errorMessage.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.red.shade50,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.red.shade200),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.error_outline,
-                                      color: Colors.red),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      _errorMessage,
-                                      style: const TextStyle(color: Colors.red),
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            margin: const EdgeInsets.only(top: 20),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade50,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.red.shade200),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.error_outline,
+                                    color: Colors.red.shade400, size: 20),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    _errorMessage,
+                                    style: TextStyle(
+                                      color: Colors.red.shade700,
+                                      fontSize: 14,
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 25),
                         SizedBox(
                           width: double.infinity,
-                          height: 55,
+                          height: 56,
                           child: ElevatedButton(
                             onPressed: _isLoading ? null : _login,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green[800],
+                              backgroundColor: isDarkMode
+                                  ? Colors.green
+                                  : Colors.green.shade800,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                              elevation: 3,
+                              elevation: _isLoading ? 0 : 3,
                             ),
                             child: _isLoading
-                                ? const SizedBox(
-                                    height: 24,
-                                    width: 24,
-                                    child: CustomLoadingSpinner(
-                                      color: Colors.green,
-                                      size: 24.0,
-                                    ),
+                                ? const CustomLoadingSpinner(
+                                    color: Colors.white,
+                                    size: 24.0,
                                   )
                                 : const Text(
                                     'Sign In',
                                     style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.5,
+                                    ),
                                   ),
                           ),
                         ),
-                        const SizedBox(height: 15),
+                        const SizedBox(height: 16),
                         TextButton(
                           onPressed: () {
                             Navigator.pushReplacement(
@@ -233,13 +312,19 @@ class _LoginScreenState extends State<LoginScreen> {
                             );
                           },
                           style: TextButton.styleFrom(
-                            foregroundColor: Colors.green[800],
+                            foregroundColor: isDarkMode
+                                ? Colors.green[300]
+                                : Colors.green[800],
+                            padding: const EdgeInsets.symmetric(vertical: 8),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Forgot Password?',
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: isDarkMode
+                                  ? Colors.green[300]
+                                  : Colors.green.shade800,
                               decoration: TextDecoration.underline,
                             ),
                           ),
@@ -251,21 +336,29 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
+                      Text(
                         "Don't have an account?",
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                          color: isDarkMode
+                              ? Colors.green[100]?.withOpacity(0.9)
+                              : Colors.white.withOpacity(0.9),
+                          fontSize: 15,
+                        ),
                       ),
                       TextButton(
                         onPressed: () {
                           Navigator.pushReplacementNamed(context, '/register');
                         },
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
+                          foregroundColor:
+                              isDarkMode ? Colors.green[300] : Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
                         child: const Text(
                           'Sign Up',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
+                            fontSize: 15,
                             decoration: TextDecoration.underline,
                           ),
                         ),

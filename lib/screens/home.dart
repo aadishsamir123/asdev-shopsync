@@ -146,7 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _signOut() async {
     await _auth.signOut();
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, '/');
   }
 
   Future<void> _createList() async {
