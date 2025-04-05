@@ -97,6 +97,10 @@ class ShopSync extends StatelessWidget {
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {
             TargetPlatform.android: CustomPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.macOS: CustomPageTransitionsBuilder(),
+            TargetPlatform.windows: CustomPageTransitionsBuilder(),
+            TargetPlatform.fuchsia: CustomPageTransitionsBuilder(),
           },
         ),
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
@@ -105,6 +109,10 @@ class ShopSync extends StatelessWidget {
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {
             TargetPlatform.android: CustomPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.macOS: CustomPageTransitionsBuilder(),
+            TargetPlatform.windows: CustomPageTransitionsBuilder(),
+            TargetPlatform.fuchsia: CustomPageTransitionsBuilder(),
           },
         ),
       ),
@@ -117,6 +125,7 @@ class ShopSync extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfileScreen(),
         '/settings': (context) => const SettingsScreen(),
+        '/onboarding': (context) => const OnboardingScreen(),
       },
     );
   }

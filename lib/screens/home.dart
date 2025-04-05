@@ -7,6 +7,7 @@ import 'recycle_bin.dart';
 import 'task_details.dart';
 import 'create_task.dart';
 import '/widgets/loading_spinner.dart';
+import '/screens/sign_out.dart';
 import '/services/export_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -144,8 +145,33 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _signOut() async {
-    await _auth.signOut();
-    if (!mounted) return;
+    final shouldSignOut = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Sign Out'),
+            content: const Text('Are you sure you want to sign out?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child:
+                    Text('Cancel', style: TextStyle(color: Colors.grey[700])),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red[700]),
+                child: const Text('Sign Out'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (shouldSignOut) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SignOutScreen()),
+      );
+    }
   }
 
   Future<void> _createList() async {

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import '/widgets/loading_spinner.dart';
+import '/widgets/place_selector.dart';
 
 class CreateTaskScreen extends StatefulWidget {
   final String listId;
@@ -18,6 +19,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   final _descriptionController = TextEditingController();
   DateTime? _selectedDeadline;
   TimeOfDay? _selectedTime;
+  Map<String, dynamic>? _location;
   bool _isLoading = false;
 
   Future<void> _createTask() async {
@@ -62,6 +64,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         'addedAt': FieldValue.serverTimestamp(),
         'priority': 'low',
         'deadline': deadline,
+        'location': _location, // Add this line
       });
 
       if (!mounted) return;
@@ -77,185 +80,351 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Task'),
-        centerTitle: true,
-        elevation: 0,
+        title: const Text(
+          'Create Task',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         backgroundColor: isDark ? Colors.grey[900] : Colors.green[800],
-        foregroundColor: Colors.white,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.grey[800]!.withOpacity(0.5)
+                  : Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color:
+                    isDark ? Colors.grey[700]! : Colors.white.withOpacity(0.3),
+              ),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+              tooltip: 'Go Back',
+            ),
+          ),
+        ),
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Task Name
-                _buildCard(
-                  title: 'Task Name *',
-                  child: Hero(
-                    tag: 'taskName',
-                    child: TextField(
-                      controller: _titleController,
-                      style: const TextStyle(fontSize: 16),
-                      decoration: InputDecoration(
-                        hintText: 'Enter task name',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.green[200]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.green[800]!, width: 2),
-                        ),
-                        filled: true,
-                        fillColor: isDark ? Colors.grey[850] : Colors.grey[50],
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Task Name
+            _buildCard(
+              title: 'Task Name',
+              child: Card(
+                elevation: 8,
+                shadowColor: Colors.black26,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.green[100],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(Icons.edit, color: Colors.green[800]),
+                          ),
+                          const SizedBox(width: 16),
+                          const Text(
+                            'Task Name',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _titleController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter task name...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.green[200]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                BorderSide(color: Colors.green[800]!, width: 2),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.green[200]!),
+                          ),
+                          filled: true,
+                          fillColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.grey[850]
+                                  : Colors.grey[50],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+              ),
+            ),
 
-                // Deadline
-                _buildCard(
-                  title: 'Deadline',
-                  child: ListTile(
-                    onTap: () async {
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 365)),
-                        builder: (context, child) => Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: isDark
-                                ? ColorScheme.dark(
-                                    primary: Colors.green[800]!,
-                                    // header background color
-                                    onPrimary: Colors.white,
-                                    // header text color
-                                    onSurface: Colors.white,
-                                    // body text color
-                                    surface: Colors
-                                        .grey[900]!, // calendar background
-                                  )
-                                : ColorScheme.light(
-                                    primary: Colors.green[800]!,
-                                    // header background color
-                                    onPrimary: Colors.white,
-                                    // header text color
-                                    onSurface: Colors.black, // body text color
-                                  ),
-                          ),
-                          child: child!,
+            // Deadline Card
+            _buildCard(
+              title: 'Deadline',
+              child: Card(
+                elevation: 8,
+                shadowColor: Colors.black26,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                child: InkWell(
+                  onTap: () async {
+                    final date = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                      builder: (context, child) => Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: isDark
+                              ? ColorScheme.dark(
+                                  primary: Colors.green[800]!,
+                                  onPrimary: Colors.white,
+                                  onSurface: Colors.white,
+                                  surface: Colors.grey[900]!,
+                                )
+                              : ColorScheme.light(
+                                  primary: Colors.green[800]!,
+                                  onPrimary: Colors.white,
+                                  onSurface: Colors.black,
+                                ),
                         ),
+                        child: child!,
+                      ),
+                    );
+                    if (date != null) {
+                      final time = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: isDark
+                                  ? ColorScheme.dark(
+                                      primary: Colors.green[800]!,
+                                      onPrimary: Colors.white,
+                                      onSurface: Colors.white,
+                                      surface: Colors.grey[900]!,
+                                    )
+                                  : ColorScheme.light(
+                                      primary: Colors.green[800]!,
+                                      onPrimary: Colors.white,
+                                      onSurface: Colors.black,
+                                    ),
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
-                      if (date != null) {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                          builder: (context, child) {
-                            final isDark =
-                                Theme.of(context).brightness == Brightness.dark;
-                            return Theme(
-                              data: Theme.of(context).copyWith(
-                                colorScheme: isDark
-                                    ? ColorScheme.dark(
-                                        primary: Colors.green[800]!,
-                                        onPrimary: Colors.white,
-                                        onSurface: Colors.white,
-                                        surface: Colors.grey[900]!,
-                                      )
-                                    : ColorScheme.light(
-                                        primary: Colors.green[800]!,
-                                        onPrimary: Colors.white,
-                                        onSurface: Colors.black,
-                                      ),
-                                timePickerTheme: TimePickerThemeData(
-                                  dialBackgroundColor: isDark
-                                      ? Colors.grey[800]
-                                      : Colors.green[50],
-                                  hourMinuteTextColor: Colors.green[300],
-                                  dayPeriodTextColor: Colors.green[300],
-                                  dayPeriodBorderSide: BorderSide.none,
-                                  dayPeriodShape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  dayPeriodColor:
-                                      MaterialStateColor.resolveWith((states) {
-                                    if (states
-                                        .contains(MaterialState.selected)) {
-                                      return Colors.green[800]!;
-                                    }
-                                    return Colors.transparent;
-                                  }),
+                      if (!mounted) return;
+                      setState(() {
+                        _selectedDeadline = date;
+                        _selectedTime = time;
+                      });
+                    }
+                  },
+                  borderRadius: BorderRadius.circular(15),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.green[100],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(Icons.event, color: Colors.green[800]),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Deadline',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
                               ),
-                              child: child!,
-                            );
-                          },
-                        );
-                        if (!mounted) return;
-                        setState(() {
-                          _selectedDeadline = date;
-                          _selectedTime = time;
-                        });
-                      }
-                    },
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    leading:
-                        Icon(Icons.calendar_today, color: Colors.green[800]),
-                    title: Text(
-                      _selectedDeadline != null
-                          ? DateFormat('MMM dd, yyyy')
-                              .format(_selectedDeadline!)
-                          : 'Select Date',
-                      style: TextStyle(
-                          color: isDark ? Colors.white : Colors.black87),
-                    ),
-                    subtitle: _selectedTime != null
-                        ? Text(_selectedTime!.format(context))
-                        : null,
-                    trailing: _selectedDeadline != null
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
+                              const SizedBox(height: 4),
+                              Text(
+                                _selectedDeadline != null
+                                    ? '${DateFormat('MMM dd, yyyy').format(_selectedDeadline!)} ${_selectedTime?.format(context) ?? ''}'
+                                    : 'Set deadline',
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (_selectedDeadline != null)
+                          IconButton(
+                            icon: const Icon(Icons.close),
                             onPressed: () => setState(() {
                               _selectedDeadline = null;
                               _selectedTime = null;
                             }),
-                          )
-                        : null,
-                  ),
-                ),
-
-                // Description
-                _buildCard(
-                  title: 'Description',
-                  child: TextField(
-                    controller: _descriptionController,
-                    maxLines: 5,
-                    style: const TextStyle(fontSize: 16),
-                    decoration: InputDecoration(
-                      hintText: 'Add description...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.green[200]!),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                            BorderSide(color: Colors.green[800]!, width: 2),
-                      ),
-                      filled: true,
-                      fillColor: isDark ? Colors.grey[850] : Colors.grey[50],
+                          ),
+                      ],
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ],
+
+            _buildCard(
+              title: 'Location',
+              child: Card(
+                elevation: 8,
+                shadowColor: Colors.black26,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                child: InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) => LocationSelector(
+                        initialLocation: null,
+                        onLocationSelected: (location) {
+                          if (!mounted) return;
+                          if (location.isNotEmpty) {
+                            _location = location;
+                          }
+                          setState(() {});
+                        },
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(15),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.green[100],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child:
+                              Icon(Icons.location_on, color: Colors.green[800]),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Location',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _location != null
+                                    ? '${_location!['name']}\n${_location!['address']}'
+                                    : 'Set location',
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Description Card
+            _buildCard(
+              title: 'Description',
+              child: Card(
+                elevation: 8,
+                shadowColor: Colors.black26,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.green[100],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(Icons.description,
+                                color: Colors.green[800]),
+                          ),
+                          const SizedBox(width: 16),
+                          const Text(
+                            'Description',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: _descriptionController,
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                          hintText: 'Add description...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.green[200]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                BorderSide(color: Colors.green[800]!, width: 2),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.green[200]!),
+                          ),
+                          filled: true,
+                          fillColor:
+                              isDark ? Colors.grey[850] : Colors.grey[50],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
@@ -293,29 +462,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   Widget _buildCard({required String title, required Widget child}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              child,
-            ],
-          ),
-        ),
-      ),
+      child: child,
     );
   }
 }

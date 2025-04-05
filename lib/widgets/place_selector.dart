@@ -139,7 +139,6 @@ class _LocationSelectorState extends State<LocationSelector>
           controller: _storeNameController,
           decoration: _buildInputDecoration(
             'Store Name',
-            'Enter store name',
             Icons.store,
             isDark,
           ),
@@ -150,7 +149,6 @@ class _LocationSelectorState extends State<LocationSelector>
           maxLines: 3,
           decoration: _buildInputDecoration(
             'Store Address',
-            'Enter store address',
             Icons.location_on,
             isDark,
           ),
@@ -161,17 +159,17 @@ class _LocationSelectorState extends State<LocationSelector>
 
   InputDecoration _buildInputDecoration(
     String label,
-    String hint,
     IconData icon,
     bool isDark,
   ) {
     return InputDecoration(
       labelText: label,
-      hintText: hint,
       prefixIcon: Icon(icon, color: Colors.green[800]),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderSide: BorderSide(
+          color: isDark ? Colors.green[300]! : Colors.green[800]!,
+        ),
       ),
       filled: true,
       fillColor: isDark ? Colors.grey[800] : Colors.grey[100],
