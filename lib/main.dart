@@ -57,31 +57,46 @@ class CustomPageTransitionsBuilder extends PageTransitionsBuilder {
 
   @override
   Widget buildTransitions<T>(
-    PageRoute<T> route,
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    if (route.fullscreenDialog) {
-      return child;
-    }
+      PageRoute<T> route,
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child) {
+    // Custom curve for a more dynamic feel
+    const curve = Curves.easeInOutQuad;
 
-    return FadeTransition(
-      opacity: CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeInOut,
-      ),
-      child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(1.0, 0.0),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeInOut,
-        )),
-        child: child,
-      ),
+    // First, define the size transition effect (scale)
+    var scaleTween = Tween(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: animation, curve: curve),
+    );
+
+    // Define the slide transition effect
+    var slideTween =
+        Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(
+      CurvedAnimation(parent: animation, curve: curve),
+    );
+
+    // Define the fade transition effect
+    var fadeTween = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: animation, curve: curve),
+    );
+
+    // Combining the animations together to give the "morphing" effect
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        return Transform(
+          transform: Matrix4.identity()
+            ..scale(scaleTween.value)
+            ..translate(
+                slideTween.value.dx * MediaQuery.of(context).size.width, 0),
+          child: FadeTransition(
+            opacity: fadeTween,
+            child: child,
+          ),
+        );
+      },
+      child: child,
     );
   }
 }
