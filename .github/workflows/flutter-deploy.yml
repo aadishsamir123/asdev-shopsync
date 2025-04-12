@@ -1,9 +1,8 @@
 name: Build & Deploy Flutter App to Play Store
 
 on:
-  push:
-    branches:
-      - main  # Or your deploy branch
+  workflow_dispatch:
+
 
 jobs:
   build:
@@ -20,7 +19,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
-          
+
       # Step 2: Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
