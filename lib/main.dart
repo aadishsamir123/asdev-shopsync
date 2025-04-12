@@ -8,14 +8,12 @@ import 'screens/login.dart';
 import 'screens/register.dart';
 import 'screens/home.dart';
 import 'screens/profile.dart';
-import 'screens/settings.dart';
 import 'screens/maintenance_screen.dart';
 import 'screens/onboarding.dart';
 import 'widgets/loading_spinner.dart';
 import 'services/update_service.dart';
 import 'services/maintenance_service.dart';
 import 'services/shared_prefs.dart';
-// import 'services/theme_notifier.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -139,7 +137,7 @@ class ShopSync extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfileScreen(),
-        '/settings': (context) => const SettingsScreen(),
+        // '/settings': (context) => const SettingsScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
       },
     );

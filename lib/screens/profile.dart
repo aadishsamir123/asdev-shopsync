@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '/screens/sign_out.dart';
 import '/widgets/loading_spinner.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = (isDark ? Colors.white : Colors.black).withOpacity(0.1)
+      ..color = (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1)
       ..strokeWidth = 1;
 
     for (var i = 0; i < size.width; i += 20) {
@@ -110,6 +111,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _signOut() async {
+    final shouldSignOut = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Sign Out'),
+            content: const Text('Are you sure you want to sign out?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child:
+                    Text('Cancel', style: TextStyle(color: Colors.grey[700])),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red[700]),
+                child: const Text('Sign Out'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (shouldSignOut) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SignOutScreen()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = _auth.currentUser;
@@ -150,13 +181,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: isDark
-                              ? Colors.grey[800]!.withOpacity(0.5)
-                              : Colors.white.withOpacity(0.2),
+                              ? Colors.grey[800]!.withValues(alpha: 0.5)
+                              : Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isDark
                                 ? Colors.grey[700]!
-                                : Colors.white.withOpacity(0.3),
+                                : Colors.white.withValues(alpha: 0.3),
                           ),
                         ),
                         child: IconButton(
@@ -279,13 +310,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: isDark
-                            ? Colors.grey[800]!.withOpacity(0.5)
-                            : Colors.white.withOpacity(0.2),
+                            ? Colors.grey[800]!.withValues(alpha: 0.5)
+                            : Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isDark
                               ? Colors.grey[700]!
-                              : Colors.white.withOpacity(0.3),
+                              : Colors.white.withValues(alpha: 0.3),
                         ),
                       ),
                       child: IconButton(
@@ -309,7 +340,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? Colors.red[900]!.withOpacity(0.2)
+                              ? Colors.red[900]!.withValues(alpha: 0.2)
                               : Colors.red[50],
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
@@ -590,10 +621,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        onPressed: () => {
-                          FirebaseAuth.instance.signOut(),
-                          Navigator.pop(context),
-                        },
+                        onPressed: () => {_signOut()},
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           side: BorderSide(

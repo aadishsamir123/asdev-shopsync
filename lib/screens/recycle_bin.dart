@@ -55,7 +55,34 @@ class RecycleBinScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: isDark ? Colors.grey[900] : Colors.green[800],
         foregroundColor: Colors.white,
-        title: const Text('Recycle Bin'),
+        title: const Text(
+          'Recycle Bin',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.grey[800]!.withValues(alpha: 0.5)
+                  : Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isDark
+                    ? Colors.grey[700]!
+                    : Colors.white.withValues(alpha: 0.3),
+              ),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+              tooltip: 'Go Back',
+            ),
+          ),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance

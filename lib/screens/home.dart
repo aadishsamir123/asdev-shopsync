@@ -39,7 +39,7 @@ class TutorialStep extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -111,7 +111,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final _firestore = FirebaseFirestore.instance;
   String? _selectedListId;
   final _newListController = TextEditingController();
-  final bool _isReorderingMode = false;
+
+  // final bool _isReorderingMode = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   double _dragStartX = 0;
@@ -360,43 +361,76 @@ class _HomeScreenState extends State<HomeScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit List Name'),
-        content: TextField(
-          controller: nameController,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'List name',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: Colors.grey[700]),
+      builder: (context) {
+        final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+        return AlertDialog(
+          backgroundColor: isDark ? Colors.black : Colors.white,
+          title: Text(
+            'Edit List Name',
+            style: TextStyle(
+              color: isDark ? Colors.white : Colors.black,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              if (nameController.text.trim().isEmpty) return;
-
-              await _firestore
-                  .collection('lists')
-                  .doc(listId)
-                  .update({'name': nameController.text.trim()});
-
-              if (!mounted) return;
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[800],
-              foregroundColor: Colors.white,
+          content: TextField(
+            controller: nameController,
+            autofocus: true,
+            style: TextStyle(
+              color: isDark ? Colors.white : Colors.black,
             ),
-            child: const Text('Save'),
+            decoration: InputDecoration(
+              hintText: 'List name',
+              hintStyle: TextStyle(
+                color: isDark ? Colors.grey[400] : Colors.grey[700],
+              ),
+              filled: true,
+              fillColor:
+                  isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isDark ? Colors.grey[600]! : Colors.grey[400]!,
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.green.shade400,
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                foregroundColor: isDark ? Colors.grey[400] : Colors.grey[700],
+              ),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (nameController.text.trim().isEmpty) return;
+
+                await _firestore
+                    .collection('lists')
+                    .doc(listId)
+                    .update({'name': nameController.text.trim()});
+
+                if (!mounted) return;
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[800],
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -434,6 +468,149 @@ class _HomeScreenState extends State<HomeScreen> {
     await batch.commit();
   }
 
+  void _showMoreOptions(BuildContext context, DocumentSnapshot? listData) {
+    if (listData == null) return;
+
+    final bool isOwner = listData['createdBy'] == _auth.currentUser?.uid;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[900]
+              : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 12,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.green[900]
+                          : Colors.green[50],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.more_vert,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.green[100]
+                          : Colors.green[800],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Text(
+                    'List Options',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.grey[800],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Regular options
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.orange[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.delete_outline, color: Colors.orange[700]),
+              ),
+              title: const Text('View Recycle Bin'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        RecycleBinScreen(listId: _selectedListId!),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.purple[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.import_export, color: Colors.purple[700]),
+              ),
+              title: const Text('Export List'),
+              onTap: () async {
+                Navigator.pop(context);
+                await ExportService.exportList(
+                    _selectedListId!, listData['name'] ?? "Unnamed List");
+              },
+            ),
+
+            // Owner-only options at the bottom
+            if (isOwner) ...[
+              const Divider(height: 32),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.edit, color: Colors.blue[700]),
+                ),
+                title: const Text('Rename List'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _editListName(
+                      _selectedListId!, listData['name'] ?? 'Unnamed List');
+                },
+              ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.delete_forever, color: Colors.red[700]),
+                ),
+                title: const Text('Delete List'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _deleteList(_selectedListId!);
+                },
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showShareMenu() {
     final TextEditingController emailController = TextEditingController();
 
@@ -449,7 +626,7 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 12,
               offset: const Offset(0, -4),
             ),
@@ -477,7 +654,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    Icons.share_outlined,
+                    Icons.people,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.green[100]
                         : Colors.green[800],
@@ -867,7 +1044,7 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.amber.withOpacity(0.2),
+            color: Colors.amber.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -982,7 +1159,7 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: (color ?? Colors.grey).withOpacity(0.1),
+            color: (color ?? Colors.grey).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -1007,309 +1184,173 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 1024;
+    // final isDesktop = MediaQuery.of(context).size.width > 1024;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     PreferredSize buildCustomAppBar(BuildContext context) {
       return PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight + 10),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: Theme.of(context).brightness == Brightness.dark
-                  ? [Colors.grey[900]!, Colors.grey[850]!]
-                  : [Colors.green[800]!, Colors.green[600]!],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: ClipPath(
-            clipper: AppBarClipper(),
-            child: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              foregroundColor: Colors.white,
-              leading: Material(
-                color: Colors.transparent,
-                child: IconButton(
-                  icon: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.menu),
-                  ),
-                  onPressed: () {
-                    _scaffoldKey.currentState?.openDrawer();
-                  },
+        child: StreamBuilder<DocumentSnapshot>(
+          stream: _selectedListId != null
+              ? _firestore.collection('lists').doc(_selectedListId).snapshots()
+              : null,
+          builder: (context, snapshot) {
+            final bool isLoading = _selectedListId != null && !snapshot.hasData;
+
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: Theme.of(context).brightness == Brightness.dark
+                      ? [Colors.grey[900]!, Colors.grey[850]!]
+                      : [Colors.green[800]!, Colors.green[600]!],
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              title: _selectedListId == null
-                  ? const Text(
-                      'ShopSync',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      ),
-                    )
-                  : StreamBuilder<DocumentSnapshot>(
-                      stream: _firestore
-                          .collection('lists')
-                          .doc(_selectedListId)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Text('Loading...');
-                        }
-                        final listName =
-                            snapshot.data!['name'] ?? 'Unnamed List';
-                        return Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    listName,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
+              child: ClipPath(
+                clipper: AppBarClipper(),
+                child: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  foregroundColor: Colors.white,
+                  leading: isLoading
+                      ? Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? Colors.grey[800]!.withValues(alpha: 0.5)
+                                  : Colors.white.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isDark
+                                    ? Colors.grey[700]!
+                                    : Colors.white.withValues(alpha: 0.3),
                               ),
                             ),
-                          ],
-                        );
-                      },
-                    ),
-              actions: _selectedListId != null
-                  ? <Widget>[
-                      // Share button
-                      Material(
-                        color: Colors.transparent,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: IconButton(
+                              icon: const Icon(Icons.arrow_back,
+                                  color: Colors.white),
+                              onPressed: () => Navigator.pop(context),
+                              tooltip: 'Go Back',
+                            ),
+                          ),
+                        )
+                      : Material(
+                          color: Colors.transparent,
                           child: IconButton(
                             icon: AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.white.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Icon(Icons.people),
+                              child: const Icon(Icons.menu),
                             ),
-                            onPressed: _showShareMenu,
-                            tooltip: 'Share List',
-                          ),
-                        ),
-                      ),
-                      // More options button
-                      Material(
-                        color: Colors.transparent,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 8, left: 4),
-                          child: StreamBuilder<DocumentSnapshot>(
-                            stream: _firestore
-                                .collection('lists')
-                                .doc(_selectedListId)
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return const SizedBox.shrink();
-                              }
-
-                              final isOwner = snapshot.data!['createdBy'] ==
-                                  _auth.currentUser?.uid;
-
-                              return IconButton(
-                                icon: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Icon(Icons.more_vert),
-                                ),
-                                onPressed: () {
-                                  showMenu(
-                                    context: context,
-                                    position: RelativeRect.fromLTRB(
-                                      MediaQuery.of(context).size.width - 48,
-                                      kToolbarHeight + 16,
-                                      8,
-                                      0,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    items: <PopupMenuEntry<String>>[
-                                      if (isOwner)
-                                        PopupMenuItem<String>(
-                                          value: 'edit',
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.edit,
-                                                  color: Theme.of(context)
-                                                              .brightness ==
-                                                          Brightness.dark
-                                                      ? Colors.white
-                                                      : Colors.black),
-                                              SizedBox(width: 12),
-                                              Text('Edit List Name'),
-                                            ],
-                                          ),
-                                        ),
-                                      PopupMenuItem<String>(
-                                        value: 'recycle',
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.delete_outline,
-                                                color: Theme.of(context)
-                                                            .brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.white
-                                                    : Colors.black),
-                                            SizedBox(width: 12),
-                                            Text('Recycle Bin'),
-                                          ],
-                                        ),
-                                      ),
-                                      PopupMenuItem<String>(
-                                        value: 'export',
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.share,
-                                                color: Theme.of(context)
-                                                            .brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.white
-                                                    : Colors.black),
-                                            SizedBox(width: 12),
-                                            Text('Export List'),
-                                          ],
-                                        ),
-                                      ),
-                                      PopupMenuItem<String>(
-                                        value: 'close',
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.close,
-                                                color: Colors.red[400]),
-                                            SizedBox(width: 12),
-                                            Text('Close List',
-                                                style: TextStyle(
-                                                    color: Colors.red[400])),
-                                          ],
-                                        ),
-                                      ),
-                                      if (isOwner) ...[
-                                        const PopupMenuDivider(),
-                                        PopupMenuItem<String>(
-                                          value: 'delete',
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.delete_forever,
-                                                  color: Colors.red[700]),
-                                              const SizedBox(width: 12),
-                                              Text(
-                                                'Delete List',
-                                                style: TextStyle(
-                                                    color: Colors.red[700]),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ).then((value) async {
-                                    if (value == null) return;
-                                    switch (value) {
-                                      case 'edit':
-                                        _editListName(_selectedListId!,
-                                            snapshot.data!['name'] ?? '');
-                                        break;
-                                      case 'recycle':
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                RecycleBinScreen(
-                                                    listId: _selectedListId!),
-                                          ),
-                                        );
-                                        break;
-                                      case 'close':
-                                        setState(() {
-                                          _selectedListId = null;
-                                        });
-                                        break;
-                                      case 'export':
-                                        try {
-                                          final listData = await _firestore
-                                              .collection('lists')
-                                              .doc(_selectedListId)
-                                              .get();
-                                          final listName =
-                                              listData.data()?['name'] ??
-                                                  'Shopping List';
-
-                                          await ExportService.exportList(
-                                              _selectedListId!, listName);
-
-                                          if (!mounted) return;
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                  'List exported successfully'),
-                                              backgroundColor: Colors.green,
-                                            ),
-                                          );
-                                        } catch (e) {
-                                          if (!mounted) return;
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  'Error exporting list: $e'),
-                                              backgroundColor: Colors.red,
-                                            ),
-                                          );
-                                        }
-                                        break;
-                                      case 'delete':
-                                        await _deleteList(_selectedListId!);
-                                        break;
-                                    }
-                                  });
-                                },
-                              );
+                            onPressed: () {
+                              _scaffoldKey.currentState?.openDrawer();
                             },
                           ),
                         ),
-                      ),
-                    ]
-                  : null,
-            ),
-          ),
+                  title: isLoading
+                      ? null
+                      : _selectedListId == null
+                          ? const Text(
+                              'ShopSync',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            )
+                          : Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        snapshot.data?['name'] ??
+                                            'Unnamed List',
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                  actions: isLoading
+                      ? null
+                      : _selectedListId != null
+                          ? <Widget>[
+                              Material(
+                                color: Colors.transparent,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  child: IconButton(
+                                    icon: AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            Colors.white.withValues(alpha: 0.2),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(Icons.people),
+                                    ),
+                                    onPressed: _showShareMenu,
+                                    tooltip: 'Share List',
+                                  ),
+                                ),
+                              ),
+                              Material(
+                                color: Colors.transparent,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(right: 8, left: 4),
+                                  child: IconButton(
+                                    icon: AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            Colors.white.withValues(alpha: 0.2),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(Icons.more_vert),
+                                    ),
+                                    onPressed: () => _showMoreOptions(
+                                        context, snapshot.data),
+                                  ),
+                                ),
+                              ),
+                            ]
+                          : null,
+                ),
+              ),
+            );
+          },
         ),
       );
     }
@@ -1359,8 +1400,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                Colors.white.withOpacity(0.8),
-                                Colors.white.withOpacity(0.5),
+                                Colors.white.withValues(alpha: 0.8),
+                                Colors.white.withValues(alpha: 0.5),
                               ],
                             ),
                           ),
@@ -1402,13 +1443,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             _auth.currentUser?.email ?? '',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               fontSize: 14,
                             ),
                           ),
@@ -1523,7 +1564,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               color: _selectedListId == listId
                                                   ? Colors.green[700]
                                                   : Colors.grey
-                                                      .withOpacity(0.1),
+                                                      .withValues(alpha: 0.1),
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                             ),
@@ -1577,37 +1618,92 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onTap: () {
                                         showDialog(
                                           context: context,
-                                          builder: (context) => AlertDialog(
-                                            title:
-                                                const Text('Create New List'),
-                                            content: TextField(
-                                              controller: _newListController,
-                                              autofocus: true,
-                                              decoration: const InputDecoration(
-                                                hintText: 'List name',
-                                              ),
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () =>
-                                                    Navigator.pop(context),
-                                                child: Text(
-                                                  'Cancel',
-                                                  style: TextStyle(
-                                                      color: Colors.grey[700]),
+                                          builder: (context) {
+                                            final bool isDark =
+                                                Theme.of(context).brightness ==
+                                                    Brightness.dark;
+
+                                            return AlertDialog(
+                                              backgroundColor: isDark
+                                                  ? Colors.black
+                                                  : Colors.white,
+                                              title: Text(
+                                                'Create New List',
+                                                style: TextStyle(
+                                                  color: isDark
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                              ElevatedButton(
-                                                onPressed: _createList,
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      Colors.green[800],
-                                                  foregroundColor: Colors.white,
+                                              content: TextField(
+                                                controller: _newListController,
+                                                autofocus: true,
+                                                style: TextStyle(
+                                                  color: isDark
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
-                                                child: const Text('Create'),
+                                                decoration: InputDecoration(
+                                                  hintText: 'List name',
+                                                  hintStyle: TextStyle(
+                                                    color: isDark
+                                                        ? Colors.grey[400]
+                                                        : Colors.grey[700],
+                                                  ),
+                                                  filled: true,
+                                                  fillColor: isDark
+                                                      ? const Color(0xFF1E1E1E)
+                                                      : const Color(0xFFF5F5F5),
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color: isDark
+                                                          ? Colors.grey[600]!
+                                                          : Colors.grey[400]!,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color:
+                                                          Colors.green.shade400,
+                                                      width: 2,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                ),
                                               ),
-                                            ],
-                                          ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  style: TextButton.styleFrom(
+                                                    foregroundColor: isDark
+                                                        ? Colors.grey[400]
+                                                        : Colors.grey[700],
+                                                  ),
+                                                  child: const Text('Cancel'),
+                                                ),
+                                                ElevatedButton(
+                                                  onPressed: _createList,
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.green[800],
+                                                    foregroundColor:
+                                                        Colors.white,
+                                                  ),
+                                                  child: const Text('Create'),
+                                                ),
+                                              ],
+                                            );
+                                          },
                                         );
                                       },
                                     ),
@@ -1662,7 +1758,6 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: _selectedListId == null
                     ? StreamBuilder<QuerySnapshot>(
-                        // Your new code
                         stream: _firestore
                             .collection('lists')
                             .where('members',
@@ -1705,7 +1800,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 Brightness.dark
                                             ? Colors.green[100]
                                             : Colors.green[800]
-                                                ?.withOpacity(0.7),
+                                                ?.withValues(alpha: 0.7),
                                       ),
                                     ),
                                     const SizedBox(height: 24),
@@ -1755,8 +1850,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         borderRadius: BorderRadius.circular(16),
                                         boxShadow: [
                                           BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.1),
+                                            color: Colors.black
+                                                .withValues(alpha: 0.1),
                                             blurRadius: 8,
                                             offset: const Offset(0, 4),
                                           ),
@@ -2161,7 +2256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 Brightness.dark
                                             ? Colors.green[100]
                                             : Colors.green[800]
-                                                ?.withOpacity(0.7),
+                                                ?.withValues(alpha: 0.7),
                                       ),
                                     ),
                                     const SizedBox(height: 32),
@@ -2204,8 +2299,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         borderRadius: BorderRadius.circular(16),
                                         boxShadow: [
                                           BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.1),
+                                            color: Colors.black
+                                                .withValues(alpha: 0.1),
                                             blurRadius: 8,
                                             offset: const Offset(0, 2),
                                           ),
@@ -2366,7 +2461,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     borderRadius: BorderRadius.circular(16),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
+                                        color:
+                                            Colors.black.withValues(alpha: 0.1),
                                         blurRadius: 8,
                                         offset: const Offset(0, 4),
                                       ),
@@ -2656,7 +2752,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         : Colors.grey[100],
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         offset: const Offset(0, -2),
                         blurRadius: 5,
                       ),

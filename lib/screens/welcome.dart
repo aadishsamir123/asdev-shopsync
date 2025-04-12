@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  WelcomeScreen({super.key});
+  const WelcomeScreen({super.key});
 
   Future<String> _getVersionInfo() async {
     final packageInfo = await PackageInfo.fromPlatform();
@@ -12,7 +12,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final colorScheme = Theme.of(context).colorScheme;
+    // final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       body: Container(
@@ -46,12 +46,12 @@ class WelcomeScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       color: isDarkMode
-                          ? Colors.green.withOpacity(0.15)
-                          : Colors.white.withOpacity(0.2),
+                          ? Colors.green.withValues(alpha: 0.15)
+                          : Colors.white.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -92,13 +92,13 @@ class WelcomeScreen extends StatelessWidget {
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                   decoration: BoxDecoration(
                     color: isDarkMode
-                        ? Colors.green.withOpacity(0.15)
-                        : Colors.white.withOpacity(0.15),
+                        ? Colors.green.withValues(alpha: 0.15)
+                        : Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(30),
                     border: Border.all(
                       color: isDarkMode
-                          ? Colors.green.withOpacity(0.3)
-                          : Colors.white.withOpacity(0.3),
+                          ? Colors.green.withValues(alpha: 0.3)
+                          : Colors.white.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Align(
@@ -191,8 +191,8 @@ class WelcomeScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         color: isDarkMode
-                            ? Colors.green[100]?.withOpacity(0.7)
-                            : Colors.white.withOpacity(0.7),
+                            ? Colors.green[100]?.withValues(alpha: 0.7)
+                            : Colors.white.withValues(alpha: 0.7),
                       ),
                     );
                   },

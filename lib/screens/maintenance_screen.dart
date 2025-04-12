@@ -28,7 +28,7 @@ class MaintenanceScreen extends StatelessWidget {
             width: double.infinity,
             height: constraints.maxHeight,
             decoration: BoxDecoration(
-              color: isDark ? colorScheme.background : mainColor.shade50,
+              color: isDark ? colorScheme.surface : mainColor.shade50,
             ),
             child: SafeArea(
               child: SingleChildScrollView(
@@ -49,8 +49,8 @@ class MaintenanceScreen extends StatelessWidget {
                           boxShadow: [
                             BoxShadow(
                               color: isDark
-                                  ? Colors.black.withOpacity(0.3)
-                                  : mainColor.withOpacity(0.2),
+                                  ? Colors.black.withValues(alpha: 0.3)
+                                  : mainColor.withValues(alpha: 0.2),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -102,8 +102,10 @@ class MaintenanceScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 16,
                                 color: isDark
-                                    ? colorScheme.onSurface.withOpacity(0.9)
-                                    : colorScheme.onSurface.withOpacity(0.8),
+                                    ? colorScheme.onSurface
+                                        .withValues(alpha: 0.9)
+                                    : colorScheme.onSurface
+                                        .withValues(alpha: 0.8),
                                 height: 1.5,
                               ),
                             ),

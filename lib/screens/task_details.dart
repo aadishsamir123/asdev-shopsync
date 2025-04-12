@@ -56,7 +56,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   DateTime? _selectedDeadline;
-  String? _priority;
+
+  // String? _priority;
 
   @override
   void initState() {
@@ -178,13 +179,13 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
             child: Container(
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.grey[800]!.withOpacity(0.5)
-                    : Colors.white.withOpacity(0.2),
+                    ? Colors.grey[800]!.withValues(alpha: 0.5)
+                    : Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isDark
                       ? Colors.grey[700]!
-                      : Colors.white.withOpacity(0.3),
+                      : Colors.white.withValues(alpha: 0.3),
                 ),
               ),
               child: IconButton(
@@ -215,6 +216,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
           final name = task['name'] ?? 'Untitled Task';
           final description = task['description'] ?? '';
           final addedByName = task['addedByName'] ?? 'Unknown';
+          final addedAt = task['addedAt'].toDate();
           final completed = task['completed'] ?? false;
           _descriptionController.text = description;
           _selectedDeadline = task['deadline']?.toDate();
@@ -272,6 +274,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                     _buildDescriptionCard(),
                     const SizedBox(height: 16),
                     _buildAddedByCard(addedByName),
+                    const SizedBox(height: 16),
+                    _buildAddedAtCard(addedAt),
                   ],
                 ),
               ),
@@ -538,6 +542,50 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                 const SizedBox(height: 4),
                 Text(
                   addedByName,
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddedAtCard(DateTime addedAt) {
+    final formattedAddedAt =
+        DateFormat('MMM dd, yyyy - hh:mm a').format(addedAt);
+
+    return Card(
+      elevation: 8,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.green[100],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.schedule, color: Colors.green[800]),
+            ),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Added at',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  formattedAddedAt,
                   style: TextStyle(color: Colors.grey[600]),
                 ),
               ],
