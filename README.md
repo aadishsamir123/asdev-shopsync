@@ -1,5 +1,5 @@
 [![Code Style Check](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/check-code-style.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/check-code-style.yml)
-
+[![Flutter Deploy](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/flutter-deploy.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/flutter-deploy.yml)
 
 # ShopSync
 
