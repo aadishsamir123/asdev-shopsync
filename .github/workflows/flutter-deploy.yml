@@ -1,4 +1,4 @@
-name: Build & Deploy Flutter App to Play Store
+name: Deploy to Play Store
 
 on:
   workflow_dispatch:
