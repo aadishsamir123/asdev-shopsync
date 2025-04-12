@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shopsync/screens/sign_out.dart';
 import '/widgets/loading_spinner.dart';
+import '/screens/sign_out.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -107,6 +109,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() => _errorMessage = 'Error updating profile: ${e.toString()}');
     } finally {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _signOut() async {
+    final shouldSignOut = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Sign Out'),
+            content: const Text('Are you sure you want to sign out?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child:
+                    Text('Cancel', style: TextStyle(color: Colors.grey[700])),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red[700]),
+                child: const Text('Sign Out'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (shouldSignOut) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SignOutScreen()),
+      );
     }
   }
 
@@ -590,10 +622,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        onPressed: () => {
-                          FirebaseAuth.instance.signOut(),
-                          Navigator.pop(context),
-                        },
+                        onPressed: () => {_signOut()},
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           side: BorderSide(

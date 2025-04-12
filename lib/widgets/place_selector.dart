@@ -99,30 +99,44 @@ class _LocationSelectorState extends State<LocationSelector>
 
   Widget _buildInfoCard(bool isDark) {
     return Card(
-      elevation: 0,
-      color: isDark ? Colors.green[900] : Colors.green[50],
+      elevation: 2,
+      color: isDark ? const Color(0xFF1B5E20) : const Color(0xFFE8F5E9),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isDark ? Colors.green[800] : Colors.green[100],
+                color:
+                    isDark ? const Color(0xFF2E7D32) : const Color(0xFFC8E6C9),
                 borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark
+                        ? Colors.black.withOpacity(0.2)
+                        : Colors.green.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: Icon(Icons.store_mall_directory,
-                  color: isDark ? Colors.green[200] : Colors.green[800]),
+              child: Icon(
+                Icons.store_mall_directory,
+                color: isDark ? Colors.white : const Color(0xFF2E7D32),
+                size: 24,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 'Add your store details below',
                 style: TextStyle(
-                  color: isDark ? Colors.green[200] : Colors.green[800],
+                  color: isDark ? Colors.white : const Color(0xFF1B5E20),
                   fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
                 ),
               ),
             ),
@@ -137,48 +151,63 @@ class _LocationSelectorState extends State<LocationSelector>
       children: [
         TextField(
           controller: _storeNameController,
-          decoration: _buildInputDecoration(
-            'Store Name',
-            Icons.store,
-            isDark,
+          style: TextStyle(
+            color: isDark ? Colors.white : Colors.black,
+          ),
+          decoration: InputDecoration(
+            labelText: 'Store name',
+            labelStyle: TextStyle(
+              color: isDark ? Colors.grey[400] : Colors.grey[700],
+            ),
+            filled: true,
+            fillColor:
+                isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: isDark ? Colors.grey[600]! : Colors.grey[400]!,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.green.shade400,
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
         ),
         const SizedBox(height: 20),
         TextField(
           controller: _addressController,
           maxLines: 3,
-          decoration: _buildInputDecoration(
-            'Store Address',
-            Icons.location_on,
-            isDark,
+          style: TextStyle(
+            color: isDark ? Colors.white : Colors.black,
+          ),
+          decoration: InputDecoration(
+            labelText: 'Store Address',
+            labelStyle: TextStyle(
+              color: isDark ? Colors.grey[400] : Colors.grey[700],
+            ),
+            filled: true,
+            fillColor:
+                isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: isDark ? Colors.grey[600]! : Colors.grey[400]!,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.green.shade400,
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
         ),
       ],
-    );
-  }
-
-  InputDecoration _buildInputDecoration(
-    String label,
-    IconData icon,
-    bool isDark,
-  ) {
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon, color: Colors.green[800]),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(
-          color: isDark ? Colors.green[300]! : Colors.green[800]!,
-        ),
-      ),
-      filled: true,
-      fillColor: isDark ? Colors.grey[800] : Colors.grey[100],
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 16,
-      ),
-      labelStyle:
-          TextStyle(color: isDark ? Colors.green[300] : Colors.green[800]),
     );
   }
 
