@@ -7,7 +7,7 @@ class SignOutScreen extends StatefulWidget {
   const SignOutScreen({super.key});
 
   @override
-  _SignOutScreenState createState() => _SignOutScreenState();
+  State<SignOutScreen> createState() => _SignOutScreenState();
 }
 
 class _SignOutScreenState extends State<SignOutScreen>

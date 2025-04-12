@@ -103,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     shaderCallback: (bounds) => LinearGradient(
                       colors: isDarkMode
                           ? [Colors.green[300]!, Colors.green[400]!]
-                          : [Colors.white, Colors.white.withOpacity(0.9)],
+                          : [Colors.white, Colors.white.withValues(alpha: 0.9)],
                     ).createShader(bounds),
                     child: const Text(
                       'Create\nAccount',
@@ -123,7 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       fontSize: 16,
                       color: isDarkMode
                           ? Colors.green[100]
-                          : Colors.white.withOpacity(0.85),
+                          : Colors.white.withValues(alpha: 0.85),
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -135,7 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
+                          color: Colors.black.withValues(alpha: 0.15),
                           blurRadius: 30,
                           offset: const Offset(0, 10),
                         ),
@@ -171,7 +171,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide(
                                 color: isDarkMode
-                                    ? Colors.green.withOpacity(0.3)
+                                    ? Colors.green.withValues(alpha: 0.3)
                                     : Colors.grey.shade200,
                               ),
                             ),
@@ -186,7 +186,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             filled: true,
                             fillColor: isDarkMode
-                                ? Colors.black.withOpacity(0.3)
+                                ? Colors.black.withValues(alpha: 0.3)
                                 : Colors.grey.shade50,
                           ),
                           textInputAction: TextInputAction.next,
@@ -220,7 +220,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide(
                                 color: isDarkMode
-                                    ? Colors.green.withOpacity(0.3)
+                                    ? Colors.green.withValues(alpha: 0.3)
                                     : Colors.grey.shade200,
                               ),
                             ),
@@ -235,7 +235,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             filled: true,
                             fillColor: isDarkMode
-                                ? Colors.black.withOpacity(0.3)
+                                ? Colors.black.withValues(alpha: 0.3)
                                 : Colors.grey.shade50,
                           ),
                           keyboardType: TextInputType.emailAddress,
@@ -286,7 +286,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide(
                                 color: isDarkMode
-                                    ? Colors.green.withOpacity(0.3)
+                                    ? Colors.green.withValues(alpha: 0.3)
                                     : Colors.grey.shade200,
                               ),
                             ),
@@ -301,7 +301,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             filled: true,
                             fillColor: isDarkMode
-                                ? Colors.black.withOpacity(0.3)
+                                ? Colors.black.withValues(alpha: 0.3)
                                 : Colors.grey.shade50,
                           ),
                           obscureText: _obscurePassword,
@@ -376,8 +376,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         'Already have an account?',
                         style: TextStyle(
                           color: isDarkMode
-                              ? Colors.green[100]?.withOpacity(0.9)
-                              : Colors.white.withOpacity(0.9),
+                              ? Colors.green[100]?.withValues(alpha: 0.9)
+                              : Colors.white.withValues(alpha: 0.9),
                           fontSize: 15,
                         ),
                       ),

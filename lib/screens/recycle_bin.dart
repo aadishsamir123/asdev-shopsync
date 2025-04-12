@@ -67,12 +67,13 @@ class RecycleBinScreen extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.grey[800]!.withOpacity(0.5)
-                  : Colors.white.withOpacity(0.2),
+                  ? Colors.grey[800]!.withValues(alpha: 0.5)
+                  : Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color:
-                    isDark ? Colors.grey[700]! : Colors.white.withOpacity(0.3),
+                color: isDark
+                    ? Colors.grey[700]!
+                    : Colors.white.withValues(alpha: 0.3),
               ),
             ),
             child: IconButton(

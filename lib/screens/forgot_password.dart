@@ -89,7 +89,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     shaderCallback: (bounds) => LinearGradient(
                       colors: isDarkMode
                           ? [Colors.green[300]!, Colors.green[400]!]
-                          : [Colors.white, Colors.white.withOpacity(0.9)],
+                          : [Colors.white, Colors.white.withValues(alpha: 0.9)],
                     ).createShader(bounds),
                     child: const Text(
                       'Reset\nPassword',
@@ -109,7 +109,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       fontSize: 16,
                       color: isDarkMode
                           ? Colors.green[100]
-                          : Colors.white.withOpacity(0.85),
+                          : Colors.white.withValues(alpha: 0.85),
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -121,7 +121,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
+                          color: Colors.black.withValues(alpha: 0.15),
                           blurRadius: 30,
                           offset: const Offset(0, 10),
                         ),
@@ -157,7 +157,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide(
                                 color: isDarkMode
-                                    ? Colors.green.withOpacity(0.3)
+                                    ? Colors.green.withValues(alpha: 0.3)
                                     : Colors.grey.shade200,
                               ),
                             ),
@@ -172,7 +172,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             ),
                             filled: true,
                             fillColor: isDarkMode
-                                ? Colors.black.withOpacity(0.3)
+                                ? Colors.black.withValues(alpha: 0.3)
                                 : Colors.grey.shade50,
                           ),
                           keyboardType: TextInputType.emailAddress,
@@ -257,8 +257,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               'Remember your password?',
                               style: TextStyle(
                                 color: isDarkMode
-                                    ? Colors.green[100]?.withOpacity(0.9)
-                                    : Colors.green[900]?.withOpacity(0.9),
+                                    ? Colors.green[100]?.withValues(alpha: 0.9)
+                                    : Colors.green[900]?.withValues(alpha: 0.9),
                                 fontSize: 15,
                               ),
                             ),

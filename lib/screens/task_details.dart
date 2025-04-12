@@ -56,7 +56,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   DateTime? _selectedDeadline;
-  String? _priority;
+
+  // String? _priority;
 
   @override
   void initState() {
@@ -178,13 +179,13 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
             child: Container(
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.grey[800]!.withOpacity(0.5)
-                    : Colors.white.withOpacity(0.2),
+                    ? Colors.grey[800]!.withValues(alpha: 0.5)
+                    : Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isDark
                       ? Colors.grey[700]!
-                      : Colors.white.withOpacity(0.3),
+                      : Colors.white.withValues(alpha: 0.3),
                 ),
               ),
               child: IconButton(

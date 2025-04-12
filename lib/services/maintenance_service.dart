@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class MaintenanceService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -10,7 +11,6 @@ class MaintenanceService {
 
       if (doc.exists) {
         final data = doc.data()!;
-        final now = DateTime.now();
         final startTime = data['startTime']?.toDate();
 
         return {
@@ -19,15 +19,15 @@ class MaintenanceService {
           'startTime': startTime,
           'endTime': data['endTime']?.toDate(),
           'isPredictive': !data['isUnderMaintenance'] &&
-              startTime != null &&
-              startTime.isAfter(now) &&
-              startTime.difference(now).inDays <=
-                  7, // Show notice if maintenance is within 7 days
+              (startTime != null && startTime.isAfter(DateTime.now())),
         };
       }
       return null;
     } catch (e) {
-      print('Error checking maintenance status: $e');
+      SnackBar(
+        content: Text('Error fetching maintenance status: $e'),
+        backgroundColor: Colors.red,
+      );
       return null;
     }
   }

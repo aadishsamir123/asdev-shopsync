@@ -23,7 +23,7 @@ class AnimatedShoppingCartPainter extends CustomPainter {
       ..strokeJoin = StrokeJoin.round;
 
     final fillPaint = Paint()
-      ..color = secondaryColor.withOpacity(0.2)
+      ..color = secondaryColor.withValues(alpha: 0.2)
       ..style = PaintingStyle.fill;
 
     // Cart body with rounded corners
@@ -95,7 +95,7 @@ class AnimatedListPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final backgroundPaint = Paint()
-      ..color = secondaryColor.withOpacity(0.1)
+      ..color = secondaryColor.withValues(alpha: 0.1)
       ..style = PaintingStyle.fill;
 
     // Paper background with shadow
@@ -112,7 +112,7 @@ class AnimatedListPainter extends CustomPainter {
     canvas.drawRRect(
       paperRect.shift(Offset(0, 4)),
       Paint()
-        ..color = primaryColor.withOpacity(0.2)
+        ..color = primaryColor.withValues(alpha: 0.2)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
     );
 
@@ -170,7 +170,7 @@ class AnimatedSharePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final fillPaint = Paint()
-      ..color = secondaryColor.withOpacity(0.2)
+      ..color = secondaryColor.withValues(alpha: 0.2)
       ..style = PaintingStyle.fill;
 
     final nodeRadius = size.width * 0.08 * animation;
@@ -355,7 +355,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     child: Text(
                       'Skip',
                       style: TextStyle(
-                        color: textColor.withOpacity(0.7),
+                        color: textColor.withValues(alpha: 0.7),
                       ),
                     ),
                   ),
@@ -370,7 +370,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         decoration: BoxDecoration(
                           color: _currentPage == index
                               ? primaryColor
-                              : primaryColor.withOpacity(0.3),
+                              : primaryColor.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
