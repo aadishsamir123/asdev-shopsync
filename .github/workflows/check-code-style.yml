@@ -1,0 +1,30 @@
+name: Code Style Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  code-style:
+    name: Analyze and Format Flutter Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run Flutter format check
+        run: flutter format --set-exit-if-changed .
+
+      - name: Run Flutter analyze
+        run: flutter analyze
