@@ -1,4 +1,4 @@
-<div style="text-align: center;">
+<div align="center">
   <img src="assets/logos/shopsync.png" alt="ShopSync Logo"/>
 
 # ShopSync
@@ -6,7 +6,7 @@
 [![Code Style Check](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/check-code-style.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/check-code-style.yml)
 [![Flutter Deploy](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/flutter-deploy.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/flutter-deploy.yml)
 ![Flutter Version](https://img.shields.io/badge/Flutter-^3.29.2-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+![License](https://img.shields.io/github/license/aadishsamir123/asdev-shopsync)
 
 *Sync shopping lists with family and friends*
 </div>
@@ -100,4 +100,5 @@ manage shopping lists in real-time with family and friends.
 
 ## 📄 License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file
+for details.
