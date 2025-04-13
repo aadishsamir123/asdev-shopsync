@@ -37,6 +37,15 @@ manage shopping lists in real-time with family and friends.
 - Firebase account
 - Android Studio / VS Code
 
+## 🛠️ Tech Stack
+
+- Flutter
+- Firebase
+- Dart
+- Provider State Management
+- Shared Preferences
+- Cloud Firestore
+
 ### Installation
 
 1. Clone the repository
@@ -84,15 +93,6 @@ manage shopping lists in real-time with family and friends.
 [//]: # (  </table>)
 
 [//]: # (</div>)
-
-## 🛠️ Tech Stack
-
-- Flutter
-- Firebase
-- Dart
-- Provider State Management
-- Shared Preferences
-- Cloud Firestore
 
 ## 🤝 Contributing
 
