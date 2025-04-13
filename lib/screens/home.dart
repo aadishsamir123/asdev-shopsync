@@ -1612,7 +1612,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               SliverToBoxAdapter(
                                 child: Column(
                                   children: [
-                                    const Divider(height: 32),
+                                    Divider(
+                                      height: 32,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.grey[700]
+                                          : Colors.grey[300],
+                                      thickness: 2,
+                                    ),
                                     _buildDrawerItem(
                                       icon: Icons.add,
                                       title: 'Create New List',
