@@ -30,7 +30,8 @@ jobs:
         run: |
           output=$(flutter analyze)
           echo "$output"
-          if echo "$output" | grep -E 'warning|error'; then
+          # Check if output contains 'warning' or 'error' or if the number of issues is greater than 0
+          if echo "$output" | grep -qE 'warning|error' || echo "$output" | grep -qE 'issues found'; then
             echo "Warnings or errors found."
             exit 1
           else
