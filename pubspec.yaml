@@ -26,6 +26,7 @@ dependencies:
   flutter_map: ^6.1.0
   latlong2: ^0.9.0
   geocoding: ^2.2.0
+  font_awesome_flutter: ^10.8.0
 
 dev_dependencies:
   flutter_test:

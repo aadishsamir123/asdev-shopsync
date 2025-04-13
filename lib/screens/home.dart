@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'recycle_bin.dart';
 import 'task_details.dart';
 import 'create_task.dart';
@@ -1726,6 +1727,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                             const SnackBar(
                                               content: Text(
                                                   'Could not open release notes'),
+                                            ),
+                                          );
+                                        }
+                                        if (!mounted) return;
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    _buildDrawerItem(
+                                      icon: FontAwesomeIcons.github,
+                                      title: 'GitHub',
+                                      onTap: () async {
+                                        final Uri url = Uri.parse(
+                                            'https://github.com/aadishsamir123/asdev-shopsync');
+                                        if (!await launchUrl(url)) {
+                                          if (!mounted) return;
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'Could not open GitHub page'),
                                             ),
                                           );
                                         }
