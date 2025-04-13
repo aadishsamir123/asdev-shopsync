@@ -3,7 +3,7 @@
 
 # ShopSync
 
-[![Code Style Check](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/check-code-style.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/check-code-style.yml)
+[![Code Style Check](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/check-code.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/check-code.yml)
 [![Flutter Deploy](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/flutter-deploy.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/flutter-deploy.yml)
 ![Flutter Version](https://img.shields.io/badge/Flutter-^3.29.2-blue.svg)
 ![License](https://img.shields.io/github/license/aadishsamir123/asdev-shopsync)
