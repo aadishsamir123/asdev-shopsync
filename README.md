@@ -11,8 +11,7 @@
 [![Android Stable](https://img.shields.io/endpoint?color=green&logo=google-play&logoColor=green&url=https%3A%2F%2Fplay.cuzi.workers.dev%2Fplay%3Fi%3Dcom.aadishsamir.shopsync%26gl%3DUS%26hl%3Den%26l%3DAndroid%2520Stable%26m%3D%24version)](https://play.google.com/store/apps/details?id=com.aadishsamir.shopsync)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fas-shopsync.pages.dev&logo=googleearth&logoColor=white)](https://as-shopsync.pages.dev)
 
-
-*Sync shopping lists with family and friends*
+*Share shopping lists with family and friends*
 </div>
 
 ## 📱 Overview
@@ -29,6 +28,7 @@ manage shopping lists in real-time with family and friends.
 - 🌓 Dark/Light theme support
 
 ## 📱 Screenshots
+
 Coming Soon
 
 [//]: # (## 📱 Screenshots)
