@@ -27,4 +27,13 @@ jobs:
         run: dart format --set-exit-if-changed .
 
       - name: Run Flutter analyze
-        run: flutter analyze
+        run: |
+          output=$(flutter analyze)
+          echo "$output"
+          if echo "$output" | grep -E 'warning|error'; then
+            echo "Warnings or errors found."
+            exit 1
+          else
+            echo "Only info messages found or no issues."
+            exit 0
+          fi
