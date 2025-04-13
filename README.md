@@ -28,6 +28,31 @@ manage shopping lists in real-time with family and friends.
 - 👥 Multi-user collaboration
 - 🌓 Dark/Light theme support
 
+## 📱 Screenshots
+Coming Soon
+
+[//]: # (## 📱 Screenshots)
+
+[//]: # ()
+
+[//]: # (<div align="center">)
+
+[//]: # (  <table>)
+
+[//]: # (    <tr>)
+
+[//]: # (      <td><img src="assets/screenshots/home.png" width="200"/></td>)
+
+[//]: # (      <td><img src="assets/screenshots/list.png" width="200"/></td>)
+
+[//]: # (      <td><img src="assets/screenshots/settings.png" width="200"/></td>)
+
+[//]: # (    </tr>)
+
+[//]: # (  </table>)
+
+[//]: # (</div>)
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -72,28 +97,6 @@ manage shopping lists in real-time with family and friends.
    ```bash
    flutter run
     ```
-
-[//]: # (## 📱 Screenshots)
-
-[//]: # ()
-
-[//]: # (<div align="center">)
-
-[//]: # (  <table>)
-
-[//]: # (    <tr>)
-
-[//]: # (      <td><img src="assets/screenshots/home.png" width="200"/></td>)
-
-[//]: # (      <td><img src="assets/screenshots/list.png" width="200"/></td>)
-
-[//]: # (      <td><img src="assets/screenshots/settings.png" width="200"/></td>)
-
-[//]: # (    </tr>)
-
-[//]: # (  </table>)
-
-[//]: # (</div>)
 
 ## 🤝 Contributing
 
