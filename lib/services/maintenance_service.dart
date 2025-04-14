@@ -12,14 +12,14 @@ class MaintenanceService {
       if (doc.exists) {
         final data = doc.data()!;
         final startTime = data['startTime']?.toDate();
+        final endTime = data['endTime']?.toDate();
 
         return {
           'isUnderMaintenance': data['isUnderMaintenance'] ?? false,
           'message': data['message'] ?? '',
           'startTime': startTime,
-          'endTime': data['endTime']?.toDate(),
-          'isPredictive': !data['isUnderMaintenance'] &&
-              (startTime != null && startTime.isAfter(DateTime.now())),
+          'endTime': endTime,
+          'isPredictive': !data['isUnderMaintenance'] && (startTime != null),
         };
       }
       return null;
