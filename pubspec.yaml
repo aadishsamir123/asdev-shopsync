@@ -2,7 +2,7 @@ name: shopsync
 description: "ShopSync - Sync shopping lists with family and friends"
 publish_to: 'none'
 
-version: 1.0.0-beta.17
+version: 1.0.0-beta.18
 
 environment:
   sdk: ^3.6.0
