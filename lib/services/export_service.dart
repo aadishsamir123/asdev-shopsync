@@ -3,28 +3,28 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'web_export.dart' if (dart.library.io) 'stub_export.dart';
 
 class ExportService {
   static Future<void> exportList(String listId, String listName) async {
     final firestore = FirebaseFirestore.instance;
 
-    // Get all items in the list
     final items = await firestore
         .collection('lists')
         .doc(listId)
         .collection('items')
         .get();
 
-    // Create CSV data with new column order
-    String csvData = 'Item,Status,Deadline,Added By,Added Date\n';
+    String csvData =
+        'Item,Status,Deadline,Store Location,Added By,Added Date\n';
 
     for (var doc in items.docs) {
       final item = doc.data();
 
-      // Format dates
       final addedAt = item['addedAt'] as Timestamp?;
       final addedDate = addedAt != null
-          ? DateFormat('yyyy-MM-dd').format(addedAt.toDate())
+          ? DateFormat('yyyy-MM-dd HH:mm').format(addedAt.toDate())
           : 'N/A';
 
       final deadline = item['deadline'] as Timestamp?;
@@ -32,22 +32,30 @@ class ExportService {
           ? DateFormat('yyyy-MM-dd HH:mm').format(deadline.toDate())
           : 'N/A';
 
-      csvData +=
-          '${item['name']},${item['completed'] ? 'Completed' : 'Pending'},'
-          '$deadlineDate,${item['addedByName'] ?? 'N/A'},$addedDate\n';
+      final isCompleted = item['completed'] as bool? ?? false;
+      final name = item['name'] as String? ?? 'N/A';
+      final addedByName = item['addedByName'] as String? ?? 'N/A';
+
+      final location = item['location'] as Map<String, dynamic>?;
+      final storeName = location?['name'] as String? ?? 'N/A';
+      final storeAddress = location?['address'] as String? ?? '';
+      final storeLocation =
+          storeName != 'N/A' ? '$storeName/$storeAddress' : 'N/A';
+
+      csvData += '$name,${isCompleted ? 'Completed' : 'Pending'},'
+          '$deadlineDate,$addedByName,$addedDate,$storeLocation\n';
     }
 
-    // Get temporary directory
-    final directory = await getTemporaryDirectory();
-    final file = File('${directory.path}/$listName.csv');
-
-    // Write CSV data
-    await file.writeAsString(csvData);
-
-    // Share the file
-    await Share.shareXFiles(
-      [XFile(file.path)],
-      subject: 'Shopping List: $listName',
-    );
+    if (kIsWeb) {
+      exportForWeb(csvData, listName);
+    } else {
+      final directory = await getTemporaryDirectory();
+      final file = File('${directory.path}/$listName.csv');
+      await file.writeAsString(csvData);
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        subject: 'Shopping List: $listName',
+      );
+    }
   }
 }
