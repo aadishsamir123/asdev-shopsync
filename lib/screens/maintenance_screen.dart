@@ -17,142 +17,133 @@ class MaintenanceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final mainColor = isPredictive ? Colors.amber : Colors.orange;
+    final backgroundColor = isDark ? Colors.grey[900] : Colors.green[900];
+    final cardColor = isDark
+        ? Colors.black.withValues(alpha: 0.6)
+        : Colors.white.withValues(alpha: 0.8);
 
     return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Container(
-            width: double.infinity,
-            height: constraints.maxHeight,
-            decoration: BoxDecoration(
-              color: isDark ? colorScheme.surface : mainColor.shade50,
-            ),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight - 80,
+      body: Container(
+        color: backgroundColor,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: isDark
+                            ? Colors.black.withValues(alpha: 0.5)
+                            : Colors.orange.withValues(alpha: 0.2),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.blueGrey.shade700
+                          : Colors.orange.shade200,
+                    ),
                   ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(32),
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: isDark ? colorScheme.surface : Colors.white,
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: isDark
-                                  ? Colors.black.withValues(alpha: 0.3)
-                                  : mainColor.withValues(alpha: 0.2),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: isPredictive
+                                ? [Colors.amber.shade700, Colors.amber.shade400]
+                                : [
+                                    Colors.orange.shade700,
+                                    Colors.orange.shade400
+                                  ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? mainColor.shade900
-                                    : mainColor.shade100,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                isPredictive
-                                    ? Icons.warning_rounded
-                                    : Icons.build_rounded,
-                                size: 48,
-                                color: isDark
-                                    ? mainColor.shade200
-                                    : mainColor.shade800,
-                              ),
-                            ),
-                            const SizedBox(height: 32),
-                            Center(
-                              child: Text(
-                                isPredictive
-                                    ? 'Upcoming Maintenance'
-                                    : 'Under Maintenance',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark
-                                      ? mainColor.shade200
-                                      : mainColor.shade900,
-                                  height: 1.2,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              message,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: isDark
-                                    ? colorScheme.onSurface
-                                        .withValues(alpha: 0.9)
-                                    : colorScheme.onSurface
-                                        .withValues(alpha: 0.8),
-                                height: 1.5,
-                              ),
-                            ),
-                            if (startTime != null && endTime != null) ...[
-                              const SizedBox(height: 32),
-                              _buildTimeDisplay(mainColor, isDark),
-                            ],
-                            if (isPredictive) ...[
-                              const SizedBox(height: 32),
-                              FilledButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                style: FilledButton.styleFrom(
-                                  backgroundColor:
-                                      isDark ? mainColor.shade800 : mainColor,
-                                  minimumSize: const Size(200, 48),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Understood',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                            ],
-                          ],
+                        child: Icon(
+                          isPredictive
+                              ? Icons.warning_rounded
+                              : Icons.build_rounded,
+                          size: 48,
+                          color: Colors.white,
                         ),
                       ),
+                      const SizedBox(height: 24),
+                      Text(
+                        isPredictive
+                            ? 'Upcoming Maintenance'
+                            : 'Under Maintenance',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        message,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isDark ? Colors.white70 : Colors.black54,
+                          height: 1.5,
+                        ),
+                      ),
+                      if (startTime != null && endTime != null) ...[
+                        const SizedBox(height: 32),
+                        _buildTimeDisplay(isDark),
+                      ],
+                      if (isPredictive) ...[
+                        const SizedBox(height: 32),
+                        ElevatedButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isDark
+                                ? Colors.amber.shade700
+                                : Colors.orange.shade600,
+                            minimumSize: const Size(200, 48),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Understood',
+                            style: TextStyle(fontSize: 16, color: Colors.black),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildTimeDisplay(MaterialColor mainColor, bool isDark) {
+  Widget _buildTimeDisplay(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.black26 : mainColor.shade50,
+        color: isDark
+            ? Colors.black.withValues(alpha: 0.5)
+            : Colors.white.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? mainColor.shade800 : mainColor.shade200,
+          color: isDark ? Colors.blueGrey.shade700 : Colors.orange.shade200,
         ),
       ),
       child: Column(
@@ -162,7 +153,7 @@ class MaintenanceScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: isDark ? mainColor.shade200 : mainColor.shade900,
+              color: isDark ? Colors.white : Colors.black87,
             ),
           ),
           const SizedBox(height: 16),
@@ -170,15 +161,23 @@ class MaintenanceScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                  child: _buildTimeCard(
-                      _formatDate(startTime!), mainColor, isDark)),
+                child: _buildTimeCard(
+                  _formatDate(startTime!),
+                  isDark,
+                ),
+              ),
               const SizedBox(width: 12),
-              Icon(Icons.arrow_forward,
-                  color: isDark ? mainColor.shade200 : mainColor.shade400),
+              Icon(
+                Icons.arrow_forward,
+                color: isDark ? Colors.white70 : Colors.black54,
+              ),
               const SizedBox(width: 12),
               Expanded(
-                  child:
-                      _buildTimeCard(_formatDate(endTime!), mainColor, isDark)),
+                child: _buildTimeCard(
+                  _formatDate(endTime!),
+                  isDark,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -186,7 +185,7 @@ class MaintenanceScreen extends StatelessWidget {
             'UTC Time Zone',
             style: TextStyle(
               fontSize: 13,
-              color: isDark ? mainColor.shade200 : mainColor.shade800,
+              color: isDark ? Colors.white70 : Colors.black54,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -195,15 +194,14 @@ class MaintenanceScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeCard(
-      List<String> timeData, MaterialColor mainColor, bool isDark) {
+  Widget _buildTimeCard(List<String> timeData, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
-        color: isDark ? Colors.black38 : Colors.white,
+        color: isDark ? Colors.black.withValues(alpha: 0.4) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? mainColor.shade800 : mainColor.shade200,
+          color: isDark ? Colors.blueGrey.shade700 : Colors.orange.shade200,
         ),
       ),
       child: Column(
@@ -213,7 +211,7 @@ class MaintenanceScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: isDark ? mainColor.shade200 : mainColor.shade900,
+              color: isDark ? Colors.white : Colors.black87,
             ),
           ),
           const SizedBox(height: 4),
@@ -222,7 +220,7 @@ class MaintenanceScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: isDark ? Colors.grey[400] : Colors.grey[800],
+              color: isDark ? Colors.white70 : Colors.black54,
             ),
           ),
         ],
