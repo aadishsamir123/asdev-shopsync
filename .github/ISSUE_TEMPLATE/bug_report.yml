@@ -1,5 +1,5 @@
 name: 🐛 Bug Report
-description: Report a reproducible issue in the Flutter app
+description: Report a reproducible issue in the ShopSync app
 title: "[Bug] <short description>"
 labels: [bug]
 body:
