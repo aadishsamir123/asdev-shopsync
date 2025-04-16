@@ -53,15 +53,6 @@ Coming Soon
 
 [//]: # (</div>)
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Flutter SDK (^3.29.2)
-- Dart SDK
-- Firebase account
-- Android Studio / VS Code
-
 ## 🛠️ Tech Stack
 
 - Flutter
@@ -70,6 +61,15 @@ Coming Soon
 - Provider State Management
 - Shared Preferences
 - Cloud Firestore
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Flutter SDK (^3.29.2)
+- Dart SDK
+- Firebase account
+- Android Studio / VS Code
 
 ### Installation
 
