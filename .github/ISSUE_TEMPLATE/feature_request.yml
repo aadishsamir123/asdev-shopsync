@@ -1,0 +1,48 @@
+name: ✨ Feature Request
+description: Suggest an idea or improvement for the app
+title: "[Feature] <short description>"
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Got an idea? Let us know by filling out this feature request.
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      description: Where would this feature apply?
+      placeholder: Android, Web, or Both
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: What do you want to see added or improved?
+      placeholder: A clear and concise description of the feature.
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why Is This Needed?
+      description: What problem does this feature solve, or what value does it add?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Did you consider any alternative solutions?
+      placeholder: Describe alternatives, if any.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other details, mockups, or context here.
