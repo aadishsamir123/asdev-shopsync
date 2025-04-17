@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import '/widgets/loading_spinner.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RecycleBinScreen extends StatelessWidget {
   final String listId;
@@ -77,7 +78,7 @@ class RecycleBinScreen extends StatelessWidget {
               ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
               onPressed: () => Navigator.pop(context),
               tooltip: 'Go Back',
             ),
@@ -106,8 +107,8 @@ class RecycleBinScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.delete_outline,
+                  FaIcon(
+                    FontAwesomeIcons.trashCan,
                     size: 64,
                     color: isDark ? Colors.grey[400] : Colors.grey[600],
                   ),
@@ -165,7 +166,8 @@ class RecycleBinScreen extends StatelessWidget {
                             ),
                           ),
                           TextButton.icon(
-                            icon: Icon(Icons.restore, color: Colors.green[600]),
+                            icon: FaIcon(FontAwesomeIcons.arrowRotateLeft,
+                                color: Colors.green[600]),
                             label: Text(
                               'Restore',
                               style: TextStyle(color: Colors.green[600]),
@@ -174,7 +176,7 @@ class RecycleBinScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           TextButton.icon(
-                            icon: const Icon(Icons.delete_forever,
+                            icon: const FaIcon(FontAwesomeIcons.trash,
                                 color: Colors.red),
                             label: const Text(
                               'Delete',
@@ -187,11 +189,7 @@ class RecycleBinScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          Icon(
-                            Icons.person_outline,
-                            size: 16,
-                            color: isDark ? Colors.grey[400] : Colors.grey[600],
-                          ),
+                          const FaIcon(FontAwesomeIcons.user, size: 16),
                           const SizedBox(width: 4),
                           Text(
                             'Deleted by: ${itemData['deletedByName']}',
@@ -206,11 +204,7 @@ class RecycleBinScreen extends StatelessWidget {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(
-                            Icons.access_time,
-                            size: 16,
-                            color: isDark ? Colors.grey[400] : Colors.grey[600],
-                          ),
+                          const FaIcon(FontAwesomeIcons.clock, size: 16),
                           const SizedBox(width: 4),
                           Text(
                             'Deleted on: ${DateFormat('MMM dd, yyyy').format(deletedAt)}',
@@ -233,3 +227,4 @@ class RecycleBinScreen extends StatelessWidget {
     );
   }
 }
+

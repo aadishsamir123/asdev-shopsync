@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/loading_spinner.dart';
 import '/widgets/place_selector.dart';
 
@@ -104,7 +105,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               ),
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
               onPressed: () => Navigator.pop(context),
               tooltip: 'Go Back',
             ),
@@ -132,12 +133,14 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(12),
+                            width: 48,
+                            height: 48,
+                            alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: Colors.green[100],
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Icon(Icons.edit, color: Colors.green[800]),
+                            child: FaIcon(FontAwesomeIcons.pen, color: Colors.green[800],),
                           ),
                           const SizedBox(width: 16),
                           const Text(
@@ -250,12 +253,14 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          width: 48,
+                          height: 48,
+                          alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: Colors.green[100],
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(Icons.event, color: Colors.green[800]),
+                          child: FaIcon(FontAwesomeIcons.calendar, color: Colors.green[800]),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -281,7 +286,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                         ),
                         if (_selectedDeadline != null)
                           IconButton(
-                            icon: const Icon(Icons.close),
+                            icon: const FaIcon(FontAwesomeIcons.xmark),
                             onPressed: () => setState(() {
                               _selectedDeadline = null;
                               _selectedTime = null;
@@ -324,13 +329,14 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          width: 48,
+                          height: 48,
+                          alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: Colors.green[100],
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child:
-                              Icon(Icons.location_on, color: Colors.green[800]),
+                          child: FaIcon(FontAwesomeIcons.locationDot, color: Colors.green[800]),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -377,13 +383,14 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(12),
+                            width: 48,
+                            height: 48,
+                            alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: Colors.green[100],
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Icon(Icons.description,
-                                color: Colors.green[800]),
+                            child: FaIcon(FontAwesomeIcons.fileLines, color: Colors.green[800]),
                           ),
                           const SizedBox(width: 16),
                           const Text(
