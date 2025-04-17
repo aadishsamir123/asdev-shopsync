@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'forgot_password.dart';
 import '/widgets/loading_spinner.dart';
 
@@ -77,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back,
+                    icon: Icon(FontAwesomeIcons.arrowLeft,
                         color: isDarkMode ? Colors.green[300] : Colors.white,
                         size: 28),
                     onPressed: () => Navigator.pop(context),
@@ -145,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontSize: 15,
                             ),
                             prefixIcon: Icon(
-                              Icons.email_outlined,
+                              FontAwesomeIcons.envelope,
                               color: isDarkMode
                                   ? Colors.green[300]
                                   : Colors.green[800],
@@ -195,17 +196,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontSize: 15,
                             ),
                             prefixIcon: Icon(
-                              Icons.lock_outline,
+                              FontAwesomeIcons.lock,
                               color: isDarkMode
                                   ? Colors.green[300]
                                   : Colors.green[800],
                               size: 22,
                             ),
                             suffixIcon: IconButton(
-                              icon: Icon(
+                              icon: FaIcon(
                                 _obscureText
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
+                                    ? FontAwesomeIcons.eye
+                                    : FontAwesomeIcons.eyeSlash,
                                 color: isDarkMode
                                     ? Colors.green[300]
                                     : Colors.green[800],
@@ -254,7 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.error_outline,
+                                Icon(FontAwesomeIcons.circleExclamation,
                                     color: Colors.red.shade400, size: 20),
                                 const SizedBox(width: 12),
                                 Expanded(

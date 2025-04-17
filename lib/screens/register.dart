@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shopsync/widgets/loading_spinner.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -93,7 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back,
+                    icon: Icon(FontAwesomeIcons.arrowLeft,
                         color: isDarkMode ? Colors.green[300] : Colors.white,
                         size: 28),
                     onPressed: () => Navigator.pop(context),
@@ -161,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               fontSize: 15,
                             ),
                             prefixIcon: Icon(
-                              Icons.person_outline,
+                              FontAwesomeIcons.user,
                               color: isDarkMode
                                   ? Colors.green[300]
                                   : Colors.green[800],
@@ -210,7 +211,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               fontSize: 15,
                             ),
                             prefixIcon: Icon(
-                              Icons.email_outlined,
+                              FontAwesomeIcons.envelope,
                               color: isDarkMode
                                   ? Colors.green[300]
                                   : Colors.green[800],
@@ -260,17 +261,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               fontSize: 15,
                             ),
                             prefixIcon: Icon(
-                              Icons.lock_outline,
+                              FontAwesomeIcons.lock,
                               color: isDarkMode
                                   ? Colors.green[300]
                                   : Colors.green[800],
                               size: 22,
                             ),
                             suffixIcon: IconButton(
-                              icon: Icon(
+                              icon: FaIcon(
                                 _obscurePassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
+                                    ? FontAwesomeIcons.eye
+                                    : FontAwesomeIcons.eyeSlash,
                                 color: isDarkMode
                                     ? Colors.green[300]
                                     : Colors.green[800],
@@ -319,7 +320,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.error_outline,
+                                Icon(FontAwesomeIcons.circleExclamation,
                                     color: Colors.red.shade400, size: 20),
                                 const SizedBox(width: 12),
                                 Expanded(

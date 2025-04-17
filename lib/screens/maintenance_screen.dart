@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 class MaintenanceScreen extends StatelessWidget {
@@ -70,25 +71,30 @@ class MaintenanceScreen extends StatelessWidget {
                             end: Alignment.bottomRight,
                           ),
                         ),
-                        child: Icon(
+                        child: FaIcon(
                           isPredictive
-                              ? Icons.warning_rounded
-                              : Icons.build_rounded,
+                              ? FontAwesomeIcons.triangleExclamation
+                              : FontAwesomeIcons.screwdriverWrench,
                           size: 48,
                           color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 24),
-                      Text(
-                        isPredictive
-                            ? 'Upcoming Maintenance'
-                            : 'Under Maintenance',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : Colors.black87,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            isPredictive
+                                ? 'Upcoming Maintenance'
+                                : 'Under Maintenance',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? Colors.white : Colors.black87,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -106,7 +112,7 @@ class MaintenanceScreen extends StatelessWidget {
                       ],
                       if (isPredictive) ...[
                         const SizedBox(height: 32),
-                        ElevatedButton(
+                        ElevatedButton.icon(
                           onPressed: () => Navigator.of(context).pop(),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: isDark
@@ -117,7 +123,12 @@ class MaintenanceScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text(
+                          icon: const FaIcon(
+                            FontAwesomeIcons.circleCheck,
+                            size: 18,
+                            color: Colors.black,
+                          ),
+                          label: const Text(
                             'Understood',
                             style: TextStyle(fontSize: 16, color: Colors.black),
                           ),
@@ -167,8 +178,8 @@ class MaintenanceScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Icon(
-                Icons.arrow_forward,
+              FaIcon(
+                FontAwesomeIcons.arrowRight,
                 color: isDark ? Colors.white70 : Colors.black54,
               ),
               const SizedBox(width: 12),

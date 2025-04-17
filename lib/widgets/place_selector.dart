@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LocationSelector extends StatefulWidget {
   final Function(Map<String, dynamic>) onLocationSelected;
@@ -9,6 +10,20 @@ class LocationSelector extends StatefulWidget {
     required this.onLocationSelected,
     this.initialLocation,
   });
+
+  static void show(BuildContext context, Function(Map<String, dynamic>) onLocationSelected, {Map<String, dynamic>? initialLocation}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => LocationSelector(
+        onLocationSelected: onLocationSelected,
+        initialLocation: initialLocation,
+      ),
+    );
+  }
 
   @override
   State<LocationSelector> createState() => _LocationSelectorState();
@@ -43,171 +58,99 @@ class _LocationSelectorState extends State<LocationSelector>
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.9,
-      decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          AppBar(
-            title: const Text(
-              'Store Location',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => Navigator.pop(context),
-            ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-          ),
-          Expanded(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildInfoCard(isDark),
-                    const SizedBox(height: 24),
-                    _buildInputFields(isDark),
-                    const Spacer(),
-                    _buildSaveButton(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoCard(bool isDark) {
-    return Card(
-      elevation: 2,
-      color: isDark ? const Color(0xFF1B5E20) : const Color(0xFFE8F5E9),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return FadeTransition(
+      opacity: _fadeAnimation,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Row(
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 16,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color:
-                    isDark ? const Color(0xFF2E7D32) : const Color(0xFFC8E6C9),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: isDark
-                        ? Colors.black.withValues(alpha: 0.2)
-                        : Colors.green.withValues(alpha: 0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.store_mall_directory,
-                color: isDark ? Colors.white : const Color(0xFF2E7D32),
-                size: 24,
+                color: Colors.grey[400],
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                'Add your store details below',
-                style: TextStyle(
-                  color: isDark ? Colors.white : const Color(0xFF1B5E20),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.2,
-                ),
-              ),
+            Text(
+              'Enter Store Location',
+              style: theme.textTheme.titleLarge,
             ),
+            const SizedBox(height: 16),
+            _buildStoreNameCard(isDark),
+            const SizedBox(height: 16),
+            _buildAddressCard(isDark),
+            const SizedBox(height: 24),
+            _buildSaveButton(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInputFields(bool isDark) {
-    return Column(
-      children: [
-        TextField(
-          controller: _storeNameController,
-          style: TextStyle(
-            color: isDark ? Colors.white : Colors.black,
+  Widget _buildStoreNameCard(bool isDark) {
+    return Card(
+      elevation: 8,
+      shadowColor: isDark ? Colors.black87 : Colors.grey[300],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: ListTile(
+        leading: Container(
+          width: 48,
+          height: 48,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.green[100],
+            borderRadius: BorderRadius.circular(12),
           ),
+          child: FaIcon(FontAwesomeIcons.shop, color: Colors.green[800]),
+        ),
+        title: TextField(
+          controller: _storeNameController,
+          style: TextStyle(color: isDark ? Colors.white : Colors.black),
           decoration: InputDecoration(
+            border: InputBorder.none,
+            labelStyle: TextStyle(color: isDark ? Colors.green[400] : Colors.green[800]),
             labelText: 'Store name',
-            labelStyle: TextStyle(
-              color: isDark ? Colors.grey[400] : Colors.grey[700],
-            ),
-            filled: true,
-            fillColor:
-                isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: isDark ? Colors.grey[600]! : Colors.grey[400]!,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.green.shade400,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
           ),
         ),
-        const SizedBox(height: 20),
-        TextField(
+      ),
+    );
+  }
+
+  Widget _buildAddressCard(bool isDark) {
+    return Card(
+      elevation: 8,
+      shadowColor: isDark ? Colors.black87 : Colors.grey[300],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: ListTile(
+        leading: Container(
+          width: 48,
+          height: 48,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.green[100],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: FaIcon(FontAwesomeIcons.locationDot, color: Colors.green[800]),
+        ),
+        title: TextField(
           controller: _addressController,
           maxLines: 3,
-          style: TextStyle(
-            color: isDark ? Colors.white : Colors.black,
-          ),
+          style: TextStyle(color: isDark ? Colors.white : Colors.black),
           decoration: InputDecoration(
-            labelText: 'Store Address',
-            labelStyle: TextStyle(
-              color: isDark ? Colors.grey[400] : Colors.grey[700],
-            ),
-            filled: true,
-            fillColor:
-                isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: isDark ? Colors.grey[600]! : Colors.grey[400]!,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.green.shade400,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: InputBorder.none,
+            labelStyle: TextStyle(color: isDark ? Colors.green[400] : Colors.green[800]),
+            labelText: 'Store address',
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -234,12 +177,13 @@ class _LocationSelectorState extends State<LocationSelector>
         ),
         elevation: 4,
       ),
-      child: const Text(
-        'Save Location',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          FaIcon(FontAwesomeIcons.floppyDisk, size: 18),
+          SizedBox(width: 8),
+          Text('Save Changes'),
+        ],
       ),
     );
   }

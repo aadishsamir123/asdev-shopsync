@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/place_selector.dart';
 import '/widgets/loading_spinner.dart';
 
@@ -177,6 +178,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
+              width: 48,
+              height: 48,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: isDark
                     ? Colors.grey[800]!.withValues(alpha: 0.5)
@@ -189,7 +193,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                 ),
               ),
               child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
                 onPressed: () => Navigator.pop(context),
                 tooltip: 'Go Back',
               ),
@@ -343,12 +347,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
           child: Row(
             children: [
               Container(
+                width: 48,
+                height: 48,
+                alignment: Alignment.center,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.green[100],
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.event, color: Colors.green[800]),
+                child: FaIcon(FontAwesomeIcons.calendar, color: Colors.green[800]),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -375,7 +382,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
               ),
               if (_selectedDeadline != null)
                 IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: const FaIcon(FontAwesomeIcons.xmark),
                   onPressed: () =>
                       _updateTask({'deadline': FieldValue.delete()}),
                 ),
@@ -414,12 +421,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
           child: Row(
             children: [
               Container(
+                width: 48,
+                height: 48,
+                alignment: Alignment.center,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.green[100],
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.location_on, color: Colors.green[800]),
+                child: FaIcon(FontAwesomeIcons.locationDot, color: Colors.green[800]),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -463,12 +473,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
             Row(
               children: [
                 Container(
+                  width: 48,
+                  height: 48,
+                  alignment: Alignment.center,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.green[100],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.description, color: Colors.green[800]),
+                  child: FaIcon(FontAwesomeIcons.fileLines, color: Colors.green[800]),
                 ),
                 const SizedBox(width: 16),
                 const Text(
@@ -521,12 +534,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
         child: Row(
           children: [
             Container(
+              width: 48,
+              height: 48,
+              alignment: Alignment.center,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.green[100],
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.person, color: Colors.green[800]),
+              child: FaIcon(FontAwesomeIcons.user, color: Colors.green[800]),
             ),
             const SizedBox(width: 16),
             Column(
@@ -565,12 +581,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
         child: Row(
           children: [
             Container(
+              width: 48,
+              height: 48,
+              alignment: Alignment.center,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.green[100],
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.schedule, color: Colors.green[800]),
+              child: FaIcon(FontAwesomeIcons.clock, color: Colors.green[800]),
             ),
             const SizedBox(width: 16),
             Column(
@@ -596,3 +615,4 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
     );
   }
 }
+
