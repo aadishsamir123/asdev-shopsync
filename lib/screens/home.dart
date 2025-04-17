@@ -510,7 +510,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      Icons.more_vert,
+                      FontAwesomeIcons.ellipsisVertical,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.green[100]
                           : Colors.green[800],
@@ -540,7 +540,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.orange[50],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.delete_outline, color: Colors.orange[700]),
+                child: Icon(FontAwesomeIcons.trashCan, color: Colors.orange[700]),
               ),
               title: const Text('View Recycle Bin'),
               onTap: () {
@@ -561,7 +561,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.purple[50],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.import_export, color: Colors.purple[700]),
+                child: Icon(FontAwesomeIcons.fileExport, color: Colors.purple[700]),
               ),
               title: const Text('Export List'),
               onTap: () async {
@@ -581,7 +581,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.blue[50],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(Icons.edit, color: Colors.blue[700]),
+                  child: Icon(FontAwesomeIcons.penToSquare, color: Colors.blue[700]),
                 ),
                 title: const Text('Rename List'),
                 onTap: () {
@@ -597,7 +597,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.red[50],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(Icons.delete_forever, color: Colors.red[700]),
+                  child: Icon(FontAwesomeIcons.trash, color: Colors.red[700]),
                 ),
                 title: const Text('Delete List'),
                 onTap: () {
@@ -654,8 +654,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         : Colors.green[50],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    Icons.people,
+                  child: FaIcon(
+                    FontAwesomeIcons.userGroup,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.green[100]
                         : Colors.green[800],
@@ -691,7 +691,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: Icon(
-                    Icons.close,
+                    FontAwesomeIcons.xmark,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.grey[400]
                         : Colors.grey[600],
@@ -716,7 +716,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 children: [
                   Icon(
-                    Icons.alternate_email,
+                    FontAwesomeIcons.at,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.green[200]
                         : Colors.green[800],
@@ -868,10 +868,11 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               children: [
                 Icon(
-                  Icons.people_outline,
+                  FontAwesomeIcons.userGroup,
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.grey[400]
                       : Colors.grey[600],
+                  size: 18,
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -919,7 +920,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         builder: (context, userSnapshot) {
                           if (!userSnapshot.hasData) {
                             return const ListTile(
-                              leading: CircleAvatar(child: Icon(Icons.person)),
+                              leading: CircleAvatar(child: Icon(FontAwesomeIcons.user)),
                               title: Text('Loading...'),
                             );
                           }
@@ -956,7 +957,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   )
                                 : IconButton(
                                     icon: const Icon(
-                                        Icons.remove_circle_outline,
+                                        FontAwesomeIcons.circleMinus,
                                         color: Colors.red),
                                     onPressed: memberId ==
                                             _auth.currentUser!.uid
@@ -1071,7 +1072,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      Icons.star_rounded,
+                      FontAwesomeIcons.star,
                       color: Colors.amber[800],
                       size: 24,
                     ),
@@ -1239,7 +1240,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             child: IconButton(
-                              icon: const Icon(Icons.arrow_back,
+                              icon: const FaIcon(FontAwesomeIcons.arrowLeft,
                                   color: Colors.white),
                               onPressed: () => Navigator.pop(context),
                               tooltip: 'Go Back',
@@ -1518,8 +1519,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(
-                                          Icons.list_alt,
+                                        FaIcon(
+                                          FontAwesomeIcons.listUl,
                                           size: 48,
                                           color: Colors.grey[400],
                                         ),
@@ -1569,12 +1570,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                             ),
-                                            child: Icon(
-                                              Icons.shopping_cart,
+                                            child: FaIcon(
+                                              FontAwesomeIcons.cartShopping,
                                               color: _selectedListId == listId
                                                   ? Colors.white
                                                   : Colors.grey[600],
-                                              size: 20,
+                                              size: 18,
                                             ),
                                           ),
                                           title: Text(
@@ -1621,7 +1622,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       thickness: 2,
                                     ),
                                     _buildDrawerItem(
-                                      icon: Icons.add,
+                                      icon: FontAwesomeIcons.plus,
                                       title: 'Create New List',
                                       onTap: () {
                                         showDialog(
@@ -1716,13 +1717,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                       },
                                     ),
                                     _buildDrawerItem(
-                                      icon: Icons.person_outline,
+                                      icon: FontAwesomeIcons.user,
                                       title: 'My Profile',
                                       onTap: () => Navigator.pushNamed(
                                           context, '/profile'),
                                     ),
                                     _buildDrawerItem(
-                                      icon: Icons.announcement_outlined,
+                                      icon: FontAwesomeIcons.scroll,
                                       title: 'Release Notes',
                                       onTap: () async {
                                         final Uri url = Uri.parse(
@@ -1762,7 +1763,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       },
                                     ),
                                     _buildDrawerItem(
-                                      icon: Icons.logout,
+                                      icon: FontAwesomeIcons.rightFromBracket,
                                       title: 'Sign Out',
                                       onTap: _signOut,
                                       color: Colors.red[400],
@@ -1907,8 +1908,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   borderRadius:
                                                       BorderRadius.circular(8),
                                                 ),
-                                                child: Icon(
-                                                  Icons.school,
+                                                child: FaIcon(
+                                                  FontAwesomeIcons.graduationCap,
                                                   color: Theme.of(context)
                                                               .brightness ==
                                                           Brightness.dark
@@ -1957,7 +1958,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: Column(
                                               children: [
                                                 TutorialStep(
-                                                  icon: Icons.menu,
+                                                  icon: FontAwesomeIcons.bars,
                                                   title:
                                                       'Open the drawer from the left',
                                                   subtitle:
@@ -1966,7 +1967,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ),
                                                 const SizedBox(height: 16),
                                                 TutorialStep(
-                                                  icon: Icons.shopping_cart,
+                                                  icon: FontAwesomeIcons.cartShopping,
                                                   title:
                                                       'Select a shopping list to view',
                                                   subtitle:
@@ -1976,7 +1977,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 const SizedBox(height: 16),
                                                 TutorialStep(
                                                   icon:
-                                                      Icons.add_circle_outline,
+                                                      FontAwesomeIcons.circlePlus,
                                                   title:
                                                       'Add items to your list',
                                                   subtitle:
@@ -2103,9 +2104,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               BorderRadius
                                                                   .circular(12),
                                                         ),
-                                                        child: Icon(
-                                                          Icons
-                                                              .shopping_cart_outlined,
+                                                        child: FaIcon(
+                                                          FontAwesomeIcons
+                                                              .cartShopping,
                                                           color: Theme.of(context)
                                                                       .brightness ==
                                                                   Brightness
@@ -2145,9 +2146,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 height: 4),
                                                             Row(
                                                               children: [
-                                                                Icon(
-                                                                  Icons
-                                                                      .calendar_today,
+                                                                FaIcon(
+                                                                  FontAwesomeIcons
+                                                                      .calendar,
                                                                   size: 14,
                                                                   color: Theme.of(context)
                                                                               .brightness ==
@@ -2197,9 +2198,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               BorderRadius
                                                                   .circular(8),
                                                         ),
-                                                        child: Icon(
-                                                          Icons
-                                                              .arrow_forward_ios,
+                                                        child: FaIcon(
+                                                          FontAwesomeIcons
+                                                              .arrowRight,
                                                           size: 16,
                                                           color: Theme.of(context)
                                                                       .brightness ==
@@ -2347,7 +2348,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Row(
                                             children: [
                                               Icon(
-                                                Icons.lightbulb_outline,
+                                                FontAwesomeIcons.lightbulb,
                                                 color: Theme.of(context)
                                                             .brightness ==
                                                         Brightness.dark
@@ -2383,9 +2384,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ]
                                                 .map((item) => ActionChip(
                                                       label: Text(item),
-                                                      avatar: const Icon(
-                                                        Icons.add,
+                                                      avatar: const FaIcon(
+                                                        FontAwesomeIcons.plus,
                                                         size: 16,
+                                                        color: Colors.green,
                                                       ),
                                                       onPressed: () async {
                                                         final user =
@@ -2429,7 +2431,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     const SizedBox(height: 32),
                                     // Add button
                                     ElevatedButton.icon(
-                                      icon: const Icon(Icons.add,
+                                      icon: const FaIcon(FontAwesomeIcons.plus,
                                           color: Colors.white),
                                       label: const Text('Add Item'),
                                       onPressed: () =>
@@ -2583,9 +2585,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           mainAxisSize:
                                                               MainAxisSize.min,
                                                           children: [
-                                                            Icon(
-                                                              Icons
-                                                                  .location_on_outlined,
+                                                            FaIcon(
+                                                              FontAwesomeIcons
+                                                                  .locationDot,
                                                               size: 14,
                                                               color: Theme.of(context)
                                                                           .brightness ==
@@ -2625,9 +2627,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           mainAxisSize:
                                                               MainAxisSize.min,
                                                           children: [
-                                                            Icon(
-                                                              Icons.schedule,
-                                                              size: 14,
+                                                            FaIcon(
+                                                              FontAwesomeIcons.clock,
+                                                              size: 12,
                                                               color: Theme.of(context)
                                                                           .brightness ==
                                                                       Brightness
@@ -2668,9 +2670,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           mainAxisSize:
                                                               MainAxisSize.min,
                                                           children: [
-                                                            Icon(
-                                                              Icons
-                                                                  .person_outline,
+                                                            FaIcon(
+                                                              FontAwesomeIcons
+                                                                  .user,
                                                               size: 14,
                                                               color: Theme.of(context)
                                                                           .brightness ==
@@ -2720,11 +2722,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   IconButton(
-                                                    icon: Icon(
+                                                    icon: FaIcon(
                                                       isCompleted
-                                                          ? Icons.check_circle
-                                                          : Icons
-                                                              .circle_outlined,
+                                                          ? FontAwesomeIcons.circleCheck
+                                                          : FontAwesomeIcons
+                                                              .circle,
                                                       color: isCompleted
                                                           ? Colors.green[400]
                                                           : Colors.grey[400],
@@ -2746,8 +2748,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         : Colors.grey[300],
                                                   ),
                                                   IconButton(
-                                                    icon: Icon(
-                                                      Icons.delete_outline,
+                                                    icon: FaIcon(
+                                                      FontAwesomeIcons.trashCan,
                                                       color: Colors.red[300],
                                                     ),
                                                     onPressed: () =>
@@ -2863,8 +2865,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 foregroundColor: Colors.red[700],
                                 elevation: 2,
                                 label: const Text('Clear Completed'),
-                                icon: const Icon(
-                                    Icons.cleaning_services_outlined),
+                                icon: const FaIcon(
+                                    FontAwesomeIcons.eraser),
                               ),
                             );
                           },
@@ -2874,7 +2876,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         FloatingActionButton(
                           onPressed: () => _addTask(_selectedListId!),
                           backgroundColor: Colors.green[800],
-                          child: const Icon(Icons.add, color: Colors.white),
+                          child: const FaIcon(FontAwesomeIcons.plus, color: Colors.white),
                         ),
                       ],
                     ),

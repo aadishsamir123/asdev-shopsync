@@ -107,27 +107,10 @@ class ShopSync extends StatelessWidget {
     return MaterialApp(
       title: 'ShopSync',
       theme: ThemeData(
-        pageTransitionsTheme: PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: CustomPageTransitionsBuilder(),
-            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.macOS: CustomPageTransitionsBuilder(),
-            TargetPlatform.windows: CustomPageTransitionsBuilder(),
-            TargetPlatform.fuchsia: CustomPageTransitionsBuilder(),
-          },
-        ),
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
       ),
       darkTheme: ThemeData.dark().copyWith(
-        pageTransitionsTheme: PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: CustomPageTransitionsBuilder(),
-            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.macOS: CustomPageTransitionsBuilder(),
-            TargetPlatform.windows: CustomPageTransitionsBuilder(),
-            TargetPlatform.fuchsia: CustomPageTransitionsBuilder(),
-          },
-        ),
+
       ),
       // themeMode: themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: const AuthWrapper(),

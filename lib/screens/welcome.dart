@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -133,7 +134,7 @@ class WelcomeScreen extends StatelessWidget {
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.login, size: 24),
+                      FaIcon(FontAwesomeIcons.rightToBracket, size: 24),
                       SizedBox(width: 12),
                       Text(
                         'Log In',
@@ -167,7 +168,7 @@ class WelcomeScreen extends StatelessWidget {
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.person_add, size: 24),
+                      FaIcon(FontAwesomeIcons.userPlus, size: 24),
                       SizedBox(width: 12),
                       Text(
                         'Sign Up',
