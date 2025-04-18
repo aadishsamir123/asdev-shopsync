@@ -50,55 +50,6 @@ void main() async {
   runApp(ShopSync());
 }
 
-class CustomPageTransitionsBuilder extends PageTransitionsBuilder {
-  const CustomPageTransitionsBuilder();
-
-  @override
-  Widget buildTransitions<T>(
-      PageRoute<T> route,
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child) {
-    // Custom curve for a more dynamic feel
-    const curve = Curves.easeInOutQuad;
-
-    // First, define the size transition effect (scale)
-    var scaleTween = Tween(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: animation, curve: curve),
-    );
-
-    // Define the slide transition effect
-    var slideTween =
-        Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(
-      CurvedAnimation(parent: animation, curve: curve),
-    );
-
-    // Define the fade transition effect
-    var fadeTween = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: animation, curve: curve),
-    );
-
-    // Combining the animations together to give the "morphing" effect
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, child) {
-        return Transform(
-          transform: Matrix4.identity()
-            ..scale(scaleTween.value)
-            ..translate(
-                slideTween.value.dx * MediaQuery.of(context).size.width, 0),
-          child: FadeTransition(
-            opacity: fadeTween,
-            child: child,
-          ),
-        );
-      },
-      child: child,
-    );
-  }
-}
-
 class ShopSync extends StatelessWidget {
   const ShopSync({super.key});
 
@@ -108,9 +59,26 @@ class ShopSync extends StatelessWidget {
       title: 'ShopSync',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: const FadeForwardsPageTransitionsBuilder(),
+            TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+            TargetPlatform.macOS: const FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.windows: const FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.linux: const FadeUpwardsPageTransitionsBuilder(),
+          },
+        )
       ),
       darkTheme: ThemeData.dark().copyWith(
-
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: const FadeForwardsPageTransitionsBuilder(),
+            TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+            TargetPlatform.macOS: const FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.windows: const FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.linux: const FadeUpwardsPageTransitionsBuilder(),
+          },
+        )
       ),
       // themeMode: themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: const AuthWrapper(),
