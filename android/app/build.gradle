@@ -41,8 +41,8 @@ android {
         applicationId = "com.aadishsamir.shopsync"
         minSdk = 29
         targetSdk = 35
-        versionCode = 21
-        versionName = '1.0.0-beta.20'
+        versionCode = 22
+        versionName = '1.0.0-beta.21'
     }
 
     buildTypes {
