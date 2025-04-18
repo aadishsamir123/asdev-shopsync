@@ -58,28 +58,27 @@ class ShopSync extends StatelessWidget {
     return MaterialApp(
       title: 'ShopSync',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
-        pageTransitionsTheme: PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: const FadeForwardsPageTransitionsBuilder(),
-            TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
-            TargetPlatform.macOS: const FadeUpwardsPageTransitionsBuilder(),
-            TargetPlatform.windows: const FadeUpwardsPageTransitionsBuilder(),
-            TargetPlatform.linux: const FadeUpwardsPageTransitionsBuilder(),
-          },
-        )
-      ),
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
+          pageTransitionsTheme: PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android:
+                  const FadeForwardsPageTransitionsBuilder(),
+              TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+              TargetPlatform.macOS: const FadeUpwardsPageTransitionsBuilder(),
+              TargetPlatform.windows: const FadeUpwardsPageTransitionsBuilder(),
+              TargetPlatform.linux: const FadeUpwardsPageTransitionsBuilder(),
+            },
+          )),
       darkTheme: ThemeData.dark().copyWith(
-        pageTransitionsTheme: PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: const FadeForwardsPageTransitionsBuilder(),
-            TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
-            TargetPlatform.macOS: const FadeUpwardsPageTransitionsBuilder(),
-            TargetPlatform.windows: const FadeUpwardsPageTransitionsBuilder(),
-            TargetPlatform.linux: const FadeUpwardsPageTransitionsBuilder(),
-          },
-        )
-      ),
+          pageTransitionsTheme: PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: const FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: const FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.windows: const FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.linux: const FadeUpwardsPageTransitionsBuilder(),
+        },
+      )),
       // themeMode: themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: const AuthWrapper(),
       routes: {

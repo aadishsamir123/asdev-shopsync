@@ -192,8 +192,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         child: IconButton(
-                          icon:
-                              const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+                          icon: const FaIcon(FontAwesomeIcons.arrowLeft,
+                              color: Colors.white),
                           onPressed: () => Navigator.pop(context),
                           tooltip: 'Go Back',
                         ),
@@ -321,7 +321,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       child: IconButton(
-                        icon: const FaIcon(FontAwesomeIcons.pen, color: Colors.white),
+                        icon: const FaIcon(FontAwesomeIcons.pen,
+                            color: Colors.white),
                         onPressed: () => setState(() => _isEditing = true),
                         tooltip: 'Edit Profile',
                       ),

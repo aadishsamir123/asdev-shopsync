@@ -105,7 +105,8 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               ),
             ),
             child: IconButton(
-              icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+              icon:
+                  const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
               onPressed: () => Navigator.pop(context),
               tooltip: 'Go Back',
             ),
@@ -140,7 +141,10 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                               color: Colors.green[100],
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: FaIcon(FontAwesomeIcons.pen, color: Colors.green[800],),
+                            child: FaIcon(
+                              FontAwesomeIcons.pen,
+                              color: Colors.green[800],
+                            ),
                           ),
                           const SizedBox(width: 16),
                           const Text(
@@ -260,7 +264,8 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                             color: Colors.green[100],
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: FaIcon(FontAwesomeIcons.calendar, color: Colors.green[800]),
+                          child: FaIcon(FontAwesomeIcons.calendar,
+                              color: Colors.green[800]),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -336,7 +341,8 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                             color: Colors.green[100],
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: FaIcon(FontAwesomeIcons.locationDot, color: Colors.green[800]),
+                          child: FaIcon(FontAwesomeIcons.locationDot,
+                              color: Colors.green[800]),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -390,7 +396,8 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                               color: Colors.green[100],
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: FaIcon(FontAwesomeIcons.fileLines, color: Colors.green[800]),
+                            child: FaIcon(FontAwesomeIcons.fileLines,
+                                color: Colors.green[800]),
                           ),
                           const SizedBox(width: 16),
                           const Text(

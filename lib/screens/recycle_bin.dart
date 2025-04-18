@@ -78,7 +78,8 @@ class RecycleBinScreen extends StatelessWidget {
               ),
             ),
             child: IconButton(
-              icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+              icon:
+                  const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
               onPressed: () => Navigator.pop(context),
               tooltip: 'Go Back',
             ),
@@ -227,4 +228,3 @@ class RecycleBinScreen extends StatelessWidget {
     );
   }
 }
-
