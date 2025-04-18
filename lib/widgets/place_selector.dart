@@ -11,7 +11,9 @@ class LocationSelector extends StatefulWidget {
     this.initialLocation,
   });
 
-  static void show(BuildContext context, Function(Map<String, dynamic>) onLocationSelected, {Map<String, dynamic>? initialLocation}) {
+  static void show(
+      BuildContext context, Function(Map<String, dynamic>) onLocationSelected,
+      {Map<String, dynamic>? initialLocation}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -116,7 +118,8 @@ class _LocationSelectorState extends State<LocationSelector>
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
           decoration: InputDecoration(
             border: InputBorder.none,
-            labelStyle: TextStyle(color: isDark ? Colors.green[400] : Colors.green[800]),
+            labelStyle: TextStyle(
+                color: isDark ? Colors.green[400] : Colors.green[800]),
             labelText: 'Store name',
           ),
         ),
@@ -146,7 +149,8 @@ class _LocationSelectorState extends State<LocationSelector>
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
           decoration: InputDecoration(
             border: InputBorder.none,
-            labelStyle: TextStyle(color: isDark ? Colors.green[400] : Colors.green[800]),
+            labelStyle: TextStyle(
+                color: isDark ? Colors.green[400] : Colors.green[800]),
             labelText: 'Store address',
           ),
         ),
