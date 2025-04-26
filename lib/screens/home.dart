@@ -375,13 +375,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-              title: const Text(
-                'ShopSync',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                ),
+              title: Row(
+                children: [
+                  Image.asset(
+                    'assets/logos/shopsync.png',
+                    height: 32,
+                    width: 32,
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'ShopSync',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -1095,3 +1105,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
