@@ -137,7 +137,7 @@ class WelcomeScreen extends StatelessWidget {
                       FaIcon(FontAwesomeIcons.rightToBracket, size: 24),
                       SizedBox(width: 12),
                       Text(
-                        'Log In',
+                        'Sign In',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
