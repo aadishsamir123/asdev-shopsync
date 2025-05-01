@@ -31,6 +31,7 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   web: ^1.1.1
   flutter_staggered_animations: ^1.1.1
+  flutter_svg: ^2.1.0
 
 dev_dependencies:
   flutter_test:
