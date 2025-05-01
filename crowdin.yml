@@ -1,0 +1,11 @@
+project_id: "your-project-id"
+api_token: "453c349bb98e2cfc2f847049db4d76517f4f4a6a0bb17c6d3acdfbe0b995950ffcd0051a4e33f8f9"
+
+files:
+  - source: /lib/l10n/app_en.arb
+    translation: /lib/l10n/app_%two_letters_code%.arb
+
+pull_request_title: "chore: update translations"
+commit_message: "chore: update %language% translations"
+
+preserve_hierarchy: true

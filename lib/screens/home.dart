@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
+// import 'package:shopsync/l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/loading_spinner.dart';
 import '/screens/sign_out.dart';
@@ -328,6 +329,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // final l10n = AppLocalizations.of(context);
 
     PreferredSize buildCustomAppBar(BuildContext context) {
       return PreferredSize(
