@@ -1,48 +1,99 @@
-// lib/screens/recycle_bin.dart
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
-import '/widgets/loading_spinner.dart';
+import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 
-class RecycleBinScreen extends StatelessWidget {
+import '/widgets/loading_spinner.dart';
+
+class AppBarClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
+    path.lineTo(0, size.height - 16);
+
+    path.quadraticBezierTo(
+      size.width / 4,
+      size.height,
+      size.width / 2,
+      size.height,
+    );
+
+    path.quadraticBezierTo(
+      size.width * 3 / 4,
+      size.height,
+      size.width,
+      size.height - 16,
+    );
+
+    path.lineTo(size.width, 0);
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+class RecycleBinScreen extends StatefulWidget {
   final String listId;
 
   const RecycleBinScreen({super.key, required this.listId});
 
-  Future<void> _restoreItem(
-      String itemId, Map<String, dynamic> itemData) async {
-    final batch = FirebaseFirestore.instance.batch();
+  @override
+  State<RecycleBinScreen> createState() => _RecycleBinScreenState();
+}
 
-    // Add back to original items collection
+class _RecycleBinScreenState extends State<RecycleBinScreen>
+    with TickerProviderStateMixin {  // Changed from SingleTickerProviderStateMixin
+  late AnimationController _controller;
+  final Map<String, AnimationController> _itemControllers = {};
+  final Map<String, Animation<double>> _itemAnimations = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    for (final controller in _itemControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<void> _restoreItem(String itemId, Map<String, dynamic> itemData) async {
+    await _itemControllers[itemId]?.reverse();
+
+    final batch = FirebaseFirestore.instance.batch();
     batch.set(
       FirebaseFirestore.instance
           .collection('lists')
-          .doc(listId)
+          .doc(widget.listId)
           .collection('items')
           .doc(),
-      {
-        ...itemData,
-        'restoredAt': FieldValue.serverTimestamp(),
-      },
+      {...itemData, 'restoredAt': FieldValue.serverTimestamp()},
     );
-
-    // Remove from recycled items
     batch.delete(
       FirebaseFirestore.instance
           .collection('lists')
-          .doc(listId)
+          .doc(widget.listId)
           .collection('recycled_items')
           .doc(itemId),
     );
-
     await batch.commit();
   }
 
   Future<void> _deletePermanently(String itemId) async {
+    await _itemControllers[itemId]?.reverse();
+
     await FirebaseFirestore.instance
         .collection('lists')
-        .doc(listId)
+        .doc(widget.listId)
         .collection('recycled_items')
         .doc(itemId)
         .delete();
@@ -52,179 +103,266 @@ class RecycleBinScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    PreferredSize buildCustomAppBar(BuildContext context) {
+      return PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight + 10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: Theme.of(context).brightness == Brightness.dark
+                  ? [Colors.grey[900]!, Colors.grey[850]!]
+                  : [Colors.green[800]!, Colors.green[600]!],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: ClipPath(
+            clipper: AppBarClipper(),
+            child: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              foregroundColor: Colors.white,
+              leading: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.grey[800]!.withValues(alpha: 0.5)
+                        : Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.grey[700]!
+                          : Colors.white.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: IconButton(
+                    icon: const FaIcon(FontAwesomeIcons.arrowLeft,
+                        color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Go Back',
+                  ),
+                ),
+              ),
+              title: Text(
+                "Recycle Bin",
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: isDark ? Colors.grey[900] : Colors.green[800],
-        foregroundColor: Colors.white,
-        title: const Text(
-          'Recycle Bin',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.grey[800]!.withValues(alpha: 0.5)
-                  : Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isDark
-                    ? Colors.grey[700]!
-                    : Colors.white.withValues(alpha: 0.3),
-              ),
-            ),
-            child: IconButton(
-              icon:
-                  const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-              tooltip: 'Go Back',
-            ),
-          ),
-        ),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('lists')
-            .doc(listId)
-            .collection('recycled_items')
-            .orderBy('deletedAt', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CustomLoadingSpinner(
-                color: Colors.green,
-                size: 60.0,
-              ),
-            );
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FaIcon(
-                    FontAwesomeIcons.trashCan,
-                    size: 64,
-                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+      appBar: buildCustomAppBar(context),
+      body: CustomScrollView(
+        slivers: [
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('lists')
+                .doc(widget.listId)
+                .collection('recycled_items')
+                .orderBy('deletedAt', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SliverFillRemaining(
+                  child: Center(
+                    child:
+                        CustomLoadingSpinner(color: Colors.green, size: 60.0),
                   ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Recycle Bin is Empty',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : Colors.grey[800],
+                );
+              }
+
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return SliverFillRemaining(
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: isDark ? Colors.grey[800] : Colors.grey[100],
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: FaIcon(
+                            FontAwesomeIcons.trashCan,
+                            size: 48,
+                            color: isDark ? Colors.grey[400] : Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'No Deleted Items',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.grey[800],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Items you delete will appear here for 30 days',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: isDark ? Colors.grey[400] : Colors.grey[600],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Items you delete will appear here',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: isDark ? Colors.grey[400] : Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
+                );
+              }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              final doc = snapshot.data!.docs[index];
-              final itemData = doc.data() as Map<String, dynamic>;
-              final deletedAt = (itemData['deletedAt'] as Timestamp).toDate();
+              return SliverPadding(
+                padding: const EdgeInsets.all(16),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final doc = snapshot.data!.docs[index];
+                      final itemData = doc.data() as Map<String, dynamic>;
+                      
+                      if (!_itemControllers.containsKey(doc.id)) {
+                        _itemControllers[doc.id] = AnimationController(
+                          duration: const Duration(milliseconds: 300),
+                          vsync: this,
+                        )..forward();
+                        
+                        _itemAnimations[doc.id] = _itemControllers[doc.id]!.drive(
+                          Tween<double>(begin: 0, end: 1),
+                        );
+                      }
 
-              return Card(
-                elevation: 2,
-                margin: const EdgeInsets.only(bottom: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              itemData['name'],
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: isDark ? Colors.white : Colors.grey[800],
-                                decoration: TextDecoration.lineThrough,
-                                decorationColor:
-                                    isDark ? Colors.white54 : Colors.black54,
+                      return AnimatedBuilder(
+                        animation: _itemAnimations[doc.id]!,
+                        builder: (context, child) => FadeTransition(
+                          opacity: _itemAnimations[doc.id]!,
+                          child: SizeTransition(
+                            sizeFactor: _itemAnimations[doc.id]!,
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: isDark ? Colors.grey[850] : Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.all(16),
+                                title: Text(
+                                  itemData['name'],
+                                  style: TextStyle(
+                                    decoration: TextDecoration.lineThrough,
+                                    decorationColor: isDark
+                                        ? Colors.white38
+                                        : Colors.black38,
+                                    color: isDark
+                                        ? Colors.white70
+                                        : Colors.black87,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.person_outline,
+                                            size: 16,
+                                            color: isDark
+                                                ? Colors.grey[400]
+                                                : Colors.grey[600]),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          itemData['deletedByName'],
+                                          style: TextStyle(
+                                            color: isDark
+                                                ? Colors.grey[400]
+                                                : Colors.grey[600],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.schedule,
+                                            size: 16,
+                                            color: isDark
+                                                ? Colors.grey[400]
+                                                : Colors.grey[600]),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          DateFormat('MMM dd, yyyy').format(
+                                            (itemData['deletedAt'] as Timestamp)
+                                                .toDate(),
+                                          ),
+                                          style: TextStyle(
+                                            color: isDark
+                                                ? Colors.grey[400]
+                                                : Colors.grey[600],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.restore,
+                                        color: Colors.green[600],
+                                      ),
+                                      onPressed: () =>
+                                          _restoreItem(doc.id, itemData),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.delete_forever,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () =>
+                                          _deletePermanently(doc.id),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                          TextButton.icon(
-                            icon: FaIcon(FontAwesomeIcons.arrowRotateLeft,
-                                color: Colors.green[600]),
-                            label: Text(
-                              'Restore',
-                              style: TextStyle(color: Colors.green[600]),
-                            ),
-                            onPressed: () => _restoreItem(doc.id, itemData),
-                          ),
-                          const SizedBox(width: 8),
-                          TextButton.icon(
-                            icon: const FaIcon(FontAwesomeIcons.trash,
-                                color: Colors.red),
-                            label: const Text(
-                              'Delete',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                            onPressed: () => _deletePermanently(doc.id),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          const FaIcon(FontAwesomeIcons.user, size: 16),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Deleted by: ${itemData['deletedByName']}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color:
-                                  isDark ? Colors.grey[400] : Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const FaIcon(FontAwesomeIcons.clock, size: 16),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Deleted on: ${DateFormat('MMM dd, yyyy').format(deletedAt)}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color:
-                                  isDark ? Colors.grey[400] : Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                        ),
+                      );
+                    },
+                    childCount: snapshot.data!.docs.length,
                   ),
                 ),
               );
             },
-          );
-        },
+          ),
+        ],
       ),
     );
   }
 }
+
