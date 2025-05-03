@@ -46,6 +46,7 @@
     }
   },
   "textexportList": "Export List",
+  "textfailedToSignInWithGoogle": "Failed to sign in with Google",
   "textlistDeletedSuccessfully": "List deleted successfully",
   "textloading": "Loading...",
   "textowner": "Owner",
@@ -70,6 +71,7 @@
   "titleAppInformation": "App Information",
   "titleAppearance": "Appearance",
   "titleCreateNewList": "Create New List",
+  "titleCrowdin": "Crowdin",
   "titleDeadline": "Deadline",
   "titleDescription": "Description",
   "titleGithub": "GitHub",

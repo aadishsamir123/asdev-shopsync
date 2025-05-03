@@ -201,6 +201,12 @@ abstract class AppLocalizations {
   /// **'Export List'**
   String get textexportList;
 
+  /// No description provided for @textfailedToSignInWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to sign in with Google'**
+  String get textfailedToSignInWithGoogle;
+
   /// No description provided for @textlistDeletedSuccessfully.
   ///
   /// In en, this message translates to:
@@ -344,6 +350,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create New List'**
   String get titleCreateNewList;
+
+  /// No description provided for @titleCrowdin.
+  ///
+  /// In en, this message translates to:
+  /// **'Crowdin'**
+  String get titleCrowdin;
 
   /// No description provided for @titleDeadline.
   ///

@@ -71,6 +71,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get textexportList => 'Export List';
 
   @override
+  String get textfailedToSignInWithGoogle => 'Failed to sign in with Google';
+
+  @override
   String get textlistDeletedSuccessfully => 'List deleted successfully';
 
   @override
@@ -141,6 +144,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get titleCreateNewList => 'Create New List';
+
+  @override
+  String get titleCrowdin => 'Crowdin';
 
   @override
   String get titleDeadline => 'Deadline';
