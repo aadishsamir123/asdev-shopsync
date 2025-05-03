@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "160863676221-clr4uq9oa70nrquef2ev84c6i2k3t22v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aadishsamir.shopsync",
+            "certificate_hash": "e0df6327ddab87ff091b97a5afa5925ce9a12b48"
+          }
+        },
+        {
+          "client_id": "160863676221-ec6d1cpsvk07qsk4ot3rev47tpk7nmnj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aadishsamir.shopsync",
+            "certificate_hash": "fb970620bebebf5d0ef7efa47a56117eb15741ef"
+          }
+        },
+        {
           "client_id": "160863676221-levmvhj0j8ae1b7peiodun6hb8s1jspc.apps.googleusercontent.com",
           "client_type": 3
         }

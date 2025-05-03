@@ -1,13 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import '/services/auth_service.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
   Future<String> _getVersionInfo() async {
     final packageInfo = await PackageInfo.fromPlatform();
     return 'Version ${packageInfo.version} (${packageInfo.buildNumber})';
+  }
+
+  Widget _getGoogleButtonImage(bool isDarkMode) {
+    if (Theme.of(context).platform == TargetPlatform.android) {
+      return Image.asset(
+        isDarkMode
+            ? 'assets/badges/google/android/png@4x/dark/android_dark_rd_na@4x.png'
+            : 'assets/badges/google/android/png@4x/light/android_light_rd_na@4x.png',
+        height: 48,
+        fit: BoxFit.contain,
+      );
+    } else {
+      return Image.asset(
+        isDarkMode
+            ? 'assets/badges/google/web/png@4x/dark/web_dark_rd_na@4x.png'
+            : 'assets/badges/google/web/png@4x/light/web_light_rd_na@4x.png',
+        height: 48,
+        fit: BoxFit.contain,
+      );
+    }
   }
 
   @override
@@ -178,6 +204,34 @@ class WelcomeScreen extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Google Sign In Button
+                InkWell(
+                  onTap: () async {
+                    try {
+                      final credential = await AuthService.signInWithGoogle();
+                      if (credential != null && mounted) {
+                        Navigator.pushReplacementNamed(context, '/home');
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed to sign in with Google'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                  child: Container(
+                    height: 48, // Standard height for Google Sign In button
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: _getGoogleButtonImage(isDarkMode),
                   ),
                 ),
 
