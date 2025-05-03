@@ -1,0 +1,89 @@
+{
+  "@@locale": "en",
+  "textappLanguage": "App Language",
+  "textareYouSureYouWantToSignOut": "Are you sure you want to sign out?",
+  "textcancel": "Cancel",
+  "textclearCompletedItems": "Clear Completed Items",
+  "textclearCompleted": "Clear Completed",
+  "textclearItems": "Clear Items",
+  "textclearedCompletedItems": "Cleared {count} completed items",
+  "@textclearedCompletedItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "textcouldNotOpenPlayStore": "Could not open Play Store",
+  "textcreate": "Create",
+  "textdarkMode": "Dark Mode",
+  "textdeleteList": "Delete List",
+  "textdelete": "Delete",
+  "textenableNotifications": "Enable Notifications",
+  "textenglish": "English",
+  "texterrorDeletingList": "Error deleting list: {error}",
+  "@texterrorDeletingList": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "texterrorFetchingStatus": "Error fetching maintenance status: {error}",
+  "@texterrorFetchingStatus": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "texterrorSharingList": "Error sharing list: {error}",
+  "@texterrorSharingList": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "textexportList": "Export List",
+  "textlistDeletedSuccessfully": "List deleted successfully",
+  "textloading": "Loading...",
+  "textowner": "Owner",
+  "textpleaseEnterATaskTitle": "Please enter a task title",
+  "textprivacyPolicy": "Privacy Policy",
+  "textprofileUpdatedSuccessfully": "Profile updated successfully",
+  "textrenameList": "Rename List",
+  "textsaveChanges": "Save Changes",
+  "textsave": "Save",
+  "textselectLanguage": "Select Language",
+  "textsettings": "Settings",
+  "textsignOut": "Sign Out",
+  "texttoggleDarklightTheme": "Toggle dark/light theme",
+  "textuserAddedSuccessfully": "User added successfully",
+  "textuserAlreadyHasAccessToThisList": "User already has access to this list",
+  "textuserRemoved": "User removed",
+  "textversion": "Version",
+  "textviewRecycleBin": "View Recycle Bin",
+  "titleAbout": "About",
+  "titleAccessYourListsAndSettings": "Access your lists and settings",
+  "titleAddItemsToYourList": "Add items to your list",
+  "titleAppInformation": "App Information",
+  "titleAppearance": "Appearance",
+  "titleCreateNewList": "Create New List",
+  "titleDeadline": "Deadline",
+  "titleDescription": "Description",
+  "titleGithub": "GitHub",
+  "titleLanguage": "Language",
+  "titleLocation": "Location",
+  "titleMyProfile": "My Profile",
+  "titleNotifications": "Notifications",
+  "titleOpenTheDrawerFromTheLeft": "Open the drawer from the left",
+  "titleReleaseNotes": "Release Notes",
+  "titleSelectAShoppingListToView": "Select a shopping list to view",
+  "titleShareCollaborate": "Share & Collaborate",
+  "titleShopsync": "ShopSync",
+  "titleSignOut": "Sign Out",
+  "titleSmartLists": "Smart Lists",
+  "titleTaskName": "Task Name",
+  "titleWelcomeToShopsync": "Welcome to ShopSync"
+}

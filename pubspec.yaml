@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   cupertino_icons: ^1.0.8
   firebase_core: ^3.12.1
   firebase_auth: ^5.5.1
@@ -18,7 +20,7 @@ dependencies:
   url_launcher: ^6.3.1
   package_info_plus: ^8.3.0
   in_app_update: ^4.2.3
-  intl: ^0.20.2
+  intl: ^0.19.0
   shared_preferences: ^2.5.2
   provider: ^6.1.2
   path_provider: ^2.0.15
@@ -30,14 +32,17 @@ dependencies:
   web: ^1.1.1
   flutter_staggered_animations: ^1.1.1
   google_sign_in: ^6.3.0
+  flutter_svg: ^2.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  build_runner: ^2.4.15
 
 flutter:
   uses-material-design: true
+  generate: true
   assets:
     - assets/logos/
     - assets/badges/google/android/png@4x/dark/android_dark_rd_na@4x.png
