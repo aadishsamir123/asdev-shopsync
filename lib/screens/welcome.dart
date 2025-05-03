@@ -207,33 +207,33 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                // const SizedBox(height: 20),
 
                 // Google Sign In Button
-                InkWell(
-                  onTap: () async {
-                    try {
-                      final credential = await AuthService.signInWithGoogle();
-                      if (credential != null && mounted) {
-                        Navigator.pushReplacementNamed(context, '/home');
-                      }
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Failed to sign in with Google'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  },
-                  child: Container(
-                    height: 48, // Standard height for Google Sign In button
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: _getGoogleButtonImage(isDarkMode),
-                  ),
-                ),
+                // InkWell(
+                //   onTap: () async {
+                //     try {
+                //       final credential = await AuthService.signInWithGoogle();
+                //       if (credential != null && mounted) {
+                //         Navigator.pushReplacementNamed(context, '/home');
+                //       }
+                //     } catch (e) {
+                //       ScaffoldMessenger.of(context).showSnackBar(
+                //         const SnackBar(
+                //           content: Text('Failed to sign in with Google'),
+                //           backgroundColor: Colors.red,
+                //         ),
+                //       );
+                //     }
+                //   },
+                //   child: Container(
+                //     height: 48, // Standard height for Google Sign In button
+                //     decoration: BoxDecoration(
+                //       borderRadius: BorderRadius.circular(4),
+                //     ),
+                //     child: _getGoogleButtonImage(isDarkMode),
+                //   ),
+                // ),
 
                 const Spacer(flex: 1),
 
