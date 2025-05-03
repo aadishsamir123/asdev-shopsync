@@ -70,13 +70,13 @@ class ShopSync extends StatelessWidget {
           ),
       ),
       darkTheme: ThemeData.dark().copyWith(
-          pageTransitionsTheme: PageTransitionsTheme(
+        pageTransitionsTheme: PageTransitionsTheme(
           builders: {
-              TargetPlatform.android: const FadeForwardsPageTransitionsBuilder(),
-              TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
-              TargetPlatform.macOS: const ZoomPageTransitionsBuilder(),
-              TargetPlatform.linux: const ZoomPageTransitionsBuilder(),
-              TargetPlatform.windows: const FadeForwardsPageTransitionsBuilder(),
+            TargetPlatform.android: const FadeForwardsPageTransitionsBuilder(),
+            TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+            TargetPlatform.macOS: const ZoomPageTransitionsBuilder(),
+            TargetPlatform.linux: const ZoomPageTransitionsBuilder(),
+            TargetPlatform.windows: const FadeForwardsPageTransitionsBuilder(),
           },
         ),
       ),
