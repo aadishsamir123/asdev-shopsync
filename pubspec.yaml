@@ -31,6 +31,7 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   web: ^1.1.1
   flutter_staggered_animations: ^1.1.1
+  google_sign_in: ^6.3.0
   flutter_svg: ^2.1.0
 
 dev_dependencies:
@@ -44,3 +45,7 @@ flutter:
   generate: true
   assets:
     - assets/logos/
+    - assets/badges/google/android/png@4x/dark/android_dark_rd_na@4x.png
+    - assets/badges/google/android/png@4x/light/android_light_rd_na@4x.png
+    - assets/badges/google/web/png@4x/dark/web_dark_rd_na@4x.png
+    - assets/badges/google/web/png@4x/light/web_light_rd_na@4x.png

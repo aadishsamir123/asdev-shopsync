@@ -42,11 +42,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyAgkvW-kDOEScJMCHKl_OHwxsAup1yFNFw',
-    appId: '1:160863676221:web:120421bead723c9a688754',
+    appId: '1:160863676221:web:435324d9788cca2b688754',
     messagingSenderId: '160863676221',
     projectId: 'as-shopsync',
     authDomain: 'as-shopsync.firebaseapp.com',
     storageBucket: 'as-shopsync.firebasestorage.app',
+    measurementId: 'G-99BL9Z5BF2',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -63,8 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '160863676221',
     projectId: 'as-shopsync',
     storageBucket: 'as-shopsync.firebasestorage.app',
-    iosClientId:
-        '160863676221-ul8ri7astve08bn4mn9uucul9v6cciv3.apps.googleusercontent.com',
+    androidClientId: '160863676221-ajc4adkuqq2holdp7bl9imbmar6137le.apps.googleusercontent.com',
+    iosClientId: '160863676221-ul8ri7astve08bn4mn9uucul9v6cciv3.apps.googleusercontent.com',
     iosBundleId: 'com.aadishsamir.shopsync',
   );
 
