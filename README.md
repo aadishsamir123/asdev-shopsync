@@ -16,6 +16,10 @@
 *Share shopping lists with family and friends*
 </div>
 
+> [!IMPORTANT]
+> ShopSync can now be localized by the public by going to our [Crowdin project](https://crowdin.com/project/as-shopsync).
+> This allows ShopSync to be available in multiple languages.
+
 ## 📱 Overview
 
 ShopSync is an intuitive Flutter application that simplifies shared shopping experiences. Create and
@@ -54,6 +58,10 @@ Coming Soon
 [//]: # (  </table>)
 
 [//]: # (</div>)
+
+## 🌐 Help Localize ShopSync
+
+To make ShopSync available in multiple languages, contribute to our [Crowdin](https://crowdin.com/project/as-shopsync)
 
 ## 🛠️ Tech Stack
 
