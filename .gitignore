@@ -52,3 +52,4 @@ app.*.map.json
 crowdin.yaml
 .crowdin.yml
 crowdin.yml
+sentry.properties

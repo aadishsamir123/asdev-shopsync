@@ -41,6 +41,7 @@ class _CustomLoadingSpinnerState extends State<CustomLoadingSpinner>
       height: widget.size,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: List.generate(3, (index) {
           return AnimatedBuilder(
             animation: _controller,
@@ -53,14 +54,14 @@ class _CustomLoadingSpinnerState extends State<CustomLoadingSpinner>
                   0.25 + (0.75 * _computeOpacityCurve(animationProgress));
 
               return Container(
-                margin: EdgeInsets.symmetric(horizontal: widget.size * 0.05),
+                margin: EdgeInsets.symmetric(horizontal: widget.size * 0.03),
                 child: Transform.scale(
                   scale: scale,
                   child: Opacity(
                     opacity: opacity,
                     child: CircleAvatar(
                       backgroundColor: widget.color,
-                      radius: widget.size * 0.15,
+                      radius: widget.size * 0.12,
                     ),
                   ),
                 ),
