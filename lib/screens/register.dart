@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shopsync/widgets/loading_spinner.dart';
+import '/utils/sentry_auth_utils.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -27,13 +28,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      // Create user
       final userCredential = await _auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
 
-      // In RegisterScreen, after creating the user
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCredential.user!.uid)
@@ -43,19 +42,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      // Update display name
       await userCredential.user?.updateDisplayName(_nameController.text.trim());
 
       if (!mounted) return;
       Navigator.of(context).pop();
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e, stackTrace) {
       setState(() {
         _errorMessage = e.message ?? 'An error occurred during registration';
       });
-    } catch (e) {
+      await SentryUtils.reportError(e, stackTrace);
+    } catch (e, stackTrace) {
       setState(() {
         _errorMessage = 'An error occurred. Please try again later';
       });
+      await SentryUtils.reportError(e, stackTrace);
     } finally {
       setState(() {
         _isLoading = false;
@@ -411,3 +411,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
+

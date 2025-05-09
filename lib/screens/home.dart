@@ -177,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final user = _auth.currentUser!;
       final transaction = {'name': _newListController.text.trim()};
       
-      final sentryTransaction = await Sentry.startTransaction(
+      final sentryTransaction = Sentry.startTransaction(
         'create_list',
         'db.operation',
         bindToScope: true,

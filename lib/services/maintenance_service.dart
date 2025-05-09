@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 class MaintenanceService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -23,7 +25,23 @@ class MaintenanceService {
         };
       }
       return null;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      if (kDebugMode) {
+        print('Error fetching maintenance status: $e');
+        print('Stack trace: $stackTrace');
+      }
+      
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+        withScope: (scope) {
+          scope.setContexts('maintenance_check', {
+            'operation': 'checkMaintenance',
+          });
+          scope.setTag('error_type', 'maintenance_status_error');
+        },
+      );
+      
       SnackBar(
         content: Text('Error fetching maintenance status: $e'),
         backgroundColor: Colors.red,

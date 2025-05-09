@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'forgot_password.dart';
 import '/widgets/loading_spinner.dart';
+import '/utils/sentry_auth_utils.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -32,14 +33,16 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       if (!mounted) return;
       Navigator.of(context).pop();
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e, stackTrace) {
       setState(() {
         _errorMessage = e.message ?? 'An error occurred during login';
       });
-    } catch (e) {
+      await SentryUtils.reportError(e, stackTrace);
+    } catch (e, stackTrace) {
       setState(() {
         _errorMessage = 'An error occurred. Please try again later';
       });
+      await SentryUtils.reportError(e, stackTrace);
     } finally {
       setState(() {
         _isLoading = false;

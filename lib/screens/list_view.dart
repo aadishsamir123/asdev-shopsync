@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'task_details.dart';
 import 'recycle_bin.dart';
 import 'create_task.dart';
@@ -69,48 +70,80 @@ class _ListViewScreenState extends State<ListViewScreen> {
   }
 
   void _toggleTaskCompletion(String taskId, bool currentStatus) async {
-    await _firestore
-        .collection('lists')
-        .doc(widget.listId)
-        .collection('items')
-        .doc(taskId)
-        .update({
-      'completed': !currentStatus,
-    });
+    try {
+      await _firestore
+          .collection('lists')
+          .doc(widget.listId)
+          .collection('items')
+          .doc(taskId)
+          .update({
+        'completed': !currentStatus,
+      });
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+        hint: Hint.withMap({
+          'message': 'Failed to toggle task completion',
+          'listId': widget.listId,
+          'taskId': taskId,
+        }),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to update task status')),
+      );
+    }
   }
 
   void _deleteTask(String taskId) async {
-    // Get the task data before deleting
-    final taskDoc = await _firestore
-        .collection('lists')
-        .doc(widget.listId)
-        .collection('items')
-        .doc(taskId)
-        .get();
-
-    if (!taskDoc.exists) return;
-
-    final batch = _firestore.batch();
-
-    // Move to recycled_items collection
-    batch.set(
-      _firestore
+    try {
+      // Get the task data before deleting
+      final taskDoc = await _firestore
           .collection('lists')
           .doc(widget.listId)
-          .collection('recycled_items')
-          .doc(),
-      {
-        ...taskDoc.data()!,
-        'deletedAt': FieldValue.serverTimestamp(),
-        'deletedBy': _auth.currentUser!.uid,
-        'deletedByName': _auth.currentUser!.displayName,
-      },
-    );
+          .collection('items')
+          .doc(taskId)
+          .get();
 
-    // Delete from original collection
-    batch.delete(taskDoc.reference);
+      if (!taskDoc.exists) return;
 
-    await batch.commit();
+      final batch = _firestore.batch();
+
+      // Move to recycled_items collection
+      batch.set(
+        _firestore
+            .collection('lists')
+            .doc(widget.listId)
+            .collection('recycled_items')
+            .doc(),
+        {
+          ...taskDoc.data()!,
+          'deletedAt': FieldValue.serverTimestamp(),
+          'deletedBy': _auth.currentUser!.uid,
+          'deletedByName': _auth.currentUser!.displayName,
+        },
+      );
+
+      // Delete from original collection
+      batch.delete(taskDoc.reference);
+
+      await batch.commit();
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+        hint: Hint.withMap({
+          'message': 'Failed to delete task',
+          'listId': widget.listId,
+          'taskId': taskId,
+        }),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete task')),
+      );
+    }
   }
 
   Future<void> _clearCompletedTasks() async {
@@ -313,13 +346,18 @@ class _ListViewScreenState extends State<ListViewScreen> {
           backgroundColor: Colors.green,
         ),
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+        hint: Hint.withMap({
+          'message': 'Failed to delete list',
+          'listId': widget.listId,
+        }),
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error deleting list: $e'),
-          backgroundColor: Colors.red,
-        ),
+        const SnackBar(content: Text('Failed to delete list')),
       );
     }
   }
@@ -1410,3 +1448,4 @@ class _ListViewScreenState extends State<ListViewScreen> {
     );
   }
 }
+
