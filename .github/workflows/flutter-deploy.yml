@@ -3,7 +3,6 @@ name: Deploy to Play Store
 on:
   workflow_dispatch:
 
-
 jobs:
   build:
     environment: google-play-deployment
@@ -40,6 +39,10 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> key.properties
           echo "storeFile=release-key.jks" >> key.properties
         working-directory: android
+
+      - name: Create sentry.properties
+        run: |
+          echo "${{ secrets.SENTRY_PROPERTIES }}" >> sentry.properties
 
       # Step 5: Get Flutter dependencies
       - name: Get dependencies
