@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import '/screens/sign_out.dart';
 import '/widgets/loading_spinner.dart';
 
@@ -106,6 +107,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       );
     } catch (e) {
+      // Send error to Sentry
+      await Sentry.captureException(
+        e,
+        stackTrace: StackTrace.current,
+        hint: Hint.withMap({'action': 'updating_profile'}),
+      );
       setState(() => _errorMessage = 'Error updating profile: ${e.toString()}');
     } finally {
       setState(() => _isLoading = false);
@@ -135,10 +142,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
         false;
 
     if (shouldSignOut) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const SignOutScreen()),
-      );
+      try {
+        await FirebaseAuth.instance.signOut();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SignOutScreen()),
+        );
+      } catch (e) {
+        // Send sign out errors to Sentry
+        await Sentry.captureException(
+          e,
+          stackTrace: StackTrace.current,
+          hint: Hint.withMap({'action': 'signing_out'}),
+        );
+        
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error signing out: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -650,3 +675,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+

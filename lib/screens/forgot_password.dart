@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/loading_spinner.dart';
+import '/utils/sentry_auth_utils.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -32,16 +33,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         _isSuccess = true;
         _message = 'Password reset link sent to your email';
       });
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e, stackTrace) {
       setState(() {
         _message = e.message ?? 'An error occurred';
         _isSuccess = false;
       });
-    } catch (e) {
+      await SentryUtils.reportError(e, stackTrace);
+    } catch (e, stackTrace) {
       setState(() {
         _message = 'An error occurred. Please try again later';
         _isSuccess = false;
       });
+      await SentryUtils.reportError(e, stackTrace);
     } finally {
       setState(() {
         _isLoading = false;

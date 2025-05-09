@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '/widgets/loading_spinner.dart';
 
@@ -67,36 +68,67 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
   }
 
   Future<void> _restoreItem(String itemId, Map<String, dynamic> itemData) async {
-    await _itemControllers[itemId]?.reverse();
+    try {
+      await _itemControllers[itemId]?.reverse();
 
-    final batch = FirebaseFirestore.instance.batch();
-    batch.set(
-      FirebaseFirestore.instance
-          .collection('lists')
-          .doc(widget.listId)
-          .collection('items')
-          .doc(),
-      {...itemData, 'restoredAt': FieldValue.serverTimestamp()},
-    );
-    batch.delete(
-      FirebaseFirestore.instance
-          .collection('lists')
-          .doc(widget.listId)
-          .collection('recycled_items')
-          .doc(itemId),
-    );
-    await batch.commit();
+      final batch = FirebaseFirestore.instance.batch();
+      batch.set(
+        FirebaseFirestore.instance
+            .collection('lists')
+            .doc(widget.listId)
+            .collection('items')
+            .doc(),
+        {...itemData, 'restoredAt': FieldValue.serverTimestamp()},
+      );
+      batch.delete(
+        FirebaseFirestore.instance
+            .collection('lists')
+            .doc(widget.listId)
+            .collection('recycled_items')
+            .doc(itemId),
+      );
+      await batch.commit();
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+        hint: Hint.withMap({
+          'message': 'Failed to restore item from recycle bin',
+          'listId': widget.listId,
+          'itemId': itemId,
+        }),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to restore item')),
+      );
+    }
   }
 
   Future<void> _deletePermanently(String itemId) async {
-    await _itemControllers[itemId]?.reverse();
-
-    await FirebaseFirestore.instance
-        .collection('lists')
-        .doc(widget.listId)
-        .collection('recycled_items')
-        .doc(itemId)
-        .delete();
+    try {
+      await _itemControllers[itemId]?.reverse();
+      await FirebaseFirestore.instance
+          .collection('lists')
+          .doc(widget.listId)
+          .collection('recycled_items')
+          .doc(itemId)
+          .delete();
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+        hint: Hint.withMap({
+          'message': 'Failed to permanently delete item',
+          'listId': widget.listId,
+          'itemId': itemId,
+        }),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete item')),
+      );
+    }
   }
 
   @override

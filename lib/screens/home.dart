@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-// import 'package:shopsync/l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '/screens/list_view.dart';
 import '/screens/sign_out.dart';
@@ -33,7 +33,7 @@ class TutorialStep extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
+            color: color.withAlpha(25),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -129,50 +129,87 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _signOut() async {
-    final shouldSignOut = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Sign Out'),
-            content: const Text('Are you sure you want to sign out?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child:
-                    Text('Cancel', style: TextStyle(color: Colors.grey[700])),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                style: TextButton.styleFrom(foregroundColor: Colors.red[700]),
-                child: const Text('Sign Out'),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    try {
+      final shouldSignOut = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Sign Out'),
+          content: const Text('Are you sure you want to sign out?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('Cancel', style: TextStyle(color: Colors.grey[700])),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: TextButton.styleFrom(foregroundColor: Colors.red[700]),
+              child: const Text('Sign Out'),
+            ),
+          ],
+        ),
+      );
 
-    if (shouldSignOut) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const SignOutScreen()),
+      if (shouldSignOut == true) {
+        await _auth.signOut();
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SignOutScreen()),
+        );
+      }
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+        hint: Hint.withMap({'action': 'sign_out'}),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to sign out. Please try again.')),
       );
     }
   }
 
   Future<void> _createList() async {
-    if (_newListController.text.trim().isEmpty) return;
+    try {
+      if (_newListController.text.trim().isEmpty) return;
 
-    final user = _auth.currentUser!;
-    await _firestore.collection('lists').add({
-      'name': _newListController.text.trim(),
-      'createdBy': user.uid,
-      'createdByName': user.displayName,
-      'createdAt': FieldValue.serverTimestamp(),
-      'members': [user.uid],
-    });
+      final user = _auth.currentUser!;
+      final transaction = {'name': _newListController.text.trim()};
+      
+      final sentryTransaction = Sentry.startTransaction(
+        'create_list',
+        'db.operation',
+        bindToScope: true,
+      );
 
-    _newListController.clear();
-    if (!mounted) return;
-    Navigator.pop(context);
+      await _firestore.collection('lists').add({
+        ...transaction,
+        'createdBy': user.uid,
+        'createdByName': user.displayName,
+        'createdAt': FieldValue.serverTimestamp(),
+        'members': [user.uid],
+      });
+
+      await sentryTransaction.finish();
+
+      _newListController.clear();
+      if (!mounted) return;
+      Navigator.pop(context);
+    } catch (error, stackTrace) {
+      await Sentry.captureException(
+        error,
+        stackTrace: stackTrace,
+        hint: Hint.withMap({
+          'action': 'create_list',
+          'list_name': _newListController.text,
+        }),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to create list. Please try again.')),
+      );
+    }
   }
 
   Widget _buildReviewBanner() {
@@ -190,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.amber.withValues(alpha: 0.2),
+            color: Colors.amber.withAlpha(51),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -306,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: (color ?? Colors.grey).withValues(alpha: 0.1),
+            color: (color ?? Colors.grey).withAlpha(25),
             borderRadius: BorderRadius.circular(8),
           ),
           child: svg ??
@@ -352,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
+                color: Colors.black.withAlpha(25),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -372,7 +409,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     curve: Curves.easeInOut,
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.white.withAlpha(51),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(Icons.menu),
@@ -442,8 +479,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              Colors.white.withValues(alpha: 0.8),
-                              Colors.white.withValues(alpha: 0.5),
+                              Colors.white.withAlpha(204),
+                              Colors.white.withAlpha(127),
                             ],
                           ),
                         ),
@@ -479,13 +516,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: Colors.black.withAlpha(25),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           _auth.currentUser?.email ?? '',
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.9),
+                            color: Colors.white.withAlpha(229),
                             fontSize: 14,
                           ),
                         ),
@@ -587,8 +624,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         leading: Container(
                                           padding: const EdgeInsets.all(8),
                                           decoration: BoxDecoration(
-                                            color: Colors.grey
-                                                .withValues(alpha: 0.1),
+                                            color: Colors.grey.withAlpha(25),
                                             borderRadius:
                                                 BorderRadius.circular(8),
                                           ),
@@ -831,6 +867,17 @@ class _HomeScreenState extends State<HomeScreen> {
               .orderBy('createdAt', descending: true)
               .snapshots(),
           builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              Sentry.captureException(
+                snapshot.error,
+                stackTrace: snapshot.stackTrace,
+                hint: Hint.withMap({'component': 'lists_stream'}),
+              );
+              return Center(
+                child: Text('Error loading lists: ${snapshot.error}'),
+              );
+            }
+
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CustomLoadingSpinner(
@@ -858,7 +905,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           size: 64,
                           color: isDark
                               ? Colors.green[100]
-                              : Colors.green[800]?.withValues(alpha: 0.7),
+                              : Colors.green[800]?.withAlpha(178),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -894,7 +941,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
+                              color: Colors.black.withAlpha(25),
                               blurRadius: 8,
                               offset: const Offset(0, 4),
                             ),
@@ -1029,7 +1076,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.1),
+                                  color: Colors.black.withAlpha(25),
                                   blurRadius: 8,
                                   offset: const Offset(0, 4),
                                 ),
@@ -1152,4 +1199,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _newListController.dispose();
+    super.dispose();
+  }
 }
+
