@@ -2,7 +2,7 @@ name: shopsync
 description: "ShopSync - Sync shopping lists with family and friends"
 publish_to: 'none'
 
-version: 1.0.0-beta.24
+version: 1.0.0-beta.25
 
 environment:
   sdk: ^3.6.0
@@ -56,4 +56,4 @@ sentry:
   upload_debug_symbols: true
   upload_source_maps: true
   project: flutter
-  org: aadish-samir
+  org: aadishsdev
