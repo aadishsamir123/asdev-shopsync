@@ -40,19 +40,20 @@ jobs:
           echo "storeFile=release-key.jks" >> key.properties
         working-directory: android
 
+      # Step 5: Create sentry.properties (using GitHub secrets)
       - name: Create sentry.properties
         run: |
           echo "${{ secrets.SENTRY_PROPERTIES }}" >> sentry.properties
 
-      # Step 5: Get Flutter dependencies
+      # Step 6: Get Flutter dependencies
       - name: Get dependencies
         run: flutter pub get
 
-      # Step 6: Build AAB (Android App Bundle) for release
+      # Step 7: Build AAB (Android App Bundle) for release
       - name: Build AAB
-        run: flutter build appbundle --release
+        run: flutter build appbundle --release --obfuscate --split-debug-info=build/symbols
 
-      # Step 7: Upload the generated AAB to Google Play Console
+      # Step 8: Upload the generated AAB to Google Play Console
       - name: Upload to Google Play
         uses: r0adkll/upload-google-play@v1
         with:
@@ -61,3 +62,7 @@ jobs:
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           track: alpha
           status: completed
+
+      # Step 9: Upload debug symbols to Sentry
+      - name: Upload debug symbols to Sentry
+        run: flutter pub run sentry_dart_plugin
