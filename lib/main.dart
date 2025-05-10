@@ -16,6 +16,9 @@ import 'services/maintenance_service.dart';
 import 'services/shared_prefs.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+// Uncomment the following line for testing purposes
+// import 'screens/update_app.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -134,6 +137,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   Future<void> _checkMaintenance() async {
     final maintenance = await MaintenanceService.checkMaintenance();
+    // Uncomment the following lines for testing purposes
+    // final updateInfo = await InAppUpdate.checkForUpdate();
+    //
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => UpdateAppScreen(onUpdateComplete: (bool completed) {}, updateInfo: updateInfo))
+    // );
 
     if (maintenance != null && mounted) {
       if (maintenance['isUnderMaintenance']) {
