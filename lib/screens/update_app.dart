@@ -134,40 +134,18 @@ class _UpdateAppScreenState extends State<UpdateAppScreen> {
 
   Future<void> _handleUpdateButtonPress() async {
     try {
-      if (_isDownloaded) {
-        // Complete the installation
-        await InAppUpdate.completeFlexibleUpdate();
-        widget.onUpdateComplete(true);
-      } else {
-        setState(() {
-          _isDownloading = true;
-        });
+      // Directly start an immediate update
+      final result = await InAppUpdate.performImmediateUpdate();
 
-        // Start flexible update
-        final result = await InAppUpdate.startFlexibleUpdate();
-        
-        if (result == AppUpdateResult.success) {
-          // The download has started, we'll track status through the stream
-          debugPrint('Flexible update started successfully');
-        } else if (result == AppUpdateResult.userDeniedUpdate) {
-          // User declined the update
-          setState(() {
-            _isDownloading = false;
-          });
-          debugPrint('User denied the update');
-        } else {
-          // Update failed
-          setState(() {
-            _isDownloading = false;
-          });
-          debugPrint('Update failed: $result');
-        }
+      if (result == AppUpdateResult.success) {
+        debugPrint('Immediate update completed successfully');
+      } else if (result == AppUpdateResult.userDeniedUpdate) {
+        debugPrint('User denied the immediate update');
+      } else {
+        debugPrint('Immediate update failed: $result');
       }
     } catch (e) {
-      debugPrint('Update action failed: $e');
-      setState(() {
-        _isDownloading = false;
-      });
+      debugPrint('Immediate update action failed: $e');
     }
   }
 }
