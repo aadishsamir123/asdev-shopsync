@@ -1,15 +1,81 @@
 {
   "@@locale": "en",
+  "returnClearedCountCompletedItems": "Cleared $count completed items",
+  "@returnClearedCountCompletedItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "returnErrorDeletingListError": "Error deleting list: $error",
+  "@returnErrorDeletingListError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "returnErrorFetchingMaintenanceStatusError": "Error fetching maintenance status: $error",
+  "@returnErrorFetchingMaintenanceStatusError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "returnErrorSharingListError": "Error sharing list: $error",
+  "@returnErrorSharingListError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "returnHigh": "high",
+  "returnLow": "low",
+  "returnMedium": "medium",
+  "returnNameMustBeAtLeast2Characters": "Name must be at least 2 characters",
+  "returnNetworkErrorCheckYourConnectionAndTryAgain": "Network error. Check your connection and try again",
+  "returnNetworkErrorPleaseCheckYourInternetConnectionAndTryAgain": "Network error. Please check your internet connection and try again",
+  "returnNoAccountFoundWithThisEmail": "No account found with this email",
+  "returnNoUserFoundForThatEmailPleaseCheckYourEmailAndTryAgain": "No user found for that email. Please check your email and try again",
+  "returnPasswordMustBeAtLeast6Characters": "Password must be at least 6 characters",
+  "returnPleaseEnterADisplayName": "Please enter a display name",
+  "returnPleaseEnterAPassword": "Please enter a password",
+  "returnPleaseEnterAValidEmailAddress": "Please enter a valid email address",
+  "returnPleaseEnterYourEmail": "Please enter your email",
+  "returnPleaseEnterYourName": "Please enter your name",
+  "returnPleaseEnterYourPassword": "Please enter your password",
+  "returnTheEmailAddressIsAlreadyInUseByAnotherAccount": "The email address is already in use by another account",
+  "returnTheOperationIsNotAllowedPleaseTryAgainLaterIfItDoesn": "The operation is not allowed. Please try again later. If it doesn't",
+  "returnThePasswordIsInvalidOrTheUserDoesNotHaveAPassword": "The password is invalid or the user does not have a password",
+  "returnTheProvidedCredentialsAreIncorrectPleaseCheckYourEmailAndPassword": "The provided credentials are incorrect. Please check your email and password",
+  "returnThisEmailIsAlreadyRegisteredPleaseSignInInstead": "This email is already registered. Please sign in instead",
+  "returnThisPasswordIsTooWeakPleaseChooseAStrongerOne": "This password is too weak. Please choose a stronger one",
+  "returnThisUserHasBeenDisabledPleaseContact": "This user has been disabled. Please contact asdev.feedback@gmail.com",
+  "returnTooManyRequestsPleaseTryAgainLater": "Too many requests. Please try again later",
+  "returnVersionPackageinfoversionPackageinfobuildnumber": "Version ${packageInfo.version} (${packageInfo.buildNumber})",
+  "@returnVersionPackageinfoversionPackageinfobuildnumber": {
+    "placeholders": {
+      "packageInfo.version": {
+        "type": "String"
+      },
+      "packageInfo.buildNumber": {
+        "type": "String"
+      }
+    }
+  },
   "textappLanguage": "App Language",
   "textareYouSureYouWantToSignOut": "Are you sure you want to sign out?",
   "textcancel": "Cancel",
   "textclearCompletedItems": "Clear Completed Items",
   "textclearCompleted": "Clear Completed",
   "textclearItems": "Clear Items",
-  "textclearedCompletedItems": "Cleared {count} completed items",
-  "@textclearedCompletedItems": {
+  "textclearedCompleteditemsdocslengthCompletedItems": "Cleared ${completedItems.docs.length} completed items",
+  "@textclearedCompleteditemsdocslengthCompletedItems": {
     "placeholders": {
-      "count": {
+      "completedItems.docs.length": {
         "type": "int"
       }
     }
@@ -21,32 +87,47 @@
   "textdelete": "Delete",
   "textenableNotifications": "Enable Notifications",
   "textenglish": "English",
-  "texterrorDeletingList": "Error deleting list: {error}",
-  "@texterrorDeletingList": {
+  "texterrorFetchingMaintenanceStatusE": "Error fetching maintenance status: $e",
+  "@texterrorFetchingMaintenanceStatusE": {
     "placeholders": {
-      "error": {
+      "e": {
         "type": "String"
       }
     }
   },
-  "texterrorFetchingStatus": "Error fetching maintenance status: {error}",
-  "@texterrorFetchingStatus": {
+  "texterrorLoadingListsSnapshoterror": "Error loading lists: ${snapshot.error}",
+  "@texterrorLoadingListsSnapshoterror": {
     "placeholders": {
-      "error": {
+      "snapshot.error": {
         "type": "String"
       }
     }
   },
-  "texterrorSharingList": "Error sharing list: {error}",
-  "@texterrorSharingList": {
+  "texterrorSharingListEtostring": "Error sharing list: ${e.toString()}",
+  "@texterrorSharingListEtostring": {
     "placeholders": {
-      "error": {
+      "e.toString()": {
+        "type": "String"
+      }
+    }
+  },
+  "texterrorSigningOutEtostring": "Error signing out: ${e.toString()}",
+  "@texterrorSigningOutEtostring": {
+    "placeholders": {
+      "e.toString()": {
         "type": "String"
       }
     }
   },
   "textexportList": "Export List",
+  "textfailedToCreateListPleaseTryAgain": "Failed to create list. Please try again.",
+  "textfailedToDeleteItem": "Failed to delete item",
+  "textfailedToDeleteList": "Failed to delete list",
+  "textfailedToDeleteTask": "Failed to delete task",
+  "textfailedToRestoreItem": "Failed to restore item",
   "textfailedToSignInWithGoogle": "Failed to sign in with Google",
+  "textfailedToSignOutPleaseTryAgain": "Failed to sign out. Please try again.",
+  "textfailedToUpdateTaskStatus": "Failed to update task status",
   "textlistDeletedSuccessfully": "List deleted successfully",
   "textloading": "Loading...",
   "textowner": "Owner",

@@ -10,9 +10,10 @@ echo '{
 # Find all Dart files and extract strings, cleaning up the Text() and title: prefixes
 STRINGS=$(find lib -name "*.dart" -type f -exec grep -ho "Text(\([\"'][^\"']*[\"']\)" {} \; | sed "s/Text(\([\"']\)\(.*\)\1)/\2/" | sort -u)
 TITLES=$(find lib -name "*.dart" -type f -exec grep -ho "title:\s*[\"'][^\"']*[\"']" {} \; | sed "s/title:\s*[\"']\(.*\)[\"']/\1/" | sort -u)
+RETURN_STRINGS=$(find lib -name "*.dart" -type f -exec grep -ho "return\s*[\"'][^\"']*[\"']" {} \; | sed "s/return\s*[\"']\(.*\)[\"']/\1/" | sort -u)
 
 # Combine all strings
-ALL_STRINGS=$(echo -e "$STRINGS\n$TITLES" | sort -u)
+ALL_STRINGS=$(echo -e "$STRINGS\n$TITLES\n$RETURN_STRINGS" | sort -u)
 
 # Convert strings to ARB format
 while IFS= read -r line; do
