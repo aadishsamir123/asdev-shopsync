@@ -13,6 +13,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _auth = FirebaseAuth.instance;
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -20,8 +21,60 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _errorMessage = '';
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _isNameValid = false;
+  bool _isEmailValid = false;
+  bool _isPasswordValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.addListener(_validateName);
+    _emailController.addListener(_validateEmail);
+    _passwordController.addListener(_validatePassword);
+  }
+
+  void _validateName() {
+    setState(() {
+      _isNameValid = _nameController.text.trim().length >= 2;
+    });
+  }
+
+  void _validateEmail() {
+    setState(() {
+      final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
+      _isEmailValid = _emailController.text.trim().isNotEmpty && 
+                     emailRegex.hasMatch(_emailController.text.trim());
+    });
+  }
+
+  void _validatePassword() {
+    setState(() {
+      _isPasswordValid = _passwordController.text.length >= 6;
+    });
+  }
+
+  String? _getErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'email-already-in-use':
+        return 'This email is already registered. Please sign in instead';
+      case 'invalid-email':
+        return 'Please enter a valid email address';
+      case 'operation-not-allowed':
+        return 'The operation is not allowed. Please try again later. If it doesn\'t work, contact asdev.feecback@gmail.com';
+      case 'weak-password':
+        return 'This password is too weak. Please choose a stronger one';
+      case 'too-many-requests':
+        return 'Too many requests. Please try again later';
+      case 'network-request-failed':
+        return 'Network error. Please check your internet connection and try again';
+      default:
+        return e.message ?? 'An error occurred during registration';
+    }
+  }
 
   Future<void> _register() async {
+    if (!_formKey.currentState!.validate()) return;
+    
     setState(() {
       _isLoading = true;
       _errorMessage = '';
@@ -48,7 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       Navigator.of(context).pop();
     } on FirebaseAuthException catch (e, stackTrace) {
       setState(() {
-        _errorMessage = e.message ?? 'An error occurred during registration';
+        _errorMessage = _getErrorMessage(e) ?? 'An error occurred during registration';
       });
       await SentryUtils.reportError(e, stackTrace);
     } catch (e, stackTrace) {
@@ -142,231 +195,290 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ],
                     ),
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          controller: _nameController,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: isDarkMode
-                                ? Colors.green[300]
-                                : Colors.green.shade800,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Name',
-                            labelStyle: TextStyle(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: _nameController,
+                            style: TextStyle(
+                              fontSize: 16,
                               color: isDarkMode
                                   ? Colors.green[300]
-                                  : Colors.green[800],
-                              fontSize: 15,
+                                  : Colors.green.shade800,
+                              fontWeight: FontWeight.w500,
                             ),
-                            prefixIcon: Icon(
-                              FontAwesomeIcons.user,
-                              color: isDarkMode
-                                  ? Colors.green[300]
-                                  : Colors.green[800],
-                              size: 22,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
+                            decoration: InputDecoration(
+                              labelText: 'Name',
+                              errorText: _nameController.text.isNotEmpty && !_isNameValid
+                                  ? 'Name must be at least 2 characters'
+                                  : null,
+                              labelStyle: TextStyle(
                                 color: isDarkMode
-                                    ? Colors.green.withValues(alpha: 0.3)
-                                    : Colors.grey.shade200,
+                                    ? Colors.green[300]
+                                    : Colors.green[800],
+                                fontSize: 15,
                               ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
-                                color: isDarkMode
-                                    ? Colors.green[300]!
-                                    : Colors.green.shade800,
-                                width: 2,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: isDarkMode
-                                ? Colors.black.withValues(alpha: 0.3)
-                                : Colors.grey.shade50,
-                          ),
-                          textInputAction: TextInputAction.next,
-                        ),
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          controller: _emailController,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: isDarkMode
-                                ? Colors.green[300]
-                                : Colors.green.shade800,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                            labelStyle: TextStyle(
-                              color: isDarkMode
-                                  ? Colors.green[300]
-                                  : Colors.green[800],
-                              fontSize: 15,
-                            ),
-                            prefixIcon: Icon(
-                              FontAwesomeIcons.envelope,
-                              color: isDarkMode
-                                  ? Colors.green[300]
-                                  : Colors.green[800],
-                              size: 22,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
-                                color: isDarkMode
-                                    ? Colors.green.withValues(alpha: 0.3)
-                                    : Colors.grey.shade200,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
-                                color: isDarkMode
-                                    ? Colors.green[300]!
-                                    : Colors.green.shade800,
-                                width: 2,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: isDarkMode
-                                ? Colors.black.withValues(alpha: 0.3)
-                                : Colors.grey.shade50,
-                          ),
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                        ),
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          controller: _passwordController,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: isDarkMode
-                                ? Colors.green[300]
-                                : Colors.green.shade800,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            labelStyle: TextStyle(
-                              color: isDarkMode
-                                  ? Colors.green[300]
-                                  : Colors.green[800],
-                              fontSize: 15,
-                            ),
-                            prefixIcon: Icon(
-                              FontAwesomeIcons.lock,
-                              color: isDarkMode
-                                  ? Colors.green[300]
-                                  : Colors.green[800],
-                              size: 22,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: FaIcon(
-                                _obscurePassword
-                                    ? FontAwesomeIcons.eye
-                                    : FontAwesomeIcons.eyeSlash,
+                              prefixIcon: Icon(
+                                FontAwesomeIcons.user,
                                 color: isDarkMode
                                     ? Colors.green[300]
                                     : Colors.green[800],
                                 size: 22,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
-                                color: isDarkMode
-                                    ? Colors.green.withValues(alpha: 0.3)
-                                    : Colors.grey.shade200,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
-                                color: isDarkMode
-                                    ? Colors.green[300]!
-                                    : Colors.green.shade800,
-                                width: 2,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: isDarkMode
-                                ? Colors.black.withValues(alpha: 0.3)
-                                : Colors.grey.shade50,
-                          ),
-                          obscureText: _obscurePassword,
-                          textInputAction: TextInputAction.done,
-                        ),
-                        if (_errorMessage.isNotEmpty)
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            margin: const EdgeInsets.only(top: 20),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.red.shade50,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.red.shade200),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(FontAwesomeIcons.circleExclamation,
-                                    color: Colors.red.shade400, size: 20),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    _errorMessage,
-                                    style: TextStyle(
-                                      color: Colors.red.shade700,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        const SizedBox(height: 25),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _register,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: isDarkMode
-                                  ? Colors.green
-                                  : Colors.green.shade800,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
+                              enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: isDarkMode
+                                      ? Colors.green.withValues(alpha: 0.3)
+                                      : Colors.grey.shade200,
+                                ),
                               ),
-                              elevation: _isLoading ? 0 : 3,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: isDarkMode
+                                      ? Colors.green[300]!
+                                      : Colors.green.shade800,
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: isDarkMode
+                                  ? Colors.black.withValues(alpha: 0.3)
+                                  : Colors.grey.shade50,
                             ),
-                            child: _isLoading
-                                ? const CustomLoadingSpinner(
-                                    color: Colors.white,
-                                    size: 24.0,
-                                  )
-                                : const Text(
-                                    'Sign Up',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 0.5,
+                            textInputAction: TextInputAction.next,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter your name';
+                              }
+                              if (value.trim().length < 2) {
+                                return 'Name must be at least 2 characters';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            controller: _emailController,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: isDarkMode
+                                  ? Colors.green[300]
+                                  : Colors.green.shade800,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: 'Email',
+                              errorText: _emailController.text.isNotEmpty && !_isEmailValid 
+                                  ? 'Please enter a valid email' 
+                                  : null,
+                              labelStyle: TextStyle(
+                                color: isDarkMode
+                                    ? Colors.green[300]
+                                    : Colors.green[800],
+                                fontSize: 15,
+                              ),
+                              prefixIcon: Icon(
+                                FontAwesomeIcons.envelope,
+                                color: isDarkMode
+                                    ? Colors.green[300]
+                                    : Colors.green[800],
+                                size: 22,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: isDarkMode
+                                      ? Colors.green.withValues(alpha: 0.3)
+                                      : Colors.grey.shade200,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: isDarkMode
+                                      ? Colors.green[300]!
+                                      : Colors.green.shade800,
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: isDarkMode
+                                  ? Colors.black.withValues(alpha: 0.3)
+                                  : Colors.grey.shade50,
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter your email';
+                              }
+                              final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
+                              if (!emailRegex.hasMatch(value.trim())) {
+                                return 'Please enter a valid email address';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            controller: _passwordController,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: isDarkMode
+                                  ? Colors.green[300]
+                                  : Colors.green.shade800,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              errorText: _passwordController.text.isNotEmpty && !_isPasswordValid 
+                                  ? 'Password must be at least 6 characters' 
+                                  : null,
+                              helperText: 'Password must be at least 6 characters',
+                              helperStyle: TextStyle(
+                                fontSize: 12,
+                                color: isDarkMode
+                                    ? Colors.green[100]
+                                    : Colors.green[800]?.withValues(alpha: 0.6),
+                              ),
+                              labelStyle: TextStyle(
+                                color: isDarkMode
+                                    ? Colors.green[300]
+                                    : Colors.green[800],
+                                fontSize: 15,
+                              ),
+                              prefixIcon: Icon(
+                                FontAwesomeIcons.lock,
+                                color: isDarkMode
+                                    ? Colors.green[300]
+                                    : Colors.green[800],
+                                size: 22,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: FaIcon(
+                                  _obscurePassword
+                                      ? FontAwesomeIcons.eye
+                                      : FontAwesomeIcons.eyeSlash,
+                                  color: isDarkMode
+                                      ? Colors.green[300]
+                                      : Colors.green[800],
+                                  size: 22,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: isDarkMode
+                                      ? Colors.green.withValues(alpha: 0.3)
+                                      : Colors.grey.shade200,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: isDarkMode
+                                      ? Colors.green[300]!
+                                      : Colors.green.shade800,
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: isDarkMode
+                                  ? Colors.black.withValues(alpha: 0.3)
+                                  : Colors.grey.shade50,
+                            ),
+                            obscureText: _obscurePassword,
+                            textInputAction: TextInputAction.done,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a password';
+                              }
+                              if (value.length < 6) {
+                                return 'Password must be at least 6 characters';
+                              }
+                              return null;
+                            },
+                            onFieldSubmitted: (_) {
+                              if (_isNameValid && _isEmailValid && _isPasswordValid) {
+                                _register();
+                              }
+                            },
+                          ),
+                          if (_errorMessage.isNotEmpty)
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              margin: const EdgeInsets.only(top: 20),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.red.shade200),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(FontAwesomeIcons.circleExclamation,
+                                      color: Colors.red.shade400, size: 20),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      _errorMessage,
+                                      style: TextStyle(
+                                        color: Colors.red.shade700,
+                                        fontSize: 14,
+                                      ),
                                     ),
                                   ),
+                                ],
+                              ),
+                            ),
+                          const SizedBox(height: 25),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: ElevatedButton(
+                              onPressed: (_isLoading || !_isNameValid || !_isEmailValid || !_isPasswordValid) 
+                                  ? null 
+                                  : _register,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: isDarkMode
+                                    ? Colors.green
+                                    : Colors.green.shade800,
+                                foregroundColor: Colors.white,
+                                disabledBackgroundColor: isDarkMode
+                                    ? Colors.green.withValues(alpha: 0.3)
+                                    : Colors.green.shade300,
+                                disabledForegroundColor: 
+                                    Colors.white.withValues(alpha: 0.6),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: _isLoading ? 0 : 3,
+                              ),
+                              child: _isLoading
+                                  ? const CustomLoadingSpinner(
+                                      color: Colors.white,
+                                      size: 24.0,
+                                    )
+                                  : const Text(
+                                      'Sign Up',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -410,5 +522,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+  
+  @override
+  void dispose() {
+    _nameController.removeListener(_validateName);
+    _emailController.removeListener(_validateEmail);
+    _passwordController.removeListener(_validatePassword);
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 }
-
