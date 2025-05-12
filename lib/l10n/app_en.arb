@@ -103,18 +103,18 @@
       }
     }
   },
-  "texterrorSharingListEtostring": "Error sharing list: ${eToString()}",
+  "texterrorSharingListEtostring": "Error sharing list: ${eToString}",
   "@texterrorSharingListEtostring": {
     "placeholders": {
-      "eToString()": {
+      "eToString": {
         "type": "String"
       }
     }
   },
-  "texterrorSigningOutEtostring": "Error signing out: ${eToString()}",
+  "texterrorSigningOutEtostring": "Error signing out: ${eToString}",
   "@texterrorSigningOutEtostring": {
     "placeholders": {
-      "eToString()": {
+      "eToString": {
         "type": "String"
       }
     }

@@ -9,6 +9,100 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String returnClearedCountCompletedItems(int count) {
+    return 'Cleared \$$count completed items';
+  }
+
+  @override
+  String returnErrorDeletingListError(String error) {
+    return 'Error deleting list: \$$error';
+  }
+
+  @override
+  String returnErrorFetchingMaintenanceStatusError(String error) {
+    return 'Error fetching maintenance status: \$$error';
+  }
+
+  @override
+  String returnErrorSharingListError(String error) {
+    return 'Error sharing list: \$$error';
+  }
+
+  @override
+  String get returnHigh => 'high';
+
+  @override
+  String get returnLow => 'low';
+
+  @override
+  String get returnMedium => 'medium';
+
+  @override
+  String get returnNameMustBeAtLeast2Characters => 'Name must be at least 2 characters';
+
+  @override
+  String get returnNetworkErrorCheckYourConnectionAndTryAgain => 'Network error. Check your connection and try again';
+
+  @override
+  String get returnNetworkErrorPleaseCheckYourInternetConnectionAndTryAgain => 'Network error. Please check your internet connection and try again';
+
+  @override
+  String get returnNoAccountFoundWithThisEmail => 'No account found with this email';
+
+  @override
+  String get returnNoUserFoundForThatEmailPleaseCheckYourEmailAndTryAgain => 'No user found for that email. Please check your email and try again';
+
+  @override
+  String get returnPasswordMustBeAtLeast6Characters => 'Password must be at least 6 characters';
+
+  @override
+  String get returnPleaseEnterADisplayName => 'Please enter a display name';
+
+  @override
+  String get returnPleaseEnterAPassword => 'Please enter a password';
+
+  @override
+  String get returnPleaseEnterAValidEmailAddress => 'Please enter a valid email address';
+
+  @override
+  String get returnPleaseEnterYourEmail => 'Please enter your email';
+
+  @override
+  String get returnPleaseEnterYourName => 'Please enter your name';
+
+  @override
+  String get returnPleaseEnterYourPassword => 'Please enter your password';
+
+  @override
+  String get returnTheEmailAddressIsAlreadyInUseByAnotherAccount => 'The email address is already in use by another account';
+
+  @override
+  String get returnTheOperationIsNotAllowedPleaseTryAgainLaterIfItDoesn => 'The operation is not allowed. Please try again later. If it doesn\'t';
+
+  @override
+  String get returnThePasswordIsInvalidOrTheUserDoesNotHaveAPassword => 'The password is invalid or the user does not have a password';
+
+  @override
+  String get returnTheProvidedCredentialsAreIncorrectPleaseCheckYourEmailAndPassword => 'The provided credentials are incorrect. Please check your email and password';
+
+  @override
+  String get returnThisEmailIsAlreadyRegisteredPleaseSignInInstead => 'This email is already registered. Please sign in instead';
+
+  @override
+  String get returnThisPasswordIsTooWeakPleaseChooseAStrongerOne => 'This password is too weak. Please choose a stronger one';
+
+  @override
+  String get returnThisUserHasBeenDisabledPleaseContact => 'This user has been disabled. Please contact asdev.feedback@gmail.com';
+
+  @override
+  String get returnTooManyRequestsPleaseTryAgainLater => 'Too many requests. Please try again later';
+
+  @override
+  String returnVersionPackageinfoversionPackageinfobuildnumber(String packageInfoVersion, String packageInfoBuildNumber) {
+    return 'Version \$$packageInfoVersion (\$$packageInfoBuildNumber)';
+  }
+
+  @override
   String get textappLanguage => 'App Language';
 
   @override
@@ -27,8 +121,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get textclearItems => 'Clear Items';
 
   @override
-  String textclearedCompletedItems(int count) {
-    return 'Cleared $count completed items';
+  String textclearedCompleteditemsdocslengthCompletedItems(int completedItemsLength) {
+    return 'Cleared \$$completedItemsLength completed items';
   }
 
   @override
@@ -53,25 +147,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get textenglish => 'English';
 
   @override
-  String texterrorDeletingList(String error) {
-    return 'Error deleting list: $error';
+  String texterrorFetchingMaintenanceStatusE(String e) {
+    return 'Error fetching maintenance status: \$$e';
   }
 
   @override
-  String texterrorFetchingStatus(String error) {
-    return 'Error fetching maintenance status: $error';
+  String texterrorLoadingListsSnapshoterror(String snapshotError) {
+    return 'Error loading lists: \$$snapshotError';
   }
 
   @override
-  String texterrorSharingList(String error) {
-    return 'Error sharing list: $error';
+  String texterrorSharingListEtostring(String eToString) {
+    return 'Error sharing list: \$$eToString';
+  }
+
+  @override
+  String texterrorSigningOutEtostring(String eToString) {
+    return 'Error signing out: \$$eToString';
   }
 
   @override
   String get textexportList => 'Export List';
 
   @override
+  String get textfailedToCreateListPleaseTryAgain => 'Failed to create list. Please try again.';
+
+  @override
+  String get textfailedToDeleteItem => 'Failed to delete item';
+
+  @override
+  String get textfailedToDeleteList => 'Failed to delete list';
+
+  @override
+  String get textfailedToDeleteTask => 'Failed to delete task';
+
+  @override
+  String get textfailedToRestoreItem => 'Failed to restore item';
+
+  @override
   String get textfailedToSignInWithGoogle => 'Failed to sign in with Google';
+
+  @override
+  String get textfailedToSignOutPleaseTryAgain => 'Failed to sign out. Please try again.';
+
+  @override
+  String get textfailedToUpdateTaskStatus => 'Failed to update task status';
 
   @override
   String get textlistDeletedSuccessfully => 'List deleted successfully';

@@ -93,6 +93,174 @@ abstract class AppLocalizations {
     Locale('en')
   ];
 
+  /// No description provided for @returnClearedCountCompletedItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleared \${count} completed items'**
+  String returnClearedCountCompletedItems(int count);
+
+  /// No description provided for @returnErrorDeletingListError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting list: \${error}'**
+  String returnErrorDeletingListError(String error);
+
+  /// No description provided for @returnErrorFetchingMaintenanceStatusError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error fetching maintenance status: \${error}'**
+  String returnErrorFetchingMaintenanceStatusError(String error);
+
+  /// No description provided for @returnErrorSharingListError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error sharing list: \${error}'**
+  String returnErrorSharingListError(String error);
+
+  /// No description provided for @returnHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'high'**
+  String get returnHigh;
+
+  /// No description provided for @returnLow.
+  ///
+  /// In en, this message translates to:
+  /// **'low'**
+  String get returnLow;
+
+  /// No description provided for @returnMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'medium'**
+  String get returnMedium;
+
+  /// No description provided for @returnNameMustBeAtLeast2Characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 2 characters'**
+  String get returnNameMustBeAtLeast2Characters;
+
+  /// No description provided for @returnNetworkErrorCheckYourConnectionAndTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Check your connection and try again'**
+  String get returnNetworkErrorCheckYourConnectionAndTryAgain;
+
+  /// No description provided for @returnNetworkErrorPleaseCheckYourInternetConnectionAndTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please check your internet connection and try again'**
+  String get returnNetworkErrorPleaseCheckYourInternetConnectionAndTryAgain;
+
+  /// No description provided for @returnNoAccountFoundWithThisEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'No account found with this email'**
+  String get returnNoAccountFoundWithThisEmail;
+
+  /// No description provided for @returnNoUserFoundForThatEmailPleaseCheckYourEmailAndTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'No user found for that email. Please check your email and try again'**
+  String get returnNoUserFoundForThatEmailPleaseCheckYourEmailAndTryAgain;
+
+  /// No description provided for @returnPasswordMustBeAtLeast6Characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get returnPasswordMustBeAtLeast6Characters;
+
+  /// No description provided for @returnPleaseEnterADisplayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a display name'**
+  String get returnPleaseEnterADisplayName;
+
+  /// No description provided for @returnPleaseEnterAPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a password'**
+  String get returnPleaseEnterAPassword;
+
+  /// No description provided for @returnPleaseEnterAValidEmailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address'**
+  String get returnPleaseEnterAValidEmailAddress;
+
+  /// No description provided for @returnPleaseEnterYourEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get returnPleaseEnterYourEmail;
+
+  /// No description provided for @returnPleaseEnterYourName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name'**
+  String get returnPleaseEnterYourName;
+
+  /// No description provided for @returnPleaseEnterYourPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password'**
+  String get returnPleaseEnterYourPassword;
+
+  /// No description provided for @returnTheEmailAddressIsAlreadyInUseByAnotherAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'The email address is already in use by another account'**
+  String get returnTheEmailAddressIsAlreadyInUseByAnotherAccount;
+
+  /// No description provided for @returnTheOperationIsNotAllowedPleaseTryAgainLaterIfItDoesn.
+  ///
+  /// In en, this message translates to:
+  /// **'The operation is not allowed. Please try again later. If it doesn\'t'**
+  String get returnTheOperationIsNotAllowedPleaseTryAgainLaterIfItDoesn;
+
+  /// No description provided for @returnThePasswordIsInvalidOrTheUserDoesNotHaveAPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'The password is invalid or the user does not have a password'**
+  String get returnThePasswordIsInvalidOrTheUserDoesNotHaveAPassword;
+
+  /// No description provided for @returnTheProvidedCredentialsAreIncorrectPleaseCheckYourEmailAndPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'The provided credentials are incorrect. Please check your email and password'**
+  String get returnTheProvidedCredentialsAreIncorrectPleaseCheckYourEmailAndPassword;
+
+  /// No description provided for @returnThisEmailIsAlreadyRegisteredPleaseSignInInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is already registered. Please sign in instead'**
+  String get returnThisEmailIsAlreadyRegisteredPleaseSignInInstead;
+
+  /// No description provided for @returnThisPasswordIsTooWeakPleaseChooseAStrongerOne.
+  ///
+  /// In en, this message translates to:
+  /// **'This password is too weak. Please choose a stronger one'**
+  String get returnThisPasswordIsTooWeakPleaseChooseAStrongerOne;
+
+  /// No description provided for @returnThisUserHasBeenDisabledPleaseContact.
+  ///
+  /// In en, this message translates to:
+  /// **'This user has been disabled. Please contact asdev.feedback@gmail.com'**
+  String get returnThisUserHasBeenDisabledPleaseContact;
+
+  /// No description provided for @returnTooManyRequestsPleaseTryAgainLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests. Please try again later'**
+  String get returnTooManyRequestsPleaseTryAgainLater;
+
+  /// No description provided for @returnVersionPackageinfoversionPackageinfobuildnumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Version \${packageInfoVersion} (\${packageInfoBuildNumber})'**
+  String returnVersionPackageinfoversionPackageinfobuildnumber(String packageInfoVersion, String packageInfoBuildNumber);
+
   /// No description provided for @textappLanguage.
   ///
   /// In en, this message translates to:
@@ -129,11 +297,11 @@ abstract class AppLocalizations {
   /// **'Clear Items'**
   String get textclearItems;
 
-  /// No description provided for @textclearedCompletedItems.
+  /// No description provided for @textclearedCompleteditemsdocslengthCompletedItems.
   ///
   /// In en, this message translates to:
-  /// **'Cleared {count} completed items'**
-  String textclearedCompletedItems(int count);
+  /// **'Cleared \${completedItemsLength} completed items'**
+  String textclearedCompleteditemsdocslengthCompletedItems(int completedItemsLength);
 
   /// No description provided for @textcouldNotOpenPlayStore.
   ///
@@ -177,23 +345,29 @@ abstract class AppLocalizations {
   /// **'English'**
   String get textenglish;
 
-  /// No description provided for @texterrorDeletingList.
+  /// No description provided for @texterrorFetchingMaintenanceStatusE.
   ///
   /// In en, this message translates to:
-  /// **'Error deleting list: {error}'**
-  String texterrorDeletingList(String error);
+  /// **'Error fetching maintenance status: \${e}'**
+  String texterrorFetchingMaintenanceStatusE(String e);
 
-  /// No description provided for @texterrorFetchingStatus.
+  /// No description provided for @texterrorLoadingListsSnapshoterror.
   ///
   /// In en, this message translates to:
-  /// **'Error fetching maintenance status: {error}'**
-  String texterrorFetchingStatus(String error);
+  /// **'Error loading lists: \${snapshotError}'**
+  String texterrorLoadingListsSnapshoterror(String snapshotError);
 
-  /// No description provided for @texterrorSharingList.
+  /// No description provided for @texterrorSharingListEtostring.
   ///
   /// In en, this message translates to:
-  /// **'Error sharing list: {error}'**
-  String texterrorSharingList(String error);
+  /// **'Error sharing list: \${eToString}'**
+  String texterrorSharingListEtostring(String eToString);
+
+  /// No description provided for @texterrorSigningOutEtostring.
+  ///
+  /// In en, this message translates to:
+  /// **'Error signing out: \${eToString}'**
+  String texterrorSigningOutEtostring(String eToString);
 
   /// No description provided for @textexportList.
   ///
@@ -201,11 +375,53 @@ abstract class AppLocalizations {
   /// **'Export List'**
   String get textexportList;
 
+  /// No description provided for @textfailedToCreateListPleaseTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create list. Please try again.'**
+  String get textfailedToCreateListPleaseTryAgain;
+
+  /// No description provided for @textfailedToDeleteItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete item'**
+  String get textfailedToDeleteItem;
+
+  /// No description provided for @textfailedToDeleteList.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete list'**
+  String get textfailedToDeleteList;
+
+  /// No description provided for @textfailedToDeleteTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete task'**
+  String get textfailedToDeleteTask;
+
+  /// No description provided for @textfailedToRestoreItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to restore item'**
+  String get textfailedToRestoreItem;
+
   /// No description provided for @textfailedToSignInWithGoogle.
   ///
   /// In en, this message translates to:
   /// **'Failed to sign in with Google'**
   String get textfailedToSignInWithGoogle;
+
+  /// No description provided for @textfailedToSignOutPleaseTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to sign out. Please try again.'**
+  String get textfailedToSignOutPleaseTryAgain;
+
+  /// No description provided for @textfailedToUpdateTaskStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update task status'**
+  String get textfailedToUpdateTaskStatus;
 
   /// No description provided for @textlistDeletedSuccessfully.
   ///
