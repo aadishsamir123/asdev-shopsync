@@ -62,7 +62,6 @@ jobs:
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           track: production
           status: completed
-          changesNotSentForReview: true
 
       # Step 9: Upload debug symbols to Sentry
       - name: Upload debug symbols to Sentry
