@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "returnClearedCountCompletedItems": "Cleared $count completed items",
+  "returnClearedCountCompletedItems": "Cleared ${count} completed items",
   "@returnClearedCountCompletedItems": {
     "placeholders": {
       "count": {
@@ -8,7 +8,7 @@
       }
     }
   },
-  "returnErrorDeletingListError": "Error deleting list: $error",
+  "returnErrorDeletingListError": "Error deleting list: ${error}",
   "@returnErrorDeletingListError": {
     "placeholders": {
       "error": {
@@ -16,7 +16,7 @@
       }
     }
   },
-  "returnErrorFetchingMaintenanceStatusError": "Error fetching maintenance status: $error",
+  "returnErrorFetchingMaintenanceStatusError": "Error fetching maintenance status: ${error}",
   "@returnErrorFetchingMaintenanceStatusError": {
     "placeholders": {
       "error": {
@@ -24,7 +24,7 @@
       }
     }
   },
-  "returnErrorSharingListError": "Error sharing list: $error",
+  "returnErrorSharingListError": "Error sharing list: ${error}",
   "@returnErrorSharingListError": {
     "placeholders": {
       "error": {
@@ -55,13 +55,13 @@
   "returnThisPasswordIsTooWeakPleaseChooseAStrongerOne": "This password is too weak. Please choose a stronger one",
   "returnThisUserHasBeenDisabledPleaseContact": "This user has been disabled. Please contact asdev.feedback@gmail.com",
   "returnTooManyRequestsPleaseTryAgainLater": "Too many requests. Please try again later",
-  "returnVersionPackageinfoversionPackageinfobuildnumber": "Version ${packageInfo.version} (${packageInfo.buildNumber})",
+  "returnVersionPackageinfoversionPackageinfobuildnumber": "Version ${packageInfoVersion} (${packageInfoBuildNumber})",
   "@returnVersionPackageinfoversionPackageinfobuildnumber": {
     "placeholders": {
-      "packageInfo.version": {
+      "packageInfoVersion": {
         "type": "String"
       },
-      "packageInfo.buildNumber": {
+      "packageInfoBuildNumber": {
         "type": "String"
       }
     }
@@ -72,10 +72,10 @@
   "textclearCompletedItems": "Clear Completed Items",
   "textclearCompleted": "Clear Completed",
   "textclearItems": "Clear Items",
-  "textclearedCompleteditemsdocslengthCompletedItems": "Cleared ${completedItems.docs.length} completed items",
+  "textclearedCompleteditemsdocslengthCompletedItems": "Cleared ${completedItemsLength} completed items",
   "@textclearedCompleteditemsdocslengthCompletedItems": {
     "placeholders": {
-      "completedItems.docs.length": {
+      "completedItemsLength": {
         "type": "int"
       }
     }
@@ -87,7 +87,7 @@
   "textdelete": "Delete",
   "textenableNotifications": "Enable Notifications",
   "textenglish": "English",
-  "texterrorFetchingMaintenanceStatusE": "Error fetching maintenance status: $e",
+  "texterrorFetchingMaintenanceStatusE": "Error fetching maintenance status: ${e}",
   "@texterrorFetchingMaintenanceStatusE": {
     "placeholders": {
       "e": {
@@ -95,26 +95,26 @@
       }
     }
   },
-  "texterrorLoadingListsSnapshoterror": "Error loading lists: ${snapshot.error}",
+  "texterrorLoadingListsSnapshoterror": "Error loading lists: ${snapshotError}",
   "@texterrorLoadingListsSnapshoterror": {
     "placeholders": {
-      "snapshot.error": {
+      "snapshotError": {
         "type": "String"
       }
     }
   },
-  "texterrorSharingListEtostring": "Error sharing list: ${e.toString()}",
+  "texterrorSharingListEtostring": "Error sharing list: ${eToString()}",
   "@texterrorSharingListEtostring": {
     "placeholders": {
-      "e.toString()": {
+      "eToString()": {
         "type": "String"
       }
     }
   },
-  "texterrorSigningOutEtostring": "Error signing out: ${e.toString()}",
+  "texterrorSigningOutEtostring": "Error signing out: ${eToString()}",
   "@texterrorSigningOutEtostring": {
     "placeholders": {
-      "e.toString()": {
+      "eToString()": {
         "type": "String"
       }
     }
