@@ -44,7 +44,8 @@ class RecycleBinScreen extends StatefulWidget {
 }
 
 class _RecycleBinScreenState extends State<RecycleBinScreen>
-    with TickerProviderStateMixin {  // Changed from SingleTickerProviderStateMixin
+    with TickerProviderStateMixin {
+  // Changed from SingleTickerProviderStateMixin
   late AnimationController _controller;
   final Map<String, AnimationController> _itemControllers = {};
   final Map<String, Animation<double>> _itemAnimations = {};
@@ -67,7 +68,8 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
     super.dispose();
   }
 
-  Future<void> _restoreItem(String itemId, Map<String, dynamic> itemData) async {
+  Future<void> _restoreItem(
+      String itemId, Map<String, dynamic> itemData) async {
     try {
       await _itemControllers[itemId]?.reverse();
 
@@ -268,14 +270,15 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
                     (context, index) {
                       final doc = snapshot.data!.docs[index];
                       final itemData = doc.data() as Map<String, dynamic>;
-                      
+
                       if (!_itemControllers.containsKey(doc.id)) {
                         _itemControllers[doc.id] = AnimationController(
                           duration: const Duration(milliseconds: 300),
                           vsync: this,
                         )..forward();
-                        
-                        _itemAnimations[doc.id] = _itemControllers[doc.id]!.drive(
+
+                        _itemAnimations[doc.id] =
+                            _itemControllers[doc.id]!.drive(
                           Tween<double>(begin: 0, end: 1),
                         );
                       }
@@ -397,4 +400,3 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
     );
   }
 }
-

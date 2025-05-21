@@ -7,7 +7,7 @@ class UpdateService {
     try {
       final updateInfo = await InAppUpdate.checkForUpdate();
 
-      if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable && 
+      if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable &&
           context.mounted) {
         // Show update screen - replace the current route with the update screen
         await Navigator.of(context).pushReplacement(
@@ -28,7 +28,7 @@ class UpdateService {
       debugPrint('Update check failed: $e');
     }
   }
-  
+
   // Check if an update is downloaded and ready to install
   static Future<bool> isUpdateDownloaded() async {
     try {
@@ -39,7 +39,7 @@ class UpdateService {
       return false;
     }
   }
-  
+
   // Get the current update status
   static Stream<InstallStatus> getUpdateStatus() {
     return InAppUpdate.installUpdateListener;

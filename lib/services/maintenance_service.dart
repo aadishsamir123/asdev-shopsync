@@ -30,7 +30,7 @@ class MaintenanceService {
         print('Error fetching maintenance status: $e');
         print('Stack trace: $stackTrace');
       }
-      
+
       await Sentry.captureException(
         e,
         stackTrace: stackTrace,
@@ -41,7 +41,7 @@ class MaintenanceService {
           scope.setTag('error_type', 'maintenance_status_error');
         },
       );
-      
+
       SnackBar(
         content: Text('Error fetching maintenance status: $e'),
         backgroundColor: Colors.red,

@@ -42,8 +42,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _validateEmail() {
     setState(() {
       final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
-      _isEmailValid = _emailController.text.trim().isNotEmpty && 
-                     emailRegex.hasMatch(_emailController.text.trim());
+      _isEmailValid = _emailController.text.trim().isNotEmpty &&
+          emailRegex.hasMatch(_emailController.text.trim());
     });
   }
 
@@ -74,7 +74,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() {
       _isLoading = true;
       _errorMessage = '';
@@ -101,7 +101,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       Navigator.of(context).pop();
     } on FirebaseAuthException catch (e, stackTrace) {
       setState(() {
-        _errorMessage = _getErrorMessage(e) ?? 'An error occurred during registration';
+        _errorMessage =
+            _getErrorMessage(e) ?? 'An error occurred during registration';
       });
       await SentryUtils.reportError(e, stackTrace);
     } catch (e, stackTrace) {
@@ -210,7 +211,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             decoration: InputDecoration(
                               labelText: 'Name',
-                              errorText: _nameController.text.isNotEmpty && !_isNameValid
+                              errorText: _nameController.text.isNotEmpty &&
+                                      !_isNameValid
                                   ? 'Name must be at least 2 characters'
                                   : null,
                               labelStyle: TextStyle(
@@ -271,8 +273,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             decoration: InputDecoration(
                               labelText: 'Email',
-                              errorText: _emailController.text.isNotEmpty && !_isEmailValid 
-                                  ? 'Please enter a valid email' 
+                              errorText: _emailController.text.isNotEmpty &&
+                                      !_isEmailValid
+                                  ? 'Please enter a valid email'
                                   : null,
                               labelStyle: TextStyle(
                                 color: isDarkMode
@@ -315,7 +318,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter your email';
                               }
-                              final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
+                              final emailRegex =
+                                  RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
                               if (!emailRegex.hasMatch(value.trim())) {
                                 return 'Please enter a valid email address';
                               }
@@ -334,10 +338,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              errorText: _passwordController.text.isNotEmpty && !_isPasswordValid 
-                                  ? 'Password must be at least 6 characters' 
+                              errorText: _passwordController.text.isNotEmpty &&
+                                      !_isPasswordValid
+                                  ? 'Password must be at least 6 characters'
                                   : null,
-                              helperText: 'Password must be at least 6 characters',
+                              helperText:
+                                  'Password must be at least 6 characters',
                               helperStyle: TextStyle(
                                 fontSize: 12,
                                 color: isDarkMode
@@ -407,7 +413,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               return null;
                             },
                             onFieldSubmitted: (_) {
-                              if (_isNameValid && _isEmailValid && _isPasswordValid) {
+                              if (_isNameValid &&
+                                  _isEmailValid &&
+                                  _isPasswordValid) {
                                 _register();
                               }
                             },
@@ -444,8 +452,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             width: double.infinity,
                             height: 56,
                             child: ElevatedButton(
-                              onPressed: (_isLoading || !_isNameValid || !_isEmailValid || !_isPasswordValid) 
-                                  ? null 
+                              onPressed: (_isLoading ||
+                                      !_isNameValid ||
+                                      !_isEmailValid ||
+                                      !_isPasswordValid)
+                                  ? null
                                   : _register,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: isDarkMode
@@ -455,7 +466,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 disabledBackgroundColor: isDarkMode
                                     ? Colors.green.withValues(alpha: 0.3)
                                     : Colors.green.shade300,
-                                disabledForegroundColor: 
+                                disabledForegroundColor:
                                     Colors.white.withValues(alpha: 0.6),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -522,7 +533,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-  
+
   @override
   void dispose() {
     _nameController.removeListener(_validateName);

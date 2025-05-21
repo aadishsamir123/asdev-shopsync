@@ -25,7 +25,7 @@ void exportForWeb(String csvData, String listName) {
       print('Error exporting list for web: $e');
       print('Stack trace: $stackTrace');
     }
-    
+
     Sentry.captureException(
       e,
       stackTrace: stackTrace,

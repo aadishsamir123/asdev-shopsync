@@ -8,7 +8,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '/screens/list_view.dart';
-import '/screens/sign_out.dart';
 import '/widgets/loading_spinner.dart';
 
 class TutorialStep extends StatelessWidget {
@@ -128,55 +127,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _signOut() async {
-    try {
-      final shouldSignOut = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Sign Out'),
-          content: const Text('Are you sure you want to sign out?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text('Cancel', style: TextStyle(color: Colors.grey[700])),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              style: TextButton.styleFrom(foregroundColor: Colors.red[700]),
-              child: const Text('Sign Out'),
-            ),
-          ],
-        ),
-      );
-
-      if (shouldSignOut == true) {
-        await _auth.signOut();
-        if (!mounted) return;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const SignOutScreen()),
-        );
-      }
-    } catch (error, stackTrace) {
-      await Sentry.captureException(
-        error,
-        stackTrace: stackTrace,
-        hint: Hint.withMap({'action': 'sign_out'}),
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to sign out. Please try again.')),
-      );
-    }
-  }
-
   Future<void> _createList() async {
     try {
       if (_newListController.text.trim().isEmpty) return;
 
       final user = _auth.currentUser!;
       final transaction = {'name': _newListController.text.trim()};
-      
+
       final sentryTransaction = Sentry.startTransaction(
         'create_list',
         'db.operation',
@@ -207,7 +164,8 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to create list. Please try again.')),
+        const SnackBar(
+            content: Text('Failed to create list. Please try again.')),
       );
     }
   }
@@ -753,13 +711,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                     },
                                   ),
                                   _buildDrawerItem(
+                                    icon: FontAwesomeIcons.gear,
+                                    title: 'Settings',
+                                    onTap: () {
+                                      Navigator.popAndPushNamed(
+                                          context, '/settings');
+                                    },
+                                  ),
+                                  _buildDrawerItem(
                                     icon: FontAwesomeIcons.user,
                                     title: 'My Profile',
                                     onTap: () {
                                       Navigator.pop(context);
-                                      Navigator.pushNamed(
-                                        context, '/profile'
-                                      );
+                                      Navigator.pushNamed(context, '/profile');
                                     },
                                   ),
                                   _buildDrawerItem(
@@ -781,69 +745,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       if (!mounted) return;
                                       Navigator.pop(context);
                                     },
-                                  ),
-                                  _buildDrawerItem(
-                                    svg: SvgPicture.string(
-                                      '''
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="248" height="248" viewBox="0 0 248 248" fill="none">
-<path d="M163.024 177.312C157.024 177.312 151.667 175.514 147.239 171.995C141.954 167.851 137.739 161.674 137.597 154.402C137.525 150.727 141.525 150.727 141.525 150.727C141.525 150.727 148.025 150.649 151.167 150.649C154.31 150.727 155.238 155.106 155.381 156.2C156.595 166.053 162.166 170.353 166.452 172.308C169.023 173.481 168.38 177.156 163.024 177.312Z" fill="white"/>
-<path d="M109.1 127.248C103.816 126.626 95.962 126.082 90.8924 124.839C82.6811 122.819 82.8953 115.438 83.2523 113.03C84.252 105.804 86.8939 99.1224 90.9638 92.9069C96.0334 85.2929 103.317 78.6112 112.67 73.1726C130.235 62.9947 154.798 57.323 181.788 57.323C201.567 57.323 222.202 59.8869 222.416 59.8869C224.273 60.12 225.63 61.907 225.558 63.927C225.487 65.9471 224.059 67.5009 222.202 67.6563C219.203 67.5786 216.276 67.5786 213.491 67.5786C186.001 67.5786 166.437 71.3079 151.87 79.3881C137.518 87.3129 127.522 99.4332 120.739 117.381C120.025 118.934 117.668 128.18 109.1 127.248Z" fill="white"/>
-<path d="M133.089 201.326C119.451 201.326 106.594 195.437 96.863 184.681C88.6235 175.574 83.6513 166.388 82.7279 154.611C82.1597 146.917 85.5692 144.248 90.1862 144.719C93.3825 145.033 103.327 145.504 109.009 146.682C113.271 147.545 116.112 149.901 116.823 154.768C120.587 180.677 136.924 190.884 146.655 193.082C148.36 193.475 149.426 194.574 149.355 196.537C149.284 198.421 148.005 199.991 146.3 200.305C141.967 201.012 137.421 201.326 133.089 201.326Z" fill="white"/>
-<path d="M94.2244 224.321C84.5472 224.321 75.0835 222.782 72.3796 222.296C60.9946 220.27 51.4598 216.786 43.2769 211.6C23.7091 199.203 11.8972 177.326 10.4741 151.397C10.1183 145.239 9.3356 133.49 23.9937 134.381C30.0419 134.705 39.6479 137.622 46.4077 139.567C54.8041 141.917 58.86 148.399 58.86 154.8C58.86 191.343 91.9474 215.489 106.392 215.489C112.583 215.489 110.306 222.134 107.602 222.863C102.834 224.159 96.7148 224.321 94.2244 224.321Z" fill="white"/>
-<path d="M43.75 116.947C38.0259 115.921 32.445 113.554 27.0071 112.213C10.1926 108.031 13.0546 91.0665 14.6287 86.4112C29.9407 41.3568 78.5238 26.2861 117.734 22.262C154.654 18.4746 193.292 21.394 229.282 31.4149C232.216 32.2039 241.303 34.4132 236.079 39.8576C232.788 43.2505 219.98 39.6998 216.546 39.4631C195.438 37.885 174.545 37.6483 153.509 40.8834C131.257 44.2763 108.361 51.2987 89.972 66.1328C81.0997 73.3131 73.3006 82.4659 68.0774 93.2758C66.7179 96.1164 65.6447 98.957 64.7145 101.798C63.7843 104.796 60.2783 119.867 43.75 116.947Z" fill="white"/>
-<path d="M137.892 125.638C141.043 111.538 155.044 89.1945 198.377 90.7355C208.318 91.0437 203.768 97.8239 198.867 97.6698C174.365 96.8223 162.744 112.617 156.654 128.643C154.694 133.805 150.213 134.576 144.613 133.651C140.693 132.958 136.422 132.496 137.892 125.638Z" fill="white"/>
-</svg>
-''',
-                                      width: 20,
-                                      height: 20,
-                                      colorFilter: ColorFilter.mode(
-                                        Colors.grey[600] ?? Colors.grey,
-                                        BlendMode.srcIn,
-                                      ),
-                                    ),
-                                    title: 'Crowdin',
-                                    onTap: () async {
-                                      final Uri url = Uri.parse(
-                                          'https://crowdin.com/project/as-shopsync');
-                                      if (!await launchUrl(url)) {
-                                        if (!mounted) return;
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                                'Could not open GitHub page'),
-                                          ),
-                                        );
-                                      }
-                                      if (!mounted) return;
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  _buildDrawerItem(
-                                    icon: FontAwesomeIcons.github,
-                                    title: 'GitHub',
-                                    onTap: () async {
-                                      final Uri url = Uri.parse(
-                                          'https://github.com/aadishsamir123/asdev-shopsync');
-                                      if (!await launchUrl(url)) {
-                                        if (!mounted) return;
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                                'Could not open GitHub page'),
-                                          ),
-                                        );
-                                      }
-                                      if (!mounted) return;
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  _buildDrawerItem(
-                                    icon: FontAwesomeIcons.rightFromBracket,
-                                    title: 'Sign Out',
-                                    onTap: _signOut,
-                                    color: Colors.red[400],
                                   ),
                                   const SizedBox(height: 16),
                                 ],
@@ -1204,4 +1105,3 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 }
-

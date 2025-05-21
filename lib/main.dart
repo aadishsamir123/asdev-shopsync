@@ -10,6 +10,7 @@ import 'screens/home.dart';
 import 'screens/profile.dart';
 import 'screens/maintenance_screen.dart';
 import 'screens/onboarding.dart';
+import 'screens/settings.dart';
 import 'widgets/loading_spinner.dart';
 import 'services/update_service.dart';
 import 'services/maintenance_service.dart';
@@ -53,7 +54,8 @@ void main() async {
 
   await SentryFlutter.init(
     (options) {
-      options.dsn = 'https://0e9830280e9e2bd8123cab218ce80a00@o4509262568816640.ingest.us.sentry.io/4509262583431168';
+      options.dsn =
+          'https://0e9830280e9e2bd8123cab218ce80a00@o4509262568816640.ingest.us.sentry.io/4509262583431168';
       // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
       // We recommend adjusting this value in production.
       options.tracesSampleRate = 1.0;
@@ -73,16 +75,16 @@ class ShopSync extends StatelessWidget {
     return MaterialApp(
       title: 'ShopSync',
       theme: ThemeData(
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
-          pageTransitionsTheme: PageTransitionsTheme(
-            builders: {
-              TargetPlatform.android: const FadeForwardsPageTransitionsBuilder(),
-              TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
-              TargetPlatform.macOS: const ZoomPageTransitionsBuilder(),
-              TargetPlatform.linux: const ZoomPageTransitionsBuilder(),
-              TargetPlatform.windows: const FadeForwardsPageTransitionsBuilder(),
-            },
-          ),
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: const FadeForwardsPageTransitionsBuilder(),
+            TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+            TargetPlatform.macOS: const ZoomPageTransitionsBuilder(),
+            TargetPlatform.linux: const ZoomPageTransitionsBuilder(),
+            TargetPlatform.windows: const FadeForwardsPageTransitionsBuilder(),
+          },
+        ),
       ),
       darkTheme: ThemeData.dark().copyWith(
         pageTransitionsTheme: PageTransitionsTheme(
@@ -103,7 +105,7 @@ class ShopSync extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfileScreen(),
-        // '/settings': (context) => const SettingsScreen(),
+        '/settings': (context) => const SettingsScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
       },
     );

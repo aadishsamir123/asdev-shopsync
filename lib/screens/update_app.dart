@@ -24,7 +24,7 @@ class _UpdateAppScreenState extends State<UpdateAppScreen> {
   void initState() {
     super.initState();
     _checkDownloadStatus();
-    
+
     // Listen to download status changes
     InAppUpdate.installUpdateListener.listen((status) {
       if (status == InstallStatus.downloaded) {
@@ -92,7 +92,8 @@ class _UpdateAppScreenState extends State<UpdateAppScreen> {
                           // Indeterminate progress indicator
                           const LinearProgressIndicator(
                             backgroundColor: Colors.grey,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.green),
                           ),
                           const SizedBox(height: 8),
                           const Text(
