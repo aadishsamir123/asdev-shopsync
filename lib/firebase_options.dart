@@ -64,8 +64,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '160863676221',
     projectId: 'as-shopsync',
     storageBucket: 'as-shopsync.firebasestorage.app',
-    androidClientId: '160863676221-ajc4adkuqq2holdp7bl9imbmar6137le.apps.googleusercontent.com',
-    iosClientId: '160863676221-ul8ri7astve08bn4mn9uucul9v6cciv3.apps.googleusercontent.com',
+    androidClientId:
+        '160863676221-ajc4adkuqq2holdp7bl9imbmar6137le.apps.googleusercontent.com',
+    iosClientId:
+        '160863676221-ul8ri7astve08bn4mn9uucul9v6cciv3.apps.googleusercontent.com',
     iosBundleId: 'com.aadishsamir.shopsync',
   );
 

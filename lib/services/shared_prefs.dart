@@ -15,7 +15,7 @@ class SharedPrefs {
         print('Error checking first launch status: $e');
         print('Stack trace: $stackTrace');
       }
-      
+
       await Sentry.captureException(
         e,
         stackTrace: stackTrace,
@@ -27,7 +27,7 @@ class SharedPrefs {
           scope.setTag('error_type', 'shared_prefs_error');
         },
       );
-      
+
       // Return true as default if there's an error
       return true;
     }
@@ -42,7 +42,7 @@ class SharedPrefs {
         print('Error setting first launch flag: $e');
         print('Stack trace: $stackTrace');
       }
-      
+
       await Sentry.captureException(
         e,
         stackTrace: stackTrace,

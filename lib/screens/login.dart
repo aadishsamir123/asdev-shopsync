@@ -33,8 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void _validateEmail() {
     setState(() {
       final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
-      _isEmailValid = _emailController.text.trim().isNotEmpty && 
-                     emailRegex.hasMatch(_emailController.text.trim());
+      _isEmailValid = _emailController.text.trim().isNotEmpty &&
+          emailRegex.hasMatch(_emailController.text.trim());
     });
   }
 
@@ -193,8 +193,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             decoration: InputDecoration(
                               labelText: 'Email',
-                              errorText: _emailController.text.isNotEmpty && !_isEmailValid 
-                                  ? 'Please enter a valid email' 
+                              errorText: _emailController.text.isNotEmpty &&
+                                      !_isEmailValid
+                                  ? 'Please enter a valid email'
                                   : null,
                               labelStyle: TextStyle(
                                 color: isDarkMode
@@ -237,7 +238,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter your email';
                               }
-                              final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
+                              final emailRegex =
+                                  RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
                               if (!emailRegex.hasMatch(value.trim())) {
                                 return 'Please enter a valid email address';
                               }
@@ -256,8 +258,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              errorText: _passwordController.text.isNotEmpty && !_isPasswordValid 
-                                  ? 'Password cannot be empty' 
+                              errorText: _passwordController.text.isNotEmpty &&
+                                      !_isPasswordValid
+                                  ? 'Password cannot be empty'
                                   : null,
                               labelStyle: TextStyle(
                                 color: isDarkMode
@@ -356,8 +359,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: double.infinity,
                             height: 56,
                             child: ElevatedButton(
-                              onPressed: (_isLoading || !_isEmailValid || !_isPasswordValid) 
-                                  ? null 
+                              onPressed: (_isLoading ||
+                                      !_isEmailValid ||
+                                      !_isPasswordValid)
+                                  ? null
                                   : _login,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: isDarkMode
@@ -367,7 +372,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 disabledBackgroundColor: isDarkMode
                                     ? Colors.green.withValues(alpha: 0.3)
                                     : Colors.green.shade300,
-                                disabledForegroundColor: 
+                                disabledForegroundColor:
                                     Colors.white.withValues(alpha: 0.6),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -463,7 +468,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-  
+
   @override
   void dispose() {
     _emailController.removeListener(_validateEmail);

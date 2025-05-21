@@ -29,8 +29,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   void _validateEmail() {
     setState(() {
       final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
-      _isEmailValid = _emailController.text.trim().isNotEmpty && 
-                     emailRegex.hasMatch(_emailController.text.trim());
+      _isEmailValid = _emailController.text.trim().isNotEmpty &&
+          emailRegex.hasMatch(_emailController.text.trim());
     });
   }
 
@@ -51,7 +51,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Future<void> _resetPassword() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() {
       _isLoading = true;
       _message = '';
@@ -179,8 +179,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             ),
                             decoration: InputDecoration(
                               labelText: 'Email',
-                              errorText: _emailController.text.isNotEmpty && !_isEmailValid 
-                                  ? 'Please enter a valid email' 
+                              errorText: _emailController.text.isNotEmpty &&
+                                      !_isEmailValid
+                                  ? 'Please enter a valid email'
                                   : null,
                               labelStyle: TextStyle(
                                 color: isDarkMode
@@ -223,7 +224,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter your email';
                               }
-                              final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
+                              final emailRegex =
+                                  RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
                               if (!emailRegex.hasMatch(value.trim())) {
                                 return 'Please enter a valid email address';
                               }
@@ -257,7 +259,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                     _isSuccess
                                         ? FontAwesomeIcons.circleCheck
                                         : FontAwesomeIcons.circleExclamation,
-                                    color: _isSuccess ? Colors.green : Colors.red,
+                                    color:
+                                        _isSuccess ? Colors.green : Colors.red,
                                     size: 20,
                                   ),
                                   const SizedBox(width: 12),
@@ -280,7 +283,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             width: double.infinity,
                             height: 56,
                             child: ElevatedButton(
-                              onPressed: (_isLoading || !_isEmailValid) ? null : _resetPassword,
+                              onPressed: (_isLoading || !_isEmailValid)
+                                  ? null
+                                  : _resetPassword,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: isDarkMode
                                     ? Colors.green
@@ -289,7 +294,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 disabledBackgroundColor: isDarkMode
                                     ? Colors.green.withValues(alpha: 0.3)
                                     : Colors.green.shade300,
-                                disabledForegroundColor: 
+                                disabledForegroundColor:
                                     Colors.white.withValues(alpha: 0.6),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -319,8 +324,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 'Remember your password?',
                                 style: TextStyle(
                                   color: isDarkMode
-                                      ? Colors.green[100]?.withValues(alpha: 0.9)
-                                      : Colors.green[900]?.withValues(alpha: 0.9),
+                                      ? Colors.green[100]
+                                          ?.withValues(alpha: 0.9)
+                                      : Colors.green[900]
+                                          ?.withValues(alpha: 0.9),
                                   fontSize: 15,
                                 ),
                               ),

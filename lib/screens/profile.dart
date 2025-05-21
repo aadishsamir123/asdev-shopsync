@@ -155,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           stackTrace: StackTrace.current,
           hint: Hint.withMap({'action': 'signing_out'}),
         );
-        
+
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -675,4 +675,3 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
-
