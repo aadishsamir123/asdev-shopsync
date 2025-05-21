@@ -30,11 +30,10 @@ class _SignOutScreenState extends State<SignOutScreen>
   }
 
   Future<void> _signOut() async {
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 500));
     await FirebaseAuth.instance.signOut();
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
-    await Future.delayed(const Duration(seconds: 1));
     if (!mounted) return;
     Navigator.pushReplacementNamed(context, '/onboarding');
   }
