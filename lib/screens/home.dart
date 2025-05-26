@@ -544,6 +544,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
+
+                                      Spacer(flex: 1),
                                       FaIcon(
                                         FontAwesomeIcons.listUl,
                                         size: 48,
@@ -556,6 +558,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: Colors.grey[600],
                                         ),
                                       ),
+                                      Spacer(flex: 1),
+                                      FaIcon(
+                                        FontAwesomeIcons.arrowDown,
+                                        size: 48,
+                                        color: Colors.grey[400],
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'Swipe down to view options',
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 32),
                                     ],
                                   ),
                                 ),
