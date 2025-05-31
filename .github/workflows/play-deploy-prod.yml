@@ -1,4 +1,4 @@
-name: Deploy to Play Store
+name: Deploy to Play Store Prod
 
 on:
   workflow_dispatch:
@@ -62,6 +62,7 @@ jobs:
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           track: production
           status: completed
+          userFraction: 0.3335
 
       # Step 9: Upload debug symbols to Sentry
       - name: Upload debug symbols to Sentry
