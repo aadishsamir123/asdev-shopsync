@@ -1,8 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shopsync/screens/sign_out.dart';
-import 'dart:io' show Platform;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -28,9 +28,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     _loadSettings();
-    if (Platform.isAndroid || Platform.isIOS) {
-      _loadAppVersion();
-    }
+    _loadAppVersion();
   }
 
   Future<void> _loadSettings() async {
@@ -45,9 +43,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _loadAppVersion() async {
     try {
       final packageInfo = await PackageInfo.fromPlatform();
-      setState(() {
-        _appVersion = '${packageInfo.version} (${packageInfo.buildNumber})';
-      });
+      if (kIsWeb) {
+        setState(() {
+          _appVersion = packageInfo.version;
+        });
+      }
+      if (!kIsWeb) {
+        setState(() {
+          _appVersion = '${packageInfo.version} (${packageInfo.buildNumber})';
+        });
+      }
     } catch (e) {
       setState(() {
         _appVersion = 'Error loading version';
