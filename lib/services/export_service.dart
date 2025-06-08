@@ -19,7 +19,7 @@ class ExportService {
           .get();
 
       String csvData =
-          'Item,Status,Deadline,Store Location,Added By,Added Date\n';
+          'Item,Counter,Status,Deadline,Store Location,Added By,Added Date\n';
 
       for (var doc in items.docs) {
         final item = doc.data();
@@ -37,6 +37,7 @@ class ExportService {
         final isCompleted = item['completed'] as bool? ?? false;
         final name = item['name'] as String? ?? 'N/A';
         final addedByName = item['addedByName'] as String? ?? 'N/A';
+        final counter = item['counter'] ?? 1;
 
         final location = item['location'] as Map<String, dynamic>?;
         final storeName = location?['name'] as String? ?? 'N/A';
@@ -44,7 +45,7 @@ class ExportService {
         final storeLocation =
             storeName != 'N/A' ? '$storeName/$storeAddress' : 'N/A';
 
-        csvData += '$name,${isCompleted ? 'Completed' : 'Pending'},'
+        csvData += '$name,$counter,${isCompleted ? 'Completed' : 'Pending'},'
             '$deadlineDate,$addedByName,$addedDate,$storeLocation\n';
       }
 

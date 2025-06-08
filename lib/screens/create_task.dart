@@ -22,6 +22,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   TimeOfDay? _selectedTime;
   Map<String, dynamic>? _location;
   bool _isLoading = false;
+  int _counter = 1;
 
   Future<void> _createTask() async {
     if (_titleController.text.trim().isEmpty) {
@@ -65,7 +66,8 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         'addedAt': FieldValue.serverTimestamp(),
         'priority': 'low',
         'deadline': deadline,
-        'location': _location, // Add this line
+        'location': _location,
+        'counter': _counter,
       });
 
       if (!mounted) return;
@@ -368,6 +370,112 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                         ),
                       ],
                     ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Counter Card
+            _buildCard(
+              title: 'Counter',
+              child: Card(
+                elevation: 8,
+                shadowColor: Colors.black26,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Colors.green[100],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: FaIcon(FontAwesomeIcons.hashtag,
+                                color: Colors.green[800]),
+                          ),
+                          const SizedBox(width: 16),
+                          const Text(
+                            'Counter',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: _counter > 1
+                                ? () => setState(() => _counter--)
+                                : null,
+                            icon: FaIcon(
+                              FontAwesomeIcons.minus,
+                              color: _counter > 1
+                                  ? Colors.green[800]
+                                  : Colors.grey[400],
+                            ),
+                            style: IconButton.styleFrom(
+                              backgroundColor: _counter > 1
+                                  ? Colors.green[100]
+                                  : Colors.grey[200],
+                              shape: const CircleBorder(),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.grey[850]
+                                  : Colors.grey[50],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.green[200]!,
+                              ),
+                            ),
+                            child: Text(
+                              '$_counter',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green[800],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          IconButton(
+                            onPressed: _counter < 99
+                                ? () => setState(() => _counter++)
+                                : null,
+                            icon: FaIcon(
+                              FontAwesomeIcons.plus,
+                              color: _counter < 99
+                                  ? Colors.green[800]
+                                  : Colors.grey[400],
+                            ),
+                            style: IconButton.styleFrom(
+                              backgroundColor: _counter < 99
+                                  ? Colors.green[100]
+                                  : Colors.grey[200],
+                              shape: const CircleBorder(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
