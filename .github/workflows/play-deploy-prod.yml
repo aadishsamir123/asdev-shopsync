@@ -1,4 +1,4 @@
-name: Deploy to Play Store Prod
+name: Deploy to Play Store Production
 
 on:
   workflow_dispatch:
