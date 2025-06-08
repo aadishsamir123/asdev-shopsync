@@ -276,6 +276,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                     const SizedBox(height: 16),
                     _buildLocationCard(task),
                     const SizedBox(height: 16),
+                    _buildCounterCard(task),
+                    const SizedBox(height: 16),
                     _buildDescriptionCard(),
                     const SizedBox(height: 16),
                     _buildAddedByCard(addedByName),
@@ -610,6 +612,105 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                 Text(
                   formattedAddedAt,
                   style: TextStyle(color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCounterCard(Map<String, dynamic> task) {
+    final counter = task['counter'] ?? 1;
+
+    return Card(
+      elevation: 8,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.green[100],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: FaIcon(FontAwesomeIcons.hashtag,
+                      color: Colors.green[800]),
+                ),
+                const SizedBox(width: 16),
+                const Text(
+                  'Counter',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: counter > 1
+                      ? () => _updateTask({'counter': counter - 1})
+                      : null,
+                  icon: FaIcon(
+                    FontAwesomeIcons.minus,
+                    color: counter > 1 ? Colors.green[800] : Colors.grey[400],
+                  ),
+                  style: IconButton.styleFrom(
+                    backgroundColor:
+                        counter > 1 ? Colors.green[100] : Colors.grey[200],
+                    shape: const CircleBorder(),
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[850]
+                        : Colors.grey[50],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.green[200]!,
+                    ),
+                  ),
+                  child: Text(
+                    '$counter',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[800],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 20),
+                IconButton(
+                  onPressed: counter < 99
+                      ? () => _updateTask({'counter': counter + 1})
+                      : null,
+                  icon: FaIcon(
+                    FontAwesomeIcons.plus,
+                    color: counter < 99 ? Colors.green[800] : Colors.grey[400],
+                  ),
+                  style: IconButton.styleFrom(
+                    backgroundColor:
+                        counter < 99 ? Colors.green[100] : Colors.grey[200],
+                    shape: const CircleBorder(),
+                  ),
                 ),
               ],
             ),

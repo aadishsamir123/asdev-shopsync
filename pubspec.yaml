@@ -1,8 +1,8 @@
 name: shopsync
 description: "ShopSync - Sync shopping lists with family and friends"
-publish_to: 'none'
+publish_to: "none"
 
-version: 1.1.0
+version: 1.2.0
 
 environment:
   sdk: ^3.6.0

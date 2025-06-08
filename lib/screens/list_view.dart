@@ -1111,6 +1111,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
                     final isCompleted = docData['completed'] ?? false;
                     final name = docData['name'] ?? 'Untitled Task';
                     final priority = _standardizePriority(docData['priority']);
+                    final counter = docData['counter'] ?? 1;
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
@@ -1174,22 +1175,52 @@ class _ListViewScreenState extends State<ListViewScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          name,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                            color: isCompleted
-                                                ? isDark
-                                                    ? Colors.grey[500]
-                                                    : Colors.grey[600]
-                                                : isDark
-                                                    ? Colors.white
-                                                    : Colors.grey[800],
-                                            decoration: isCompleted
-                                                ? TextDecoration.lineThrough
-                                                : null,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              name,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                color: isCompleted
+                                                    ? isDark
+                                                        ? Colors.grey[500]
+                                                        : Colors.grey[600]
+                                                    : isDark
+                                                        ? Colors.white
+                                                        : Colors.grey[800],
+                                                decoration: isCompleted
+                                                    ? TextDecoration.lineThrough
+                                                    : null,
+                                              ),
+                                            ),
+                                            if (counter > 1) ...[
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 6,
+                                                        vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.green[100],
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                    color: Colors.green[300]!,
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  '${counter}x',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.green[800],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ],
                                         ),
                                         if (docData['location'] != null ||
                                             docData['deadline'] != null ||
