@@ -1,0 +1,19 @@
+changelog:
+  categories:
+    - title: 🚀 Features
+      labels:
+        - enhancement
+
+    - title: 🐛 Bug Fixes
+      labels:
+        - bug
+
+    - title: 🧰 Maintenance
+      labels:
+        - chore
+        - refactor
+        - maintenance
+        
+ footer: |
+    ---
+    🌐 These changes will rollout to Android and Web in the coming days
