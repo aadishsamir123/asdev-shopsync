@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LocationSelector extends StatefulWidget {
   final Function(Map<String, dynamic>) onLocationSelected;
   final Map<String, dynamic>? initialLocation;
+  final String? listId; // Add listId to access saved locations
 
   const LocationSelector({
     super.key,
     required this.onLocationSelected,
     this.initialLocation,
+    this.listId,
   });
 
   static void show(
       BuildContext context, Function(Map<String, dynamic>) onLocationSelected,
-      {Map<String, dynamic>? initialLocation}) {
+      {Map<String, dynamic>? initialLocation, String? listId}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -23,6 +26,7 @@ class LocationSelector extends StatefulWidget {
       builder: (context) => LocationSelector(
         onLocationSelected: onLocationSelected,
         initialLocation: initialLocation,
+        listId: listId,
       ),
     );
   }
@@ -37,6 +41,8 @@ class _LocationSelectorState extends State<LocationSelector>
   final _addressController = TextEditingController();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+  final _firestore = FirebaseFirestore.instance;
+  bool _showSavedLocations = false;
 
   @override
   void initState() {
@@ -81,18 +87,130 @@ class _LocationSelectorState extends State<LocationSelector>
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            Text(
-              'Enter Store Location',
-              style: theme.textTheme.titleLarge,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Enter Store Location',
+                  style: theme.textTheme.titleLarge,
+                ),
+                if (widget.listId != null)
+                  TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _showSavedLocations = !_showSavedLocations;
+                      });
+                    },
+                    icon: FaIcon(
+                      _showSavedLocations
+                          ? FontAwesomeIcons.keyboard
+                          : FontAwesomeIcons.bookmark,
+                      size: 16,
+                    ),
+                    label: Text(_showSavedLocations ? 'Manual' : 'Saved'),
+                  ),
+              ],
             ),
             const SizedBox(height: 16),
-            _buildStoreNameCard(isDark),
-            const SizedBox(height: 16),
-            _buildAddressCard(isDark),
-            const SizedBox(height: 24),
-            _buildSaveButton(),
+            if (_showSavedLocations && widget.listId != null)
+              _buildSavedLocationsList(isDark)
+            else ...[
+              _buildStoreNameCard(isDark),
+              const SizedBox(height: 16),
+              _buildAddressCard(isDark),
+              const SizedBox(height: 24),
+              _buildSaveButton(),
+            ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSavedLocationsList(bool isDark) {
+    return SizedBox(
+      height: 300,
+      child: StreamBuilder<QuerySnapshot>(
+        stream: _firestore
+            .collection('lists')
+            .doc(widget.listId!)
+            .collection('saved_locations')
+            .orderBy('createdAt', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FaIcon(
+                    FontAwesomeIcons.locationDot,
+                    size: 48,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No saved locations',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _showSavedLocations = false;
+                      });
+                    },
+                    child: const Text('Add new location'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              final doc = snapshot.data!.docs[index];
+              final data = doc.data() as Map<String, dynamic>;
+
+              return Card(
+                elevation: 2,
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.green[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: FaIcon(
+                      FontAwesomeIcons.locationDot,
+                      color: Colors.green[800],
+                      size: 16,
+                    ),
+                  ),
+                  title: Text(
+                    data['name'] ?? 'Unnamed Location',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle:
+                      data['address'] != null ? Text(data['address']) : null,
+                  onTap: () {
+                    widget.onLocationSelected({
+                      'name': data['name'],
+                      'address': data['address'],
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

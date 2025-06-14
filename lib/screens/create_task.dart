@@ -319,7 +319,9 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                       context: context,
                       isScrollControlled: true,
                       builder: (context) => LocationSelector(
-                        initialLocation: null,
+                        initialLocation: _location,
+                        listId:
+                            widget.listId, // Pass listId for saved locations
                         onLocationSelected: (location) {
                           if (!mounted) return;
                           if (location.isNotEmpty) {
