@@ -99,6 +99,7 @@ class _ChooseTaskIconScreenState extends State<ChooseTaskIconScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
       appBar: AppBar(
         title: const Text(
           'Choose Icon',
@@ -107,27 +108,11 @@ class _ChooseTaskIconScreenState extends State<ChooseTaskIconScreen> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: isDark ? Colors.grey[900] : Colors.green[800],
+        backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
         elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.grey[800]!.withValues(alpha: 0.5)
-                  : Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isDark
-                    ? Colors.grey[700]!
-                    : Colors.white.withValues(alpha: 0.3),
-              ),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.close, color: Colors.white),
-              onPressed: _onCancel,
-            ),
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.white),
+          onPressed: _onCancel,
         ),
         actions: [
           Padding(
@@ -159,7 +144,6 @@ class _ChooseTaskIconScreenState extends State<ChooseTaskIconScreen> {
           ),
         ],
       ),
-      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
       body: Column(
         children: [
           // Search Bar

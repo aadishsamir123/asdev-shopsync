@@ -143,7 +143,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (shouldSignOut) {
       try {
-        await FirebaseAuth.instance.signOut();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const SignOutScreen()),
@@ -193,6 +192,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       child: Scaffold(
+        backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
         body: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
@@ -200,33 +200,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               expandedHeight: 280,
               // Increased height
               pinned: true,
-              backgroundColor: isDark ? Colors.grey[900] : Colors.green[800],
+              backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
+              elevation: 0,
               leading: !_isEditing
-                  ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.grey[800]!.withValues(alpha: 0.5)
-                              : Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isDark
-                                ? Colors.grey[700]!
-                                : Colors.white.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: IconButton(
-                          icon: const FaIcon(FontAwesomeIcons.arrowLeft,
-                              color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
-                          tooltip: 'Go Back',
-                        ),
-                      ),
+                  ? IconButton(
+                      icon: const FaIcon(FontAwesomeIcons.arrowLeft,
+                          color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                      tooltip: 'Go Back',
                     )
-                  : Padding(
-                      padding: const EdgeInsets.all(0.0),
-                    ),
+                  : null,
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
                   fit: StackFit.expand,

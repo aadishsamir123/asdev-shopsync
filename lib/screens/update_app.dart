@@ -54,9 +54,24 @@ class _UpdateAppScreenState extends State<UpdateAppScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return PopScope(
       canPop: false,
       child: Scaffold(
+        backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
+        appBar: AppBar(
+          backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
+          elevation: 0,
+          title: const Text(
+            'ShopSync Update',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          automaticallyImplyLeading: false,
+        ),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),

@@ -167,41 +167,22 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
       appBar: AppBar(
-          title: Text(
-            'Task Details',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+        title: const Text(
+          'Task Details',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-          backgroundColor: isDark ? Colors.grey[900] : Colors.green[800],
-          elevation: 0,
-          leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              width: 48,
-              height: 48,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.grey[800]!.withValues(alpha: 0.5)
-                    : Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isDark
-                      ? Colors.grey[700]!
-                      : Colors.white.withValues(alpha: 0.3),
-                ),
-              ),
-              child: IconButton(
-                icon: const FaIcon(FontAwesomeIcons.arrowLeft,
-                    color: Colors.white),
-                onPressed: () => Navigator.pop(context),
-                tooltip: 'Go Back',
-              ),
-            ),
-          )),
+        ),
+        backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
+        elevation: 0,
+        leading: IconButton(
+          icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: _firestore
             .collection('lists')

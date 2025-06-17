@@ -332,70 +332,36 @@ class _HomeScreenState extends State<HomeScreen> {
     // final l10n = AppLocalizations.of(context);
 
     PreferredSize buildCustomAppBar(BuildContext context) {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
       return PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight + 10),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: Theme.of(context).brightness == Brightness.dark
-                  ? [Colors.grey[900]!, Colors.grey[850]!]
-                  : [Colors.green[800]!, Colors.green[600]!],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withAlpha(25),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: AppBar(
+          backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.menu, color: Colors.white),
+            onPressed: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
           ),
-          child: ClipPath(
-            clipper: AppBarClipper(),
-            child: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              foregroundColor: Colors.white,
-              leading: Material(
-                color: Colors.transparent,
-                child: IconButton(
-                  icon: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withAlpha(51),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.menu),
-                  ),
-                  onPressed: () {
-                    _scaffoldKey.currentState?.openDrawer();
-                  },
+          title: Row(
+            children: [
+              Image.asset(
+                'assets/logos/shopsync.png',
+                height: 32,
+                width: 32,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'ShopSync',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                  color: Colors.white,
                 ),
               ),
-              title: Row(
-                children: [
-                  Image.asset(
-                    'assets/logos/shopsync.png',
-                    height: 32,
-                    width: 32,
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'ShopSync',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            ],
           ),
         ),
       );
@@ -406,6 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onHorizontalDragUpdate: _handleDragUpdate,
       child: Scaffold(
         key: _scaffoldKey,
+        backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
         appBar: buildCustomAppBar(context),
         drawer: Drawer(
           child: Container(
@@ -544,7 +511,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-
                                       Spacer(flex: 1),
                                       FaIcon(
                                         FontAwesomeIcons.listUl,
