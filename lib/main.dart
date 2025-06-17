@@ -11,6 +11,7 @@ import 'screens/profile.dart';
 import 'screens/maintenance_screen.dart';
 import 'screens/onboarding.dart';
 import 'screens/settings.dart';
+import 'screens/choose_task_icon.dart';
 import 'widgets/loading_spinner.dart';
 import 'services/update_service.dart';
 import 'services/maintenance_service.dart';
