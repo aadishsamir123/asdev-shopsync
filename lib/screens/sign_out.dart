@@ -46,7 +46,22 @@ class _SignOutScreenState extends State<SignOutScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
+      appBar: AppBar(
+        backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
+        elevation: 0,
+        title: const Text(
+          'ShopSync',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        automaticallyImplyLeading: false,
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

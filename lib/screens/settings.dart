@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shopsync/screens/sign_out.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -94,17 +95,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _signOut() async {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const SignOutScreen()),
-    );
+    final shouldSignOut = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Sign Out'),
+            content: const Text('Are you sure you want to sign out?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child:
+                    Text('Cancel', style: TextStyle(color: Colors.grey[700])),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red[700]),
+                child: const Text('Sign Out'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (shouldSignOut) {
+      try {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SignOutScreen()),
+        );
+      } catch (e) {
+        // Send sign out errors to Sentry
+        await Sentry.captureException(
+          e,
+          stackTrace: StackTrace.current,
+          hint: Hint.withMap({'action': 'signing_out'}),
+        );
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error signing out: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        isDark ? const Color(0xFF181A20) : const Color(0xFFF5F6FA);
     final cardColor = isDark ? const Color(0xFF23262B) : Colors.white;
     final iconColor = isDark ? Colors.green[200]! : Colors.green[700]!;
     final textColor = isDark ? Colors.white : Colors.grey[900]!;
@@ -181,19 +220,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: backgroundColor,
+        backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Settings',
           style: TextStyle(
-            color: textColor,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
         ),
-        iconTheme: IconThemeData(color: iconColor),
+        leading: IconButton(
+          icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(18),

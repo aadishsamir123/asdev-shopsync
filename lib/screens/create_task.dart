@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/loading_spinner.dart';
 import '/widgets/place_selector.dart';
+import '/libraries/icons/lucide_food_map.dart';
+import '/screens/choose_task_icon.dart';
 
 class CreateTaskScreen extends StatefulWidget {
   final String listId;
@@ -23,6 +25,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   Map<String, dynamic>? _location;
   bool _isLoading = false;
   int _counter = 1;
+  FoodIconMapping? _selectedIcon;
 
   Future<void> _createTask() async {
     if (_titleController.text.trim().isEmpty) {
@@ -68,6 +71,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         'deadline': deadline,
         'location': _location,
         'counter': _counter,
+        'iconIdentifier': _selectedIcon?.identifier,
       });
 
       if (!mounted) return;
@@ -82,6 +86,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
       appBar: AppBar(
         title: const Text(
           'Create Task',
@@ -90,29 +95,11 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: isDark ? Colors.grey[900] : Colors.green[800],
+        backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
         elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.grey[800]!.withValues(alpha: 0.5)
-                  : Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isDark
-                    ? Colors.grey[700]!
-                    : Colors.white.withValues(alpha: 0.3),
-              ),
-            ),
-            child: IconButton(
-              icon:
-                  const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-              tooltip: 'Go Back',
-            ),
-          ),
+        leading: IconButton(
+          icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SingleChildScrollView(
@@ -184,6 +171,81 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Icon Selection Card
+            _buildCard(
+              title: 'Icon',
+              child: Card(
+                elevation: 8,
+                shadowColor: Colors.black26,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                child: InkWell(
+                  onTap: () async {
+                    final result = await Navigator.push<FoodIconMapping>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChooseTaskIconScreen(
+                          selectedIcon: _selectedIcon,
+                        ),
+                      ),
+                    );
+                    if (result != null) {
+                      setState(() {
+                        _selectedIcon = result;
+                      });
+                    }
+                  },
+                  borderRadius: BorderRadius.circular(15),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.green[100],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: _selectedIcon != null
+                              ? Icon(
+                                  _selectedIcon!.icon,
+                                  color: Colors.green[800],
+                                  size: 24,
+                                )
+                              : FaIcon(
+                                  FontAwesomeIcons.icons,
+                                  color: Colors.green[800],
+                                ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Task Icon',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _selectedIcon?.displayName ?? 'Choose an icon',
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

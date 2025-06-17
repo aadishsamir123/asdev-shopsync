@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/place_selector.dart';
 import '/widgets/loading_spinner.dart';
+import '/libraries/icons/lucide_food_map.dart';
+import '/screens/choose_task_icon.dart';
 
 class TaskDetailsScreen extends StatefulWidget {
   final String listId;
@@ -165,41 +167,22 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
       appBar: AppBar(
-          title: Text(
-            'Task Details',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+        title: const Text(
+          'Task Details',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-          backgroundColor: isDark ? Colors.grey[900] : Colors.green[800],
-          elevation: 0,
-          leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              width: 48,
-              height: 48,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.grey[800]!.withValues(alpha: 0.5)
-                    : Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isDark
-                      ? Colors.grey[700]!
-                      : Colors.white.withValues(alpha: 0.3),
-                ),
-              ),
-              child: IconButton(
-                icon: const FaIcon(FontAwesomeIcons.arrowLeft,
-                    color: Colors.white),
-                onPressed: () => Navigator.pop(context),
-                tooltip: 'Go Back',
-              ),
-            ),
-          )),
+        ),
+        backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
+        elevation: 0,
+        leading: IconButton(
+          icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: _firestore
             .collection('lists')
@@ -272,6 +255,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                     const SizedBox(height: 24),
                     _buildStatusCard(completed),
                     const SizedBox(height: 16),
+                    _buildIconCard(task),
+                    const SizedBox(height: 16),
                     _buildDeadlineCard(),
                     const SizedBox(height: 16),
                     _buildLocationCard(task),
@@ -331,6 +316,90 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
             activeTrackColor: Colors.green[800],
             inactiveThumbColor: isDark ? Colors.grey[300] : Colors.grey[50],
             inactiveTrackColor: isDark ? Colors.grey[600] : Colors.grey[300],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIconCard(Map<String, dynamic> task) {
+    final iconIdentifier = task['iconIdentifier'] as String?;
+    final selectedIcon = iconIdentifier != null
+        ? LucideFoodIconMap.getIcon(iconIdentifier)
+        : null;
+
+    return Card(
+      elevation: 8,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: InkWell(
+        onTap: () async {
+          final result = await Navigator.push<FoodIconMapping>(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChooseTaskIconScreen(
+                selectedIcon: selectedIcon,
+              ),
+            ),
+          );
+          if (result != null) {
+            await _updateTask({'iconIdentifier': result.identifier});
+          } else if (selectedIcon != null) {
+            // User can clear the icon by returning null
+            await _updateTask({'iconIdentifier': FieldValue.delete()});
+          }
+        },
+        borderRadius: BorderRadius.circular(15),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.green[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: selectedIcon != null
+                    ? Icon(
+                        selectedIcon.icon,
+                        color: Colors.green[800],
+                        size: 24,
+                      )
+                    : FaIcon(
+                        FontAwesomeIcons.icons,
+                        color: Colors.green[800],
+                      ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Task Icon',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      selectedIcon?.displayName ?? 'Choose an icon',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+              if (selectedIcon != null)
+                IconButton(
+                  icon: const FaIcon(FontAwesomeIcons.xmark),
+                  onPressed: () =>
+                      _updateTask({'iconIdentifier': FieldValue.delete()}),
+                ),
+            ],
           ),
         ),
       ),

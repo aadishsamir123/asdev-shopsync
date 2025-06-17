@@ -9,6 +9,7 @@ import 'task_details.dart';
 import 'create_task.dart';
 import 'list_options.dart';
 import '/widgets/loading_spinner.dart';
+import '/libraries/icons/lucide_food_map.dart';
 
 class ListViewScreen extends StatefulWidget {
   final String listId;
@@ -416,6 +417,10 @@ class _TasksTabState extends State<TasksTab> {
     final deadline = data['deadline'] as Timestamp?;
     final location = data['location'] as Map<String, dynamic>?;
     final counter = data['counter'] ?? 1;
+    final iconIdentifier = data['iconIdentifier'] as String?;
+    final taskIcon = iconIdentifier != null
+        ? LucideFoodIconMap.getIcon(iconIdentifier)
+        : null;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -471,6 +476,24 @@ class _TasksTabState extends State<TasksTab> {
                 ),
               ),
               const SizedBox(width: 16),
+
+              // Task Icon
+              if (taskIcon != null) ...[
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.green[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    taskIcon.icon,
+                    size: 18,
+                    color: Colors.green[800],
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
 
               // Task content
               Expanded(

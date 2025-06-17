@@ -138,62 +138,22 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     PreferredSize buildCustomAppBar(BuildContext context) {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
       return PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight + 10),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: Theme.of(context).brightness == Brightness.dark
-                  ? [Colors.grey[900]!, Colors.grey[850]!]
-                  : [Colors.green[800]!, Colors.green[600]!],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: AppBar(
+          backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
+          elevation: 0,
+          leading: IconButton(
+            icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
           ),
-          child: ClipPath(
-            clipper: AppBarClipper(),
-            child: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              foregroundColor: Colors.white,
-              leading: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.grey[800]!.withValues(alpha: 0.5)
-                        : Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.grey[700]!
-                          : Colors.white.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: IconButton(
-                    icon: const FaIcon(FontAwesomeIcons.arrowLeft,
-                        color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
-                    tooltip: 'Go Back',
-                  ),
-                ),
-              ),
-              title: Text(
-                "Recycle Bin",
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+          title: const Text(
+            "Recycle Bin",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
         ),
@@ -201,6 +161,7 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
     }
 
     return Scaffold(
+      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
       appBar: buildCustomAppBar(context),
       body: CustomScrollView(
         slivers: [

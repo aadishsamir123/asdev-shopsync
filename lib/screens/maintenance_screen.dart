@@ -19,126 +19,135 @@ class MaintenanceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark ? Colors.grey[900] : Colors.green[900];
+    final backgroundColor = isDark ? Colors.grey[900] : Colors.grey[50];
     final cardColor = isDark
         ? Colors.black.withValues(alpha: 0.6)
         : Colors.white.withValues(alpha: 0.8);
 
     return Scaffold(
-      body: Container(
-        color: backgroundColor,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: cardColor,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: isDark
-                            ? Colors.black.withValues(alpha: 0.5)
-                            : Colors.orange.withValues(alpha: 0.2),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                    border: Border.all(
+      backgroundColor: backgroundColor,
+      appBar: AppBar(
+        backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
+        elevation: 0,
+        title: const Text(
+          'ShopSync',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
                       color: isDark
-                          ? Colors.blueGrey.shade700
-                          : Colors.orange.shade200,
+                          ? Colors.black.withValues(alpha: 0.5)
+                          : Colors.orange.withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
                     ),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: isPredictive
-                                ? [Colors.amber.shade700, Colors.amber.shade400]
-                                : [
-                                    Colors.orange.shade700,
-                                    Colors.orange.shade400
-                                  ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                        child: FaIcon(
-                          isPredictive
-                              ? FontAwesomeIcons.triangleExclamation
-                              : FontAwesomeIcons.screwdriverWrench,
-                          size: 48,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            isPredictive
-                                ? 'Upcoming Maintenance'
-                                : 'Under Maintenance',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        message,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: isDark ? Colors.white70 : Colors.black54,
-                          height: 1.5,
-                        ),
-                      ),
-                      if (startTime != null && endTime != null) ...[
-                        const SizedBox(height: 32),
-                        _buildTimeDisplay(isDark),
-                      ],
-                      if (isPredictive) ...[
-                        const SizedBox(height: 32),
-                        ElevatedButton.icon(
-                          onPressed: () => Navigator.of(context).pop(),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isDark
-                                ? Colors.amber.shade700
-                                : Colors.orange.shade600,
-                            minimumSize: const Size(200, 48),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          icon: const FaIcon(
-                            FontAwesomeIcons.circleCheck,
-                            size: 18,
-                            color: Colors.black,
-                          ),
-                          label: const Text(
-                            'Understood',
-                            style: TextStyle(fontSize: 16, color: Colors.black),
-                          ),
-                        ),
-                      ],
-                    ],
+                  ],
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.blueGrey.shade700
+                        : Colors.orange.shade200,
                   ),
                 ),
-              ],
-            ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: isPredictive
+                              ? [Colors.amber.shade700, Colors.amber.shade400]
+                              : [
+                                  Colors.orange.shade700,
+                                  Colors.orange.shade400
+                                ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: FaIcon(
+                        isPredictive
+                            ? FontAwesomeIcons.triangleExclamation
+                            : FontAwesomeIcons.screwdriverWrench,
+                        size: 48,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          isPredictive
+                              ? 'Upcoming Maintenance'
+                              : 'Under Maintenance',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: isDark ? Colors.white70 : Colors.black54,
+                        height: 1.5,
+                      ),
+                    ),
+                    if (startTime != null && endTime != null) ...[
+                      const SizedBox(height: 32),
+                      _buildTimeDisplay(isDark),
+                    ],
+                    if (isPredictive) ...[
+                      const SizedBox(height: 32),
+                      ElevatedButton.icon(
+                        onPressed: () => Navigator.of(context).pop(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isDark
+                              ? Colors.amber.shade700
+                              : Colors.orange.shade600,
+                          minimumSize: const Size(200, 48),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: const FaIcon(
+                          FontAwesomeIcons.circleCheck,
+                          size: 18,
+                          color: Colors.black,
+                        ),
+                        label: const Text(
+                          'Understood',
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
