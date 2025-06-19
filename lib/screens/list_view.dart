@@ -480,16 +480,26 @@ class _TasksTabState extends State<TasksTab> {
               // Task Icon
               if (taskIcon != null) ...[
                 Container(
-                  width: 32,
-                  height: 32,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
-                    color: Colors.green[100],
-                    borderRadius: BorderRadius.circular(8),
+                    color: isCompleted
+                        ? (isDark ? Colors.grey[700] : Colors.grey[300])
+                        : Colors.green[100],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isCompleted
+                          ? (isDark ? Colors.grey[600]! : Colors.grey[400]!)
+                          : Colors.green[200]!,
+                      width: 1,
+                    ),
                   ),
                   child: Icon(
                     taskIcon.icon,
-                    size: 18,
-                    color: Colors.green[800],
+                    size: 28,
+                    color: isCompleted
+                        ? (isDark ? Colors.grey[400] : Colors.grey[600])
+                        : Colors.green[800],
                   ),
                 ),
                 const SizedBox(width: 12),
