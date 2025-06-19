@@ -1,14 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '/screens/list_view.dart';
 import '/widgets/loading_spinner.dart';
+import '/widgets/advert.dart';
 
 class TutorialStep extends StatelessWidget {
   final IconData icon;
@@ -113,6 +116,10 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   double _dragStartX = 0;
+
+  // Ad management
+  BannerAd? _bannerAd;
+  bool _isBannerAdLoaded = false;
 
   void _handleDragStart(DragStartDetails details) {
     _dragStartX = details.globalPosition.dx;
@@ -323,6 +330,49 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: onTap,
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBannerAd();
+  }
+
+  void _loadBannerAd() {
+    // Don't load ads on web platform
+    if (kIsWeb) {
+      return;
+    }
+
+    _bannerAd = BannerAd(
+      adUnitId: 'ca-app-pub-6149170768233698/9243836096',
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _isBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          setState(() {
+            _bannerAd = null;
+            _isBannerAdLoaded = false;
+          });
+        },
+      ),
+    );
+    _bannerAd?.load();
+  }
+
+  @override
+  void dispose() {
+    _newListController.dispose();
+    if (!kIsWeb) {
+      _bannerAd?.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -742,167 +792,186 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        body: StreamBuilder<QuerySnapshot>(
-          stream: _firestore
-              .collection('lists')
-              .where('members', arrayContains: _auth.currentUser?.uid)
-              .orderBy('createdAt', descending: true)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              Sentry.captureException(
-                snapshot.error,
-                stackTrace: snapshot.stackTrace,
-                hint: Hint.withMap({'component': 'lists_stream'}),
-              );
-              return Center(
-                child: Text('Error loading lists: ${snapshot.error}'),
-              );
-            }
+        body: Column(
+          children: [
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _firestore
+                    .collection('lists')
+                    .where('members', arrayContains: _auth.currentUser?.uid)
+                    .orderBy('createdAt', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    Sentry.captureException(
+                      snapshot.error,
+                      stackTrace: snapshot.stackTrace,
+                      hint: Hint.withMap({'component': 'lists_stream'}),
+                    );
+                    return Center(
+                      child: Text('Error loading lists: ${snapshot.error}'),
+                    );
+                  }
 
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CustomLoadingSpinner(
-                  color: Colors.green,
-                  size: 60.0,
-                ),
-              );
-            }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CustomLoadingSpinner(
+                        color: Colors.green,
+                        size: 60.0,
+                      ),
+                    );
+                  }
 
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: isDark ? Colors.green[900] : Colors.green[50],
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.check_circle_outline,
-                          size: 64,
-                          color: isDark
-                              ? Colors.green[100]
-                              : Colors.green[800]?.withAlpha(178),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Welcome to ShopSync',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.green[300] : Colors.green[800],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Share shopping lists with family and friends',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: isDark ? Colors.grey[300] : Colors.grey[700],
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      // Instructions Card with tutorial steps
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: isDark
-                                ? [Colors.grey[900]!, Colors.grey[850]!]
-                                : [Colors.green[50]!, Colors.green[100]!],
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withAlpha(25),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                          border: Border.all(
-                            color:
-                                isDark ? Colors.grey[800]! : Colors.green[200]!,
-                          ),
-                        ),
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: isDark
-                                        ? Colors.green[800]
-                                        : Colors.green[100],
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: FaIcon(
-                                    FontAwesomeIcons.graduationCap,
-                                    color: isDark
-                                        ? Colors.green[100]
-                                        : Colors.green[800],
-                                    size: 20,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Quick Tutorial',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark
-                                        ? Colors.green[100]
-                                        : Colors.green[900],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
+                            Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: isDark ? Colors.grey[850] : Colors.white,
-                                borderRadius: BorderRadius.circular(12),
+                                color: isDark
+                                    ? Colors.green[900]
+                                    : Colors.green[50],
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.check_circle_outline,
+                                size: 64,
+                                color: isDark
+                                    ? Colors.green[100]
+                                    : Colors.green[800]?.withAlpha(178),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              'Welcome to ShopSync',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: isDark
+                                    ? Colors.green[300]
+                                    : Colors.green[800],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Share shopping lists with family and friends',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: isDark
+                                    ? Colors.grey[300]
+                                    : Colors.grey[700],
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            // Instructions Card with tutorial steps
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: isDark
+                                      ? [Colors.grey[900]!, Colors.grey[850]!]
+                                      : [Colors.green[50]!, Colors.green[100]!],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withAlpha(25),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                                 border: Border.all(
                                   color: isDark
-                                      ? Colors.grey[700]!
-                                      : Colors.grey[200]!,
+                                      ? Colors.grey[800]!
+                                      : Colors.green[200]!,
                                 ),
                               ),
                               child: Column(
                                 children: [
-                                  TutorialStep(
-                                    icon: FontAwesomeIcons.bars,
-                                    title: 'Open the drawer from the left',
-                                    subtitle: 'Access your lists and settings',
-                                    color: Colors.green[800]!,
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: isDark
+                                              ? Colors.green[800]
+                                              : Colors.green[100],
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: FaIcon(
+                                          FontAwesomeIcons.graduationCap,
+                                          color: isDark
+                                              ? Colors.green[100]
+                                              : Colors.green[800],
+                                          size: 20,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        'Quick Tutorial',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDark
+                                              ? Colors.green[100]
+                                              : Colors.green[900],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 16),
-                                  TutorialStep(
-                                    icon: FontAwesomeIcons.cartShopping,
-                                    title: 'Select a shopping list to view',
-                                    subtitle:
-                                        'Or create a new one to get started',
-                                    color: Colors.green[800]!,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  TutorialStep(
-                                    icon: FontAwesomeIcons.circlePlus,
-                                    title: 'Add items to your list',
-                                    subtitle:
-                                        'Keep track of what you need to buy',
-                                    color: Colors.green[800]!,
+                                  const SizedBox(height: 20),
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? Colors.grey[850]
+                                          : Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: isDark
+                                            ? Colors.grey[700]!
+                                            : Colors.grey[200]!,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        TutorialStep(
+                                          icon: FontAwesomeIcons.bars,
+                                          title:
+                                              'Open the drawer from the left',
+                                          subtitle:
+                                              'Access your lists and settings',
+                                          color: Colors.green[800]!,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        TutorialStep(
+                                          icon: FontAwesomeIcons.cartShopping,
+                                          title:
+                                              'Select a shopping list to view',
+                                          subtitle:
+                                              'Or create a new one to get started',
+                                          color: Colors.green[800]!,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        TutorialStep(
+                                          icon: FontAwesomeIcons.circlePlus,
+                                          title: 'Add items to your list',
+                                          subtitle:
+                                              'Keep track of what you need to buy',
+                                          color: Colors.green[800]!,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -910,180 +979,194 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              );
-            }
+                    );
+                  }
 
-            // Show lists in grid/list view
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Your Lists',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.green[300] : Colors.green[800],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        final doc = snapshot.data!.docs[index];
-                        final listName = doc['name'] ?? 'Unnamed List';
-                        final timestamp = doc['createdAt'] as Timestamp?;
-                        final createdAt = timestamp != null
-                            ? DateFormat('MMM dd, yyyy')
-                                .format(timestamp.toDate())
-                            : 'Unknown date';
+                  // Show lists in grid/list view
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Your Lists',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                isDark ? Colors.green[300] : Colors.green[800],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              final doc = snapshot.data!.docs[index];
+                              final listName = doc['name'] ?? 'Unnamed List';
+                              final timestamp = doc['createdAt'] as Timestamp?;
+                              final createdAt = timestamp != null
+                                  ? DateFormat('MMM dd, yyyy')
+                                      .format(timestamp.toDate())
+                                  : 'Unknown date';
 
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: isDark
-                                    ? [Colors.grey[900]!, Colors.grey[850]!]
-                                    : [Colors.white, Colors.grey[50]!],
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withAlpha(25),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                              border: Border.all(
-                                color: isDark
-                                    ? Colors.grey[800]!
-                                    : Colors.grey[200]!,
-                              ),
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(16),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ListViewScreen(
-                                        listId: doc.id,
-                                        listName: listName,
-                                      ),
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: isDark
+                                          ? [
+                                              Colors.grey[900]!,
+                                              Colors.grey[850]!
+                                            ]
+                                          : [Colors.white, Colors.grey[50]!],
                                     ),
-                                  );
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: isDark
-                                              ? Colors.green[900]
-                                              : Colors.green[50],
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: FaIcon(
-                                          FontAwesomeIcons.cartShopping,
-                                          color: isDark
-                                              ? Colors.green[200]
-                                              : Colors.green[700],
-                                          size: 24,
-                                        ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withAlpha(25),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
                                       ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                    ],
+                                    border: Border.all(
+                                      color: isDark
+                                          ? Colors.grey[800]!
+                                          : Colors.grey[200]!,
+                                    ),
+                                  ),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(16),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ListViewScreen(
+                                              listId: doc.id,
+                                              listName: listName,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Row(
                                           children: [
-                                            Text(
-                                              listName,
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w600,
+                                            Container(
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
                                                 color: isDark
-                                                    ? Colors.white
-                                                    : Colors.grey[800],
+                                                    ? Colors.green[900]
+                                                    : Colors.green[50],
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: FaIcon(
+                                                FontAwesomeIcons.cartShopping,
+                                                color: isDark
+                                                    ? Colors.green[200]
+                                                    : Colors.green[700],
+                                                size: 24,
                                               ),
                                             ),
-                                            const SizedBox(height: 4),
-                                            Row(
-                                              children: [
-                                                FaIcon(
-                                                  FontAwesomeIcons.calendar,
-                                                  size: 14,
-                                                  color: isDark
-                                                      ? Colors.grey[400]
-                                                      : Colors.grey[600],
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  createdAt,
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: isDark
-                                                        ? Colors.grey[400]
-                                                        : Colors.grey[600],
+                                            const SizedBox(width: 16),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    listName,
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: isDark
+                                                          ? Colors.white
+                                                          : Colors.grey[800],
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                  const SizedBox(height: 4),
+                                                  Row(
+                                                    children: [
+                                                      FaIcon(
+                                                        FontAwesomeIcons
+                                                            .calendar,
+                                                        size: 14,
+                                                        color: isDark
+                                                            ? Colors.grey[400]
+                                                            : Colors.grey[600],
+                                                      ),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        createdAt,
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: isDark
+                                                              ? Colors.grey[400]
+                                                              : Colors
+                                                                  .grey[600],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              padding: const EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                color: isDark
+                                                    ? Colors.grey[800]
+                                                    : Colors.grey[100],
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: FaIcon(
+                                                FontAwesomeIcons.arrowRight,
+                                                size: 16,
+                                                color: isDark
+                                                    ? Colors.grey[400]
+                                                    : Colors.grey[600],
+                                              ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                      Container(
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: isDark
-                                              ? Colors.grey[800]
-                                              : Colors.grey[100],
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: FaIcon(
-                                          FontAwesomeIcons.arrowRight,
-                                          size: 16,
-                                          color: isDark
-                                              ? Colors.grey[400]
-                                              : Colors.grey[600],
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                           ),
-                        );
-                      },
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
-            );
-          },
+            ),
+            // Advertisement at the bottom
+            if (_isBannerAdLoaded && _bannerAd != null)
+              Container(
+                margin: const EdgeInsets.all(8.0),
+                child: BannerAdvertWidget(
+                  bannerAd: _bannerAd,
+                  backgroundColor:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[800]!
+                          : Colors.white,
+                ),
+              ),
+          ],
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _newListController.dispose();
-    super.dispose();
   }
 }

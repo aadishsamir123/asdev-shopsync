@@ -2,7 +2,7 @@ name: shopsync
 description: "ShopSync - Share shopping lists with family and friends"
 publish_to: "none"
 
-version: 2.2.0
+version: 2.3.0
 
 environment:
   sdk: ^3.6.0
@@ -36,6 +36,7 @@ dependencies:
   google_sign_in: ^6.3.0
   flutter_svg: ^2.1.0
   amplitude_flutter: ^4.0.0
+  google_mobile_ads: ^6.0.0
 
 dev_dependencies:
   sentry_dart_plugin: ^2.4.1
