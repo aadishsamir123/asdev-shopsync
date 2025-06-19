@@ -218,44 +218,97 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Stack(
+                    Row(
                       children: [
-                        TextField(
-                          controller: _nameController,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.only(bottom: 8),
-                          ),
-                          onSubmitted: (value) {
-                            if (value.trim().isNotEmpty) {
-                              _updateTask({'name': value.trim()});
-                            }
-                          },
-                        ),
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          child: CustomPaint(
-                            painter: DottedLinePainter(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.grey[600]!
-                                  : Colors.grey[300]!,
+                        // Large icon display
+                        Stack(
+                          children: [
+                            GestureDetector(
+                              onTap: () => _navigateToIconSelector(task),
+                              child: Container(
+                                width: 64,
+                                height: 64,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Colors.green[100],
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: Colors.green[200]!,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: _buildTaskIcon(task),
+                              ),
                             ),
-                            size: Size(MediaQuery.of(context).size.width, 1),
+                            Positioned(
+                              top: 2,
+                              right: 2,
+                              child: GestureDetector(
+                                onTap: () => _navigateToIconSelector(task),
+                                child: Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    color: Colors.green[800],
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    FontAwesomeIcons.pen,
+                                    size: 11,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 16),
+                        // Task name field
+                        Expanded(
+                          child: Stack(
+                            children: [
+                              TextField(
+                                controller: _nameController,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.only(bottom: 8),
+                                ),
+                                onSubmitted: (value) {
+                                  if (value.trim().isNotEmpty) {
+                                    _updateTask({'name': value.trim()});
+                                  }
+                                },
+                              ),
+                              Positioned(
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                child: CustomPaint(
+                                  painter: DottedLinePainter(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.grey[600]!
+                                        : Colors.grey[300]!,
+                                  ),
+                                  size: Size(
+                                      MediaQuery.of(context).size.width, 1),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 24),
                     _buildStatusCard(completed),
-                    const SizedBox(height: 16),
-                    _buildIconCard(task),
                     const SizedBox(height: 16),
                     _buildDeadlineCard(),
                     const SizedBox(height: 16),
@@ -322,88 +375,47 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
     );
   }
 
-  Widget _buildIconCard(Map<String, dynamic> task) {
+  Widget _buildTaskIcon(Map<String, dynamic> task) {
     final iconIdentifier = task['iconIdentifier'] as String?;
     final selectedIcon = iconIdentifier != null
         ? LucideFoodIconMap.getIcon(iconIdentifier)
         : null;
 
-    return Card(
-      elevation: 8,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: InkWell(
-        onTap: () async {
-          final result = await Navigator.push<FoodIconMapping>(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChooseTaskIconScreen(
-                selectedIcon: selectedIcon,
-              ),
-            ),
-          );
-          if (result != null) {
-            await _updateTask({'iconIdentifier': result.identifier});
-          } else if (selectedIcon != null) {
-            // User can clear the icon by returning null
-            await _updateTask({'iconIdentifier': FieldValue.delete()});
-          }
-        },
-        borderRadius: BorderRadius.circular(15),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.green[100],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: selectedIcon != null
-                    ? Icon(
-                        selectedIcon.icon,
-                        color: Colors.green[800],
-                        size: 24,
-                      )
-                    : FaIcon(
-                        FontAwesomeIcons.icons,
-                        color: Colors.green[800],
-                      ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Task Icon',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      selectedIcon?.displayName ?? 'Choose an icon',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-              if (selectedIcon != null)
-                IconButton(
-                  icon: const FaIcon(FontAwesomeIcons.xmark),
-                  onPressed: () =>
-                      _updateTask({'iconIdentifier': FieldValue.delete()}),
-                ),
-            ],
-          ),
+    if (selectedIcon != null) {
+      return Icon(
+        selectedIcon.icon,
+        color: Colors.green[800],
+        size: 32,
+      );
+    } else {
+      return FaIcon(
+        FontAwesomeIcons.check,
+        color: Colors.green[800],
+        size: 28,
+      );
+    }
+  }
+
+  Future<void> _navigateToIconSelector(Map<String, dynamic> task) async {
+    final iconIdentifier = task['iconIdentifier'] as String?;
+    final selectedIcon = iconIdentifier != null
+        ? LucideFoodIconMap.getIcon(iconIdentifier)
+        : null;
+
+    final result = await Navigator.push<FoodIconMapping>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChooseTaskIconScreen(
+          selectedIcon: selectedIcon,
         ),
       ),
     );
+    if (result != null) {
+      await _updateTask({'iconIdentifier': result.identifier});
+    } else if (selectedIcon != null) {
+      // User can clear the icon by returning null
+      await _updateTask({'iconIdentifier': FieldValue.delete()});
+    }
   }
 
   Widget _buildDeadlineCard() {
