@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import '/widgets/place_selector.dart';
 import '/widgets/loading_spinner.dart';
 import '/services/export_service.dart';
+import '/widgets/advert.dart';
 import 'recycle_bin.dart';
 
 class ListOptionsScreen extends StatefulWidget {
@@ -25,6 +28,50 @@ class ListOptionsScreen extends StatefulWidget {
 class _ListOptionsScreenState extends State<ListOptionsScreen> {
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
+
+  // Ad management
+  BannerAd? _bannerAd;
+  bool _isBannerAdLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBannerAd();
+  }
+
+  void _loadBannerAd() {
+    // Don't load ads on web platform
+    if (kIsWeb) {
+      return;
+    }
+
+    _bannerAd = BannerAd(
+      adUnitId: 'ca-app-pub-6149170768233698/4749207257',
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _isBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          setState(() {
+            _bannerAd = null;
+            _isBannerAdLoaded = false;
+          });
+        },
+      ),
+    );
+    _bannerAd?.load();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
+  }
 
   void _editListName(String currentName) {
     final TextEditingController nameController =
@@ -369,6 +416,21 @@ class _ListOptionsScreenState extends State<ListOptionsScreen> {
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 16),
+
+                // Advertisement at the bottom
+                if (_isBannerAdLoaded && _bannerAd != null)
+                  Center(
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 8.0),
+                      child: BannerAdvertWidget(
+                        bannerAd: _bannerAd,
+                        backgroundColor:
+                            isDark ? Colors.grey[800]! : Colors.white,
+                      ),
+                    ),
+                  ),
               ],
             ),
           );
