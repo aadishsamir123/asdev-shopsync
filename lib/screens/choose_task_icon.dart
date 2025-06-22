@@ -24,7 +24,6 @@ class _ChooseTaskIconScreenState extends State<ChooseTaskIconScreen>
   late AnimationController _categoryAnimationController;
   late AnimationController _fabAnimationController;
   late Animation<double> _searchAnimation;
-  late Animation<double> _fabAnimation;
 
   FoodIconMapping? _selectedIcon;
   String _selectedCategory = 'all';
@@ -79,10 +78,6 @@ class _ChooseTaskIconScreenState extends State<ChooseTaskIconScreen>
     _searchAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
           parent: _searchAnimationController, curve: Curves.easeInOut),
-    );
-    _fabAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-          parent: _fabAnimationController, curve: Curves.elasticOut),
     );
 
     // Setup focus node listener
