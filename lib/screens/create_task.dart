@@ -214,10 +214,10 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: _selectedIcon != null
-                              ? Icon(
-                                  _selectedIcon!.icon,
+                              ? _selectedIcon!.buildIcon(
+                                  width: 24,
+                                  height: 24,
                                   color: Colors.green[800],
-                                  size: 24,
                                 )
                               : FaIcon(
                                   FontAwesomeIcons.icons,

@@ -418,9 +418,8 @@ class _TasksTabState extends State<TasksTab> {
     final location = data['location'] as Map<String, dynamic>?;
     final counter = data['counter'] ?? 1;
     final iconIdentifier = data['iconIdentifier'] as String?;
-    final taskIcon = iconIdentifier != null
-        ? LucideFoodIconMap.getIcon(iconIdentifier)
-        : null;
+    final taskIcon =
+        iconIdentifier != null ? FoodIconMap.getIcon(iconIdentifier) : null;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -494,9 +493,9 @@ class _TasksTabState extends State<TasksTab> {
                       width: 1,
                     ),
                   ),
-                  child: Icon(
-                    taskIcon.icon,
-                    size: 28,
+                  child: taskIcon.buildIcon(
+                    width: 28,
+                    height: 28,
                     color: isCompleted
                         ? (isDark ? Colors.grey[400] : Colors.grey[600])
                         : Colors.green[800],

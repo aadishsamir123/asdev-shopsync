@@ -18,6 +18,7 @@ import 'services/update_service.dart';
 import 'services/maintenance_service.dart';
 import 'services/shared_prefs.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'screens/choose_task_icon.dart';
 
 // Uncomment the following line for testing purposes
 // import 'screens/update_app.dart';
@@ -198,7 +199,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         // Check if user is logged in
         if (snapshot.hasData && snapshot.data != null) {
           // User is signed in, direct to home screen
-          return const HomeScreen();
+          return const ChooseTaskIconScreen();
         }
 
         // User is not signed in, direct to welcome screen

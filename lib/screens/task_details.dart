@@ -377,15 +377,14 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
 
   Widget _buildTaskIcon(Map<String, dynamic> task) {
     final iconIdentifier = task['iconIdentifier'] as String?;
-    final selectedIcon = iconIdentifier != null
-        ? LucideFoodIconMap.getIcon(iconIdentifier)
-        : null;
+    final selectedIcon =
+        iconIdentifier != null ? FoodIconMap.getIcon(iconIdentifier) : null;
 
     if (selectedIcon != null) {
-      return Icon(
-        selectedIcon.icon,
+      return selectedIcon.buildIcon(
+        width: 32,
+        height: 32,
         color: Colors.green[800],
-        size: 32,
       );
     } else {
       return FaIcon(
@@ -398,9 +397,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
 
   Future<void> _navigateToIconSelector(Map<String, dynamic> task) async {
     final iconIdentifier = task['iconIdentifier'] as String?;
-    final selectedIcon = iconIdentifier != null
-        ? LucideFoodIconMap.getIcon(iconIdentifier)
-        : null;
+    final selectedIcon =
+        iconIdentifier != null ? FoodIconMap.getIcon(iconIdentifier) : null;
 
     final result = await Navigator.push<FoodIconMapping>(
       context,
