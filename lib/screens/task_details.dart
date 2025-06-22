@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/place_selector.dart';
 import '/widgets/loading_spinner.dart';
-import '/libraries/icons/lucide_food_map.dart';
+import '/libraries/icons/food_icons_map.dart';
 import '/screens/choose_task_icon.dart';
 
 class TaskDetailsScreen extends StatefulWidget {

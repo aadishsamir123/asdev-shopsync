@@ -9,7 +9,7 @@ import 'task_details.dart';
 import 'create_task.dart';
 import 'list_options.dart';
 import '/widgets/loading_spinner.dart';
-import '/libraries/icons/lucide_food_map.dart';
+import '/libraries/icons/food_icons_map.dart';
 
 class ListViewScreen extends StatefulWidget {
   final String listId;

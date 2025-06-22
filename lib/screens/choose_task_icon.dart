@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../libraries/icons/lucide_food_map.dart';
+import '../libraries/icons/food_icons_map.dart';
 
 class ChooseTaskIconScreen extends StatefulWidget {
   final FoodIconMapping? selectedIcon;
