@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/loading_spinner.dart';
 import '/widgets/place_selector.dart';
-import '/libraries/icons/lucide_food_map.dart';
+import '/libraries/icons/food_icons_map.dart';
 import '/screens/choose_task_icon.dart';
 
 class CreateTaskScreen extends StatefulWidget {
@@ -214,10 +214,10 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: _selectedIcon != null
-                              ? Icon(
-                                  _selectedIcon!.icon,
+                              ? _selectedIcon!.buildIcon(
+                                  width: 24,
+                                  height: 24,
                                   color: Colors.green[800],
-                                  size: 24,
                                 )
                               : FaIcon(
                                   FontAwesomeIcons.icons,

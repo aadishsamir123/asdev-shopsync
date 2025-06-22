@@ -2,7 +2,7 @@ name: shopsync
 description: "ShopSync - Share shopping lists with family and friends"
 publish_to: "none"
 
-version: 2.3.0
+version: 3.0.0
 
 environment:
   sdk: ^3.6.0
@@ -54,6 +54,22 @@ flutter:
     - assets/badges/google/android/png@4x/light/android_light_rd_na@4x.png
     - assets/badges/google/web/png@4x/dark/web_dark_rd_na@4x.png
     - assets/badges/google/web/png@4x/light/web_light_rd_na@4x.png
+    - assets/icons/food_icons/bakery/
+    - assets/icons/food_icons/berries/
+    - assets/icons/food_icons/desserts/
+    - assets/icons/food_icons/dishes/
+    - assets/icons/food_icons/drinks/
+    - assets/icons/food_icons/fastfood/
+    - assets/icons/food_icons/fruits/
+    - assets/icons/food_icons/ingredients/
+    - assets/icons/food_icons/kawaii/
+    - assets/icons/food_icons/meat/
+    - assets/icons/food_icons/nutrition/
+    - assets/icons/food_icons/nuts/
+    - assets/icons/food_icons/pastries/
+    - assets/icons/food_icons/seafood/
+    - assets/icons/food_icons/vegetables/
+    - assets/icons/food_icons/other/
 
 sentry:
   upload_debug_symbols: true
