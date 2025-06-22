@@ -34,16 +34,16 @@ This plan outlines the implementation of fine-grained permission controls and li
 
 CURRENT STRUCTURE:
 
-```dart
+```json
 {
-    'members': ['userId1', 'userId2'],
-    'createdBy': 'ownerId'
+  "members": ["userId1", "userId2"],
+  "createdBy": "ownerId"
 }
 ```
 
 NEW STRUCTURE:
 
-```dart
+```json
 {
     'members': {
         'userId1': {'role': 'editor', 'joinedAt': Timestamp},
@@ -71,14 +71,14 @@ NEW STRUCTURE:
 
 ```dart
 class Permission {
-static const String owner = 'owner';
-static const String editor = 'editor';
-static const String viewer = 'viewer';
+    static const String owner = 'owner';
+    static const String editor = 'editor';
+    static const String viewer = 'viewer';
 }
 
 class ShareLinkAccessLevel {
-static const String viewer = 'viewer';
-static const String editor = 'editor';
+    static const String viewer = 'viewer';
+    static const String editor = 'editor';
 }
 ```
 
