@@ -24,7 +24,6 @@ class _ChooseTaskIconScreenState extends State<ChooseTaskIconScreen>
   late AnimationController _categoryAnimationController;
   late AnimationController _fabAnimationController;
   late Animation<double> _searchAnimation;
-  late Animation<double> _fabAnimation;
 
   FoodIconMapping? _selectedIcon;
   String _selectedCategory = 'all';
@@ -79,10 +78,6 @@ class _ChooseTaskIconScreenState extends State<ChooseTaskIconScreen>
     _searchAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
           parent: _searchAnimationController, curve: Curves.easeInOut),
-    );
-    _fabAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-          parent: _fabAnimationController, curve: Curves.elasticOut),
     );
 
     // Setup focus node listener
@@ -861,30 +856,6 @@ class _ChooseTaskIconScreenState extends State<ChooseTaskIconScreen>
                       ),
           ),
         ],
-      ),
-      floatingActionButton: AnimatedBuilder(
-        animation: _fabAnimation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _fabAnimation.value.clamp(0.0, 1.0),
-            child: Transform.rotate(
-              angle: _fabAnimation.value * 0.1,
-              child: _selectedIcon != null
-                  ? FloatingActionButton.extended(
-                      onPressed: _onConfirm,
-                      backgroundColor: Colors.green[800],
-                      foregroundColor: Colors.white,
-                      elevation: 8,
-                      icon: const Icon(Icons.check),
-                      label: const Text(
-                        'Use Icon',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    )
-                  : null,
-            ),
-          );
-        },
       ),
     );
   }
