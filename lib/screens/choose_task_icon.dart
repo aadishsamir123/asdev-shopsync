@@ -862,30 +862,6 @@ class _ChooseTaskIconScreenState extends State<ChooseTaskIconScreen>
           ),
         ],
       ),
-      floatingActionButton: AnimatedBuilder(
-        animation: _fabAnimation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _fabAnimation.value.clamp(0.0, 1.0),
-            child: Transform.rotate(
-              angle: _fabAnimation.value * 0.1,
-              child: _selectedIcon != null
-                  ? FloatingActionButton.extended(
-                      onPressed: _onConfirm,
-                      backgroundColor: Colors.green[800],
-                      foregroundColor: Colors.white,
-                      elevation: 8,
-                      icon: const Icon(Icons.check),
-                      label: const Text(
-                        'Use Icon',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    )
-                  : null,
-            ),
-          );
-        },
-      ),
     );
   }
 }

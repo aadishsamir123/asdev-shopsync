@@ -4,11 +4,13 @@ import 'dart:math';
 class CustomLoadingSpinner extends StatefulWidget {
   final Color color;
   final double size;
+  final Duration animationDuration;
 
   const CustomLoadingSpinner({
     super.key,
     this.color = Colors.green,
     this.size = 50.0,
+    this.animationDuration = const Duration(milliseconds: 1500),
   });
 
   @override
@@ -17,20 +19,37 @@ class CustomLoadingSpinner extends StatefulWidget {
 
 class _CustomLoadingSpinnerState extends State<CustomLoadingSpinner>
     with TickerProviderStateMixin {
-  late final AnimationController _controller;
+  late final AnimationController _rotationController;
+  late final Animation<double> _rotationAnimation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 1200),
+    _rotationController = AnimationController(
+      duration: widget.animationDuration,
       vsync: this,
-    )..repeat();
+    );
+
+    _rotationAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _rotationController,
+      curve: Curves.linear,
+    ));
+
+    _rotationController.repeat();
+  }
+
+  @override
+  void didUpdateWidget(CustomLoadingSpinner oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _rotationController.repeat();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _rotationController.dispose();
     super.dispose();
   }
 
@@ -39,45 +58,77 @@ class _CustomLoadingSpinnerState extends State<CustomLoadingSpinner>
     return SizedBox(
       width: widget.size,
       height: widget.size,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(3, (index) {
-          return AnimatedBuilder(
-            animation: _controller,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Circular progress indicator
+          AnimatedBuilder(
+            animation: _rotationAnimation,
             builder: (context, child) {
-              final progress = _controller.value;
-              final phase = (index / 3);
-              final animationProgress = ((progress + phase) % 1.0);
-              final scale = 0.5 + (0.5 * _computeScaleCurve(animationProgress));
-              final opacity =
-                  0.25 + (0.75 * _computeOpacityCurve(animationProgress));
-
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: widget.size * 0.03),
-                child: Transform.scale(
-                  scale: scale,
-                  child: Opacity(
-                    opacity: opacity,
-                    child: CircleAvatar(
-                      backgroundColor: widget.color,
-                      radius: widget.size * 0.12,
-                    ),
+              return Transform.rotate(
+                angle: _rotationAnimation.value * 2 * pi,
+                child: CustomPaint(
+                  size: Size(widget.size, widget.size),
+                  painter: CircularSpinnerPainter(
+                    color: widget.color,
+                    progress: _rotationAnimation.value,
                   ),
                 ),
               );
             },
-          );
-        }),
+          ),
+        ],
       ),
     );
   }
+}
 
-  double _computeScaleCurve(double progress) {
-    return -4 * pow(progress - 0.5, 2) + 1;
+class CircularSpinnerPainter extends CustomPainter {
+  final Color color;
+  final double progress;
+
+  CircularSpinnerPainter({
+    required this.color,
+    required this.progress,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 - 4;
+
+    // Background circle
+    final backgroundPaint = Paint()
+      ..color = color.withOpacity(0.15)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.0
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawCircle(center, radius, backgroundPaint);
+
+    // Animated progress arc that rotates
+    final progressPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.0
+      ..strokeCap = StrokeCap.round;
+
+    // Create a rotating arc
+    final startAngle =
+        (progress * 2 * pi) - (pi / 2); // Rotate the start position
+    final sweepAngle = pi; // Half circle arc
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      startAngle,
+      sweepAngle,
+      false,
+      progressPaint,
+    );
   }
 
-  double _computeOpacityCurve(double progress) {
-    return -4 * pow(progress - 0.5, 2) + 1;
+  @override
+  bool shouldRepaint(CircularSpinnerPainter oldDelegate) {
+    return oldDelegate.progress != progress || oldDelegate.color != color;
   }
 }
