@@ -14,7 +14,6 @@ import 'screens/maintenance_screen.dart';
 import 'screens/onboarding.dart';
 import 'screens/settings.dart';
 import 'screens/migration_screen.dart';
-import 'widgets/loading_spinner.dart';
 import 'services/update_service.dart';
 import 'services/maintenance_service.dart';
 import 'services/shared_prefs.dart';

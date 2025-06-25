@@ -32,8 +32,6 @@ class _ListItemWidgetState extends State<ListItemWidget> {
     final data = widget.listDoc.data() as Map<String, dynamic>;
     final listName = data['name'] ?? 'Unnamed List';
 
-    print('List item tapped: $listName - listId: ${widget.listDoc.id}');
-
     try {
       await Navigator.of(context).push(
         MaterialPageRoute(
@@ -43,9 +41,6 @@ class _ListItemWidgetState extends State<ListItemWidget> {
           ),
         ),
       );
-      print('Navigation completed successfully');
-    } catch (e) {
-      print('Navigation error: $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -233,7 +228,6 @@ class _ExpandableListGroupWidgetState extends State<ExpandableListGroupWidget>
   }
 
   void _toggleExpansion() async {
-    print('Group expansion toggled'); // Debug print
     setState(() {
       _isExpanded = !_isExpanded;
     });
@@ -303,7 +297,6 @@ class _ExpandableListGroupWidgetState extends State<ExpandableListGroupWidget>
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(16)),
               onTap: () {
-                print('Group header tapped - Group: $groupName'); // Debug print
                 _toggleExpansion();
               },
               child: Container(
