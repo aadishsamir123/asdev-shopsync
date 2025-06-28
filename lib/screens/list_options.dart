@@ -9,6 +9,7 @@ import '/widgets/place_selector.dart';
 import '/widgets/loading_spinner.dart';
 import '/services/export_service.dart';
 import '/widgets/advert.dart';
+import '/utils/permissions.dart';
 import 'recycle_bin.dart';
 
 class ListOptionsScreen extends StatefulWidget {
@@ -323,116 +324,137 @@ class _ListOptionsScreenState extends State<ListOptionsScreen> {
           final listData = snapshot.data!;
           final bool isOwner = listData['createdBy'] == _auth.currentUser?.uid;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // List Management Section
-                _buildSectionCard(
-                  title: 'List Management',
-                  icon: FontAwesomeIcons.listCheck,
+          return FutureBuilder<bool>(
+            future: PermissionsHelper.isViewer(widget.listId),
+            builder: (context, permissionSnapshot) {
+              final isViewer =
+                  permissionSnapshot.hasData && permissionSnapshot.data == true;
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (isOwner)
-                      _buildOptionTile(
-                        icon: FontAwesomeIcons.pen,
-                        title: 'Edit List Name',
-                        subtitle: 'Change the name of this list',
-                        onTap: () => _editListName(listData['name']),
+                    // List Management Section - Limited for viewers
+                    if (!isViewer)
+                      _buildSectionCard(
+                        title: 'List Management',
+                        icon: FontAwesomeIcons.listCheck,
+                        children: [
+                          if (isOwner)
+                            _buildOptionTile(
+                              icon: FontAwesomeIcons.pen,
+                              title: 'Edit List Name',
+                              subtitle: 'Change the name of this list',
+                              onTap: () => _editListName(listData['name']),
+                            ),
+                          _buildOptionTile(
+                            icon: FontAwesomeIcons.share,
+                            title: 'Share List',
+                            subtitle: 'Share this list with others',
+                            onTap: _showShareMenu,
+                          ),
+                          _buildOptionTile(
+                            icon: FontAwesomeIcons.trashCan,
+                            title: 'Clear Completed',
+                            subtitle: 'Remove all completed items',
+                            onTap: _clearCompletedTasks,
+                          ),
+                          if (isOwner)
+                            _buildOptionTile(
+                              icon: FontAwesomeIcons.trash,
+                              title: 'Delete List',
+                              subtitle: 'Permanently delete this list',
+                              onTap: _deleteList,
+                              isDestructive: true,
+                            ),
+                        ],
                       ),
-                    _buildOptionTile(
-                      icon: FontAwesomeIcons.share,
-                      title: 'Share List',
-                      subtitle: 'Share this list with others',
-                      onTap: _showShareMenu,
-                    ),
-                    _buildOptionTile(
-                      icon: FontAwesomeIcons.trashCan,
-                      title: 'Clear Completed',
-                      subtitle: 'Remove all completed items',
-                      onTap: _clearCompletedTasks,
-                    ),
-                    _buildOptionTile(
-                      icon: FontAwesomeIcons.recycle,
+
+                    // Recycle Bin - Always visible but limited for viewers
+                    _buildSectionCard(
                       title: 'Recycle Bin',
-                      subtitle: 'View deleted items',
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RecycleBinScreen(
-                            listId: widget.listId,
+                      icon: FontAwesomeIcons.recycle,
+                      children: [
+                        _buildOptionTile(
+                          icon: FontAwesomeIcons.recycle,
+                          title: 'Recycle Bin',
+                          subtitle: 'View deleted items',
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RecycleBinScreen(
+                                listId: widget.listId,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    if (!isViewer) ...[
+                      const SizedBox(height: 16),
+
+                      // Templates Section - Hidden for viewers
+                      _buildSectionCard(
+                        title: 'Templates & Shortcuts',
+                        icon: FontAwesomeIcons.bookmark,
+                        children: [
+                          _buildOptionTile(
+                            icon: FontAwesomeIcons.locationDot,
+                            title: 'Saved Locations',
+                            subtitle: 'Manage your frequently used locations',
+                            onTap: _showSavedLocations,
+                          ),
+                          _buildOptionTile(
+                            icon: FontAwesomeIcons.clone,
+                            title: 'Saved Tasks',
+                            subtitle: 'Create tasks from saved templates',
+                            onTap: _showSavedTasks,
+                          ),
+                        ],
+                      ),
+                    ],
+
+                    if (!isViewer) ...[
+                      const SizedBox(height: 16),
+
+                      // Export Section - Hidden for viewers
+                      _buildSectionCard(
+                        title: 'Export & Backup',
+                        icon: FontAwesomeIcons.download,
+                        children: [
+                          _buildOptionTile(
+                            icon: FontAwesomeIcons.fileExport,
+                            title: 'Export List',
+                            subtitle: 'Export list as a CSV',
+                            onTap: () async {
+                              await ExportService.exportList(
+                                  widget.listId, widget.listName);
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+
+                    const SizedBox(height: 16),
+
+                    // Advertisement at the bottom
+                    if (_isBannerAdLoaded && _bannerAd != null)
+                      Center(
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 8.0),
+                          child: BannerAdvertWidget(
+                            bannerAd: _bannerAd,
+                            backgroundColor:
+                                isDark ? Colors.grey[800]! : Colors.white,
                           ),
                         ),
                       ),
-                    ),
-                    if (isOwner)
-                      _buildOptionTile(
-                        icon: FontAwesomeIcons.trash,
-                        title: 'Delete List',
-                        subtitle: 'Permanently delete this list',
-                        onTap: _deleteList,
-                        isDestructive: true,
-                      ),
                   ],
                 ),
-
-                const SizedBox(height: 16),
-
-                // Templates Section
-                _buildSectionCard(
-                  title: 'Templates & Shortcuts',
-                  icon: FontAwesomeIcons.bookmark,
-                  children: [
-                    _buildOptionTile(
-                      icon: FontAwesomeIcons.locationDot,
-                      title: 'Saved Locations',
-                      subtitle: 'Manage your frequently used locations',
-                      onTap: _showSavedLocations,
-                    ),
-                    _buildOptionTile(
-                      icon: FontAwesomeIcons.clone,
-                      title: 'Saved Tasks',
-                      subtitle: 'Create tasks from saved templates',
-                      onTap: _showSavedTasks,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // Export Section
-                _buildSectionCard(
-                  title: 'Export & Backup',
-                  icon: FontAwesomeIcons.download,
-                  children: [
-                    _buildOptionTile(
-                      icon: FontAwesomeIcons.fileExport,
-                      title: 'Export List',
-                      subtitle: 'Export list as a CSV',
-                      onTap: () async {
-                        await ExportService.exportList(
-                            widget.listId, widget.listName);
-                      },
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // Advertisement at the bottom
-                if (_isBannerAdLoaded && _bannerAd != null)
-                  Center(
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 8.0),
-                      child: BannerAdvertWidget(
-                        bannerAd: _bannerAd,
-                        backgroundColor:
-                            isDark ? Colors.grey[800]! : Colors.white,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+              );
+            },
           );
         },
       ),

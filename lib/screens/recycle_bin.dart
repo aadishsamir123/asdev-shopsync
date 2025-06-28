@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '/widgets/loading_spinner.dart';
+import '/utils/permissions.dart';
 
 class AppBarClipper extends CustomClipper<Path> {
   @override
@@ -323,26 +324,38 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
                                     ),
                                   ],
                                 ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.restore,
-                                        color: Colors.green[600],
-                                      ),
-                                      onPressed: () =>
-                                          _restoreItem(doc.id, itemData),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.delete_forever,
-                                        color: Colors.red,
-                                      ),
-                                      onPressed: () =>
-                                          _deletePermanently(doc.id),
-                                    ),
-                                  ],
+                                trailing: FutureBuilder<bool>(
+                                  future:
+                                      PermissionsHelper.isViewer(widget.listId),
+                                  builder: (context, permissionSnapshot) {
+                                    // Hide action buttons for viewers
+                                    if (permissionSnapshot.hasData &&
+                                        permissionSnapshot.data == true) {
+                                      return const SizedBox.shrink();
+                                    }
+
+                                    return Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.restore,
+                                            color: Colors.green[600],
+                                          ),
+                                          onPressed: () =>
+                                              _restoreItem(doc.id, itemData),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.delete_forever,
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () =>
+                                              _deletePermanently(doc.id),
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 ),
                               ),
                             ),
