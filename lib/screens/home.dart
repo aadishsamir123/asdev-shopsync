@@ -17,6 +17,7 @@ import '/widgets/expandable_list_group_widget.dart';
 import '/widgets/splash_screen.dart';
 import '/services/list_groups_service.dart';
 import '/services/migration_service.dart';
+import '/utils/permissions.dart';
 
 class TutorialStep extends StatelessWidget {
   final IconData icon;
@@ -1403,6 +1404,48 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
+                ),
+                // Viewer indicator
+                FutureBuilder<bool>(
+                  future: PermissionsHelper.hasViewerLists(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData && snapshot.data == true) {
+                      return Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.blue[900] : Colors.blue[50],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color:
+                                isDark ? Colors.blue[700]! : Colors.blue[200]!,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.eye,
+                              color:
+                                  isDark ? Colors.blue[300] : Colors.blue[700],
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              "You're a viewer",
+                              style: TextStyle(
+                                color: isDark
+                                    ? Colors.blue[300]
+                                    : Colors.blue[700],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
                 ),
                 // Advertisement at the bottom
                 if (_isBannerAdLoaded && _bannerAd != null)

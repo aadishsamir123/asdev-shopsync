@@ -9,6 +9,7 @@ import '/widgets/place_selector.dart';
 import '/widgets/loading_spinner.dart';
 import '/services/export_service.dart';
 import '/widgets/advert.dart';
+import '/utils/permissions.dart';
 import 'recycle_bin.dart';
 
 class ListOptionsScreen extends StatefulWidget {
@@ -323,116 +324,137 @@ class _ListOptionsScreenState extends State<ListOptionsScreen> {
           final listData = snapshot.data!;
           final bool isOwner = listData['createdBy'] == _auth.currentUser?.uid;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // List Management Section
-                _buildSectionCard(
-                  title: 'List Management',
-                  icon: FontAwesomeIcons.listCheck,
+          return FutureBuilder<bool>(
+            future: PermissionsHelper.isViewer(widget.listId),
+            builder: (context, permissionSnapshot) {
+              final isViewer =
+                  permissionSnapshot.hasData && permissionSnapshot.data == true;
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (isOwner)
-                      _buildOptionTile(
-                        icon: FontAwesomeIcons.pen,
-                        title: 'Edit List Name',
-                        subtitle: 'Change the name of this list',
-                        onTap: () => _editListName(listData['name']),
+                    // List Management Section - Limited for viewers
+                    if (!isViewer)
+                      _buildSectionCard(
+                        title: 'List Management',
+                        icon: FontAwesomeIcons.listCheck,
+                        children: [
+                          if (isOwner)
+                            _buildOptionTile(
+                              icon: FontAwesomeIcons.pen,
+                              title: 'Edit List Name',
+                              subtitle: 'Change the name of this list',
+                              onTap: () => _editListName(listData['name']),
+                            ),
+                          _buildOptionTile(
+                            icon: FontAwesomeIcons.share,
+                            title: 'Share List',
+                            subtitle: 'Share this list with others',
+                            onTap: _showShareMenu,
+                          ),
+                          _buildOptionTile(
+                            icon: FontAwesomeIcons.trashCan,
+                            title: 'Clear Completed',
+                            subtitle: 'Remove all completed items',
+                            onTap: _clearCompletedTasks,
+                          ),
+                          if (isOwner)
+                            _buildOptionTile(
+                              icon: FontAwesomeIcons.trash,
+                              title: 'Delete List',
+                              subtitle: 'Permanently delete this list',
+                              onTap: _deleteList,
+                              isDestructive: true,
+                            ),
+                        ],
                       ),
-                    _buildOptionTile(
-                      icon: FontAwesomeIcons.share,
-                      title: 'Share List',
-                      subtitle: 'Share this list with others',
-                      onTap: _showShareMenu,
-                    ),
-                    _buildOptionTile(
-                      icon: FontAwesomeIcons.trashCan,
-                      title: 'Clear Completed',
-                      subtitle: 'Remove all completed items',
-                      onTap: _clearCompletedTasks,
-                    ),
-                    _buildOptionTile(
-                      icon: FontAwesomeIcons.recycle,
+
+                    // Recycle Bin - Always visible but limited for viewers
+                    _buildSectionCard(
                       title: 'Recycle Bin',
-                      subtitle: 'View deleted items',
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RecycleBinScreen(
-                            listId: widget.listId,
+                      icon: FontAwesomeIcons.recycle,
+                      children: [
+                        _buildOptionTile(
+                          icon: FontAwesomeIcons.recycle,
+                          title: 'Recycle Bin',
+                          subtitle: 'View deleted items',
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RecycleBinScreen(
+                                listId: widget.listId,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    if (!isViewer) ...[
+                      const SizedBox(height: 16),
+
+                      // Templates Section - Hidden for viewers
+                      _buildSectionCard(
+                        title: 'Templates & Shortcuts',
+                        icon: FontAwesomeIcons.bookmark,
+                        children: [
+                          _buildOptionTile(
+                            icon: FontAwesomeIcons.locationDot,
+                            title: 'Saved Locations',
+                            subtitle: 'Manage your frequently used locations',
+                            onTap: _showSavedLocations,
+                          ),
+                          _buildOptionTile(
+                            icon: FontAwesomeIcons.clone,
+                            title: 'Saved Tasks',
+                            subtitle: 'Create tasks from saved templates',
+                            onTap: _showSavedTasks,
+                          ),
+                        ],
+                      ),
+                    ],
+
+                    if (!isViewer) ...[
+                      const SizedBox(height: 16),
+
+                      // Export Section - Hidden for viewers
+                      _buildSectionCard(
+                        title: 'Export & Backup',
+                        icon: FontAwesomeIcons.download,
+                        children: [
+                          _buildOptionTile(
+                            icon: FontAwesomeIcons.fileExport,
+                            title: 'Export List',
+                            subtitle: 'Export list as a CSV',
+                            onTap: () async {
+                              await ExportService.exportList(
+                                  widget.listId, widget.listName);
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+
+                    const SizedBox(height: 16),
+
+                    // Advertisement at the bottom
+                    if (_isBannerAdLoaded && _bannerAd != null)
+                      Center(
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 8.0),
+                          child: BannerAdvertWidget(
+                            bannerAd: _bannerAd,
+                            backgroundColor:
+                                isDark ? Colors.grey[800]! : Colors.white,
                           ),
                         ),
                       ),
-                    ),
-                    if (isOwner)
-                      _buildOptionTile(
-                        icon: FontAwesomeIcons.trash,
-                        title: 'Delete List',
-                        subtitle: 'Permanently delete this list',
-                        onTap: _deleteList,
-                        isDestructive: true,
-                      ),
                   ],
                 ),
-
-                const SizedBox(height: 16),
-
-                // Templates Section
-                _buildSectionCard(
-                  title: 'Templates & Shortcuts',
-                  icon: FontAwesomeIcons.bookmark,
-                  children: [
-                    _buildOptionTile(
-                      icon: FontAwesomeIcons.locationDot,
-                      title: 'Saved Locations',
-                      subtitle: 'Manage your frequently used locations',
-                      onTap: _showSavedLocations,
-                    ),
-                    _buildOptionTile(
-                      icon: FontAwesomeIcons.clone,
-                      title: 'Saved Tasks',
-                      subtitle: 'Create tasks from saved templates',
-                      onTap: _showSavedTasks,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // Export Section
-                _buildSectionCard(
-                  title: 'Export & Backup',
-                  icon: FontAwesomeIcons.download,
-                  children: [
-                    _buildOptionTile(
-                      icon: FontAwesomeIcons.fileExport,
-                      title: 'Export List',
-                      subtitle: 'Export list as a CSV',
-                      onTap: () async {
-                        await ExportService.exportList(
-                            widget.listId, widget.listName);
-                      },
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // Advertisement at the bottom
-                if (_isBannerAdLoaded && _bannerAd != null)
-                  Center(
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 8.0),
-                      child: BannerAdvertWidget(
-                        bannerAd: _bannerAd,
-                        backgroundColor:
-                            isDark ? Colors.grey[800]! : Colors.white,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+              );
+            },
           );
         },
       ),
@@ -541,6 +563,8 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
   final _auth = FirebaseAuth.instance;
   bool _isLoading = false;
 
+  String _selectedRole = 'editor'; // Default role
+
   Future<void> _shareList() async {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
@@ -591,16 +615,18 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
         return;
       }
 
-      // Add user to members array
+      // Add user to members array and set their role
       await _firestore.collection('lists').doc(widget.listId).update({
         'members': FieldValue.arrayUnion([userId]),
+        'memberRoles.$userId': _selectedRole,
       });
 
       if (!mounted) return;
       _emailController.clear();
+      setState(() => _selectedRole = 'editor'); // Reset to default
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('List shared with $email'),
+          content: Text('List shared with $email as $_selectedRole'),
           backgroundColor: Colors.green[800],
         ),
       );
@@ -618,6 +644,7 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
     try {
       await _firestore.collection('lists').doc(widget.listId).update({
         'members': FieldValue.arrayRemove([userId]),
+        'memberRoles.$userId': FieldValue.delete(),
       });
 
       if (!mounted) return;
@@ -632,6 +659,116 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to remove user')),
       );
+    }
+  }
+
+  Future<void> _changeMemberRole(String userId, String currentRole) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final newRole = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: isDark ? Colors.grey[900] : Colors.white,
+        title: Text(
+          'Change Permission Level',
+          style: TextStyle(
+            color: isDark ? Colors.white : Colors.black,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: Row(
+                children: [
+                  FaIcon(
+                    FontAwesomeIcons.penToSquare,
+                    size: 16,
+                    color: Colors.blue[700],
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Editor',
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Text(
+                'Can add, edit, and delete items',
+                style: TextStyle(
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
+                ),
+              ),
+              value: 'editor',
+              groupValue: currentRole,
+              activeColor: Colors.green[800],
+              onChanged: (value) => Navigator.pop(context, value),
+            ),
+            RadioListTile<String>(
+              title: Row(
+                children: [
+                  FaIcon(
+                    FontAwesomeIcons.eye,
+                    size: 16,
+                    color: Colors.grey[600],
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Viewer',
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Text(
+                'Can only view items',
+                style: TextStyle(
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
+                ),
+              ),
+              value: 'viewer',
+              groupValue: currentRole,
+              activeColor: Colors.green[800],
+              onChanged: (value) => Navigator.pop(context, value),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: isDark ? Colors.grey[400] : Colors.grey[600],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (newRole != null && newRole != currentRole) {
+      try {
+        await _firestore.collection('lists').doc(widget.listId).update({
+          'memberRoles.$userId': newRole,
+        });
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Permission changed to $newRole'),
+            backgroundColor: Colors.green[800],
+          ),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to change permission')),
+        );
+      }
     }
   }
 
@@ -656,7 +793,7 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -711,6 +848,50 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
+                    // Role selector
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey[300]!),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Text(
+                              'Permission Level',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                          ),
+                          RadioListTile<String>(
+                            title: const Text('Editor'),
+                            subtitle:
+                                const Text('Can add, edit, and delete items'),
+                            value: 'editor',
+                            groupValue: _selectedRole,
+                            activeColor: Colors.green[800],
+                            onChanged: (value) {
+                              setState(() => _selectedRole = value!);
+                            },
+                          ),
+                          RadioListTile<String>(
+                            title: const Text('Viewer'),
+                            subtitle: const Text('Can only view items'),
+                            value: 'viewer',
+                            groupValue: _selectedRole,
+                            activeColor: Colors.green[800],
+                            onChanged: (value) {
+                              setState(() => _selectedRole = value!);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -755,6 +936,8 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
                 final data = snapshot.data!.data() as Map<String, dynamic>?;
                 final members = List<String>.from(data?['members'] ?? []);
                 final ownerId = data?['createdBy'] as String?;
+                final memberRoles =
+                    Map<String, String>.from(data?['memberRoles'] ?? {});
 
                 if (members.isEmpty) return const SizedBox.shrink();
 
@@ -816,6 +999,8 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
                                     userData?['displayName'] ?? 'User';
                                 final isOwner = userId == ownerId;
                                 final currentUserId = _auth.currentUser?.uid;
+                                final userRole =
+                                    memberRoles[userId] ?? 'editor';
 
                                 return ListTile(
                                   leading: CircleAvatar(
@@ -851,6 +1036,45 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
                                           style: TextStyle(
                                             color: Colors.amber[800],
                                             fontWeight: FontWeight.w600,
+                                          ),
+                                        )
+                                      else
+                                        GestureDetector(
+                                          onTap: currentUserId == ownerId
+                                              ? () => _changeMemberRole(
+                                                  userId, userRole)
+                                              : null,
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                userRole == 'editor'
+                                                    ? FontAwesomeIcons
+                                                        .penToSquare
+                                                    : FontAwesomeIcons.eye,
+                                                size: 12,
+                                                color: userRole == 'editor'
+                                                    ? Colors.blue[700]
+                                                    : Colors.grey[600],
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                '${userRole[0].toUpperCase()}${userRole.substring(1)}',
+                                                style: TextStyle(
+                                                  color: userRole == 'editor'
+                                                      ? Colors.blue[700]
+                                                      : Colors.grey[600],
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                              if (currentUserId == ownerId) ...[
+                                                const SizedBox(width: 4),
+                                                Icon(
+                                                  FontAwesomeIcons.pen,
+                                                  size: 10,
+                                                  color: Colors.grey[500],
+                                                ),
+                                              ],
+                                            ],
                                           ),
                                         ),
                                     ],

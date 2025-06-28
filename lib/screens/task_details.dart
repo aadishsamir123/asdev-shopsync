@@ -6,6 +6,7 @@ import '/widgets/place_selector.dart';
 import '/widgets/loading_spinner.dart';
 import '/libraries/icons/food_icons_map.dart';
 import '/screens/choose_task_icon.dart';
+import '/utils/permissions.dart';
 
 class TaskDetailsScreen extends StatefulWidget {
   final String listId;
@@ -221,88 +222,113 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                     Row(
                       children: [
                         // Large icon display
-                        Stack(
-                          children: [
-                            GestureDetector(
-                              onTap: () => _navigateToIconSelector(task),
-                              child: Container(
-                                width: 64,
-                                height: 64,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: Colors.green[100],
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: Colors.green[200]!,
-                                    width: 2,
+                        FutureBuilder<bool>(
+                          future: PermissionsHelper.isViewer(widget.listId),
+                          builder: (context, snapshot) {
+                            final isViewer =
+                                snapshot.hasData && snapshot.data == true;
+
+                            return Stack(
+                              children: [
+                                GestureDetector(
+                                  onTap: isViewer
+                                      ? null
+                                      : () => _navigateToIconSelector(task),
+                                  child: Container(
+                                    width: 64,
+                                    height: 64,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: Colors.green[100],
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: Colors.green[200]!,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: _buildTaskIcon(task),
                                   ),
                                 ),
-                                child: _buildTaskIcon(task),
-                              ),
-                            ),
-                            Positioned(
-                              top: 2,
-                              right: 2,
-                              child: GestureDetector(
-                                onTap: () => _navigateToIconSelector(task),
-                                child: Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                    color: Colors.green[800],
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 1,
+                                if (!isViewer)
+                                  Positioned(
+                                    top: 2,
+                                    right: 2,
+                                    child: GestureDetector(
+                                      onTap: () =>
+                                          _navigateToIconSelector(task),
+                                      child: Container(
+                                        width: 20,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                          color: Colors.green[800],
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: Colors.white,
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          FontAwesomeIcons.pen,
+                                          size: 11,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                  child: const Icon(
-                                    FontAwesomeIcons.pen,
-                                    size: 11,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                              ],
+                            );
+                          },
                         ),
                         const SizedBox(width: 16),
                         // Task name field
                         Expanded(
-                          child: Stack(
-                            children: [
-                              TextField(
-                                controller: _nameController,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.only(bottom: 8),
-                                ),
-                                onSubmitted: (value) {
-                                  if (value.trim().isNotEmpty) {
-                                    _updateTask({'name': value.trim()});
-                                  }
-                                },
-                              ),
-                              Positioned(
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                child: CustomPaint(
-                                  painter: DottedLinePainter(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.grey[600]!
-                                        : Colors.grey[300]!,
+                          child: FutureBuilder<bool>(
+                            future: PermissionsHelper.isViewer(widget.listId),
+                            builder: (context, snapshot) {
+                              final isViewer =
+                                  snapshot.hasData && snapshot.data == true;
+
+                              return Stack(
+                                children: [
+                                  TextField(
+                                    controller: _nameController,
+                                    enabled: !isViewer,
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding:
+                                          EdgeInsets.only(bottom: 8),
+                                    ),
+                                    onSubmitted: isViewer
+                                        ? null
+                                        : (value) {
+                                            if (value.trim().isNotEmpty) {
+                                              _updateTask(
+                                                  {'name': value.trim()});
+                                            }
+                                          },
                                   ),
-                                  size: Size(
-                                      MediaQuery.of(context).size.width, 1),
-                                ),
-                              ),
-                            ],
+                                  Positioned(
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    child: CustomPaint(
+                                      painter: DottedLinePainter(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.grey[600]!
+                                            : Colors.grey[300]!,
+                                      ),
+                                      size: Size(
+                                          MediaQuery.of(context).size.width, 1),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -362,13 +388,23 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
               fontWeight: FontWeight.bold,
             ),
           ),
-          trailing: Switch.adaptive(
-            value: completed,
-            onChanged: (value) => _updateTask({'completed': value}),
-            activeColor: Colors.white,
-            activeTrackColor: Colors.green[800],
-            inactiveThumbColor: isDark ? Colors.grey[300] : Colors.grey[50],
-            inactiveTrackColor: isDark ? Colors.grey[600] : Colors.grey[300],
+          trailing: FutureBuilder<bool>(
+            future: PermissionsHelper.isViewer(widget.listId),
+            builder: (context, snapshot) {
+              final isViewer = snapshot.hasData && snapshot.data == true;
+
+              return Switch.adaptive(
+                value: completed,
+                onChanged: isViewer
+                    ? null
+                    : (value) => _updateTask({'completed': value}),
+                activeColor: Colors.white,
+                activeTrackColor: Colors.green[800],
+                inactiveThumbColor: isDark ? Colors.grey[300] : Colors.grey[50],
+                inactiveTrackColor:
+                    isDark ? Colors.grey[600] : Colors.grey[300],
+              );
+            },
           ),
         ),
       ),
@@ -421,57 +457,64 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
       elevation: 8,
       shadowColor: Colors.black26,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: InkWell(
-        onTap: _selectDeadline,
-        borderRadius: BorderRadius.circular(15),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.green[100],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child:
-                    FaIcon(FontAwesomeIcons.calendar, color: Colors.green[800]),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Deadline',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+      child: FutureBuilder<bool>(
+        future: PermissionsHelper.isViewer(widget.listId),
+        builder: (context, snapshot) {
+          final isViewer = snapshot.hasData && snapshot.data == true;
+
+          return InkWell(
+            onTap: isViewer ? null : _selectDeadline,
+            borderRadius: BorderRadius.circular(15),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.green[100],
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _selectedDeadline != null
-                          ? DateFormat('MMM dd, yyyy - hh:mm a')
-                              .format(_selectedDeadline!)
-                          : 'Set deadline',
-                      style: TextStyle(color: Colors.grey[600]),
+                    child: FaIcon(FontAwesomeIcons.calendar,
+                        color: Colors.green[800]),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Deadline',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _selectedDeadline != null
+                              ? DateFormat('MMM dd, yyyy - hh:mm a')
+                                  .format(_selectedDeadline!)
+                              : 'Set deadline',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  if (_selectedDeadline != null && !isViewer)
+                    IconButton(
+                      icon: const FaIcon(FontAwesomeIcons.xmark),
+                      onPressed: () =>
+                          _updateTask({'deadline': FieldValue.delete()}),
+                    ),
+                ],
               ),
-              if (_selectedDeadline != null)
-                IconButton(
-                  icon: const FaIcon(FontAwesomeIcons.xmark),
-                  onPressed: () =>
-                      _updateTask({'deadline': FieldValue.delete()}),
-                ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -481,65 +524,74 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
       elevation: 8,
       shadowColor: Colors.black26,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: InkWell(
-        onTap: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (context) => LocationSelector(
-              initialLocation: task['location'],
-              onLocationSelected: (location) {
-                if (location.isEmpty) {
-                  _updateTask({'location': FieldValue.delete()});
-                } else {
-                  _updateTask({'location': location});
-                }
-              },
+      child: FutureBuilder<bool>(
+        future: PermissionsHelper.isViewer(widget.listId),
+        builder: (context, snapshot) {
+          final isViewer = snapshot.hasData && snapshot.data == true;
+
+          return InkWell(
+            onTap: isViewer
+                ? null
+                : () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) => LocationSelector(
+                        initialLocation: task['location'],
+                        onLocationSelected: (location) {
+                          if (location.isEmpty) {
+                            _updateTask({'location': FieldValue.delete()});
+                          } else {
+                            _updateTask({'location': location});
+                          }
+                        },
+                      ),
+                    );
+                  },
+            borderRadius: BorderRadius.circular(15),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.green[100],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: FaIcon(FontAwesomeIcons.locationDot,
+                        color: Colors.green[800]),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Location',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          task['location'] != null
+                              ? '${task['location']['name']}\n${task['location']['address']}'
+                              : 'Set location',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
-        borderRadius: BorderRadius.circular(15),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.green[100],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: FaIcon(FontAwesomeIcons.locationDot,
-                    color: Colors.green[800]),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Location',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      task['location'] != null
-                          ? '${task['location']['name']}\n${task['location']['address']}'
-                          : 'Set location',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -579,29 +631,46 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
               ],
             ),
             const SizedBox(height: 16),
-            TextField(
-              controller: _descriptionController,
-              maxLines: 5,
-              decoration: InputDecoration(
-                hintText: 'Add description...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.green[200]!),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.green[800]!, width: 2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.green[200]!),
-                ),
-                filled: true,
-                fillColor: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.grey[850]
-                    : Colors.grey[50],
-              ),
-              onChanged: (value) => _updateTask({'description': value}),
+            FutureBuilder<bool>(
+              future: PermissionsHelper.isViewer(widget.listId),
+              builder: (context, snapshot) {
+                final isViewer = snapshot.hasData && snapshot.data == true;
+
+                return TextField(
+                  controller: _descriptionController,
+                  maxLines: 5,
+                  enabled: !isViewer,
+                  decoration: InputDecoration(
+                    hintText: 'Add description...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.green[200]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: Colors.green[800]!, width: 2),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.green[200]!),
+                    ),
+                    disabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    filled: true,
+                    fillColor: isViewer
+                        ? Colors.grey[200]
+                        : Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[850]
+                            : Colors.grey[50],
+                  ),
+                  onChanged: isViewer
+                      ? null
+                      : (value) => _updateTask({'description': value}),
+                );
+              },
             ),
           ],
         ),
@@ -737,61 +806,74 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
               ],
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: counter > 1
-                      ? () => _updateTask({'counter': counter - 1})
-                      : null,
-                  icon: FaIcon(
-                    FontAwesomeIcons.minus,
-                    color: counter > 1 ? Colors.green[800] : Colors.grey[400],
-                  ),
-                  style: IconButton.styleFrom(
-                    backgroundColor:
-                        counter > 1 ? Colors.green[100] : Colors.grey[200],
-                    shape: const CircleBorder(),
-                  ),
-                ),
-                const SizedBox(width: 20),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.grey[850]
-                        : Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.green[200]!,
+            FutureBuilder<bool>(
+              future: PermissionsHelper.isViewer(widget.listId),
+              builder: (context, snapshot) {
+                final isViewer = snapshot.hasData && snapshot.data == true;
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: !isViewer && counter > 1
+                          ? () => _updateTask({'counter': counter - 1})
+                          : null,
+                      icon: FaIcon(
+                        FontAwesomeIcons.minus,
+                        color: (!isViewer && counter > 1)
+                            ? Colors.green[800]
+                            : Colors.grey[400],
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: (!isViewer && counter > 1)
+                            ? Colors.green[100]
+                            : Colors.grey[200],
+                        shape: const CircleBorder(),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    '$counter',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green[800],
+                    const SizedBox(width: 20),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[850]
+                            : Colors.grey[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.green[200]!,
+                        ),
+                      ),
+                      child: Text(
+                        '$counter',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[800],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 20),
-                IconButton(
-                  onPressed: counter < 99
-                      ? () => _updateTask({'counter': counter + 1})
-                      : null,
-                  icon: FaIcon(
-                    FontAwesomeIcons.plus,
-                    color: counter < 99 ? Colors.green[800] : Colors.grey[400],
-                  ),
-                  style: IconButton.styleFrom(
-                    backgroundColor:
-                        counter < 99 ? Colors.green[100] : Colors.grey[200],
-                    shape: const CircleBorder(),
-                  ),
-                ),
-              ],
+                    const SizedBox(width: 20),
+                    IconButton(
+                      onPressed: !isViewer && counter < 99
+                          ? () => _updateTask({'counter': counter + 1})
+                          : null,
+                      icon: FaIcon(
+                        FontAwesomeIcons.plus,
+                        color: (!isViewer && counter < 99)
+                            ? Colors.green[800]
+                            : Colors.grey[400],
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: (!isViewer && counter < 99)
+                            ? Colors.green[100]
+                            : Colors.grey[200],
+                        shape: const CircleBorder(),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),

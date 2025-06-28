@@ -10,6 +10,7 @@ import 'create_task.dart';
 import 'list_options.dart';
 import '/widgets/loading_spinner.dart';
 import '/libraries/icons/food_icons_map.dart';
+import '/utils/permissions.dart';
 
 class ListViewScreen extends StatefulWidget {
   final String listId;
@@ -239,18 +240,29 @@ class _ListViewScreenState extends State<ListViewScreen>
         ),
       ),
       floatingActionButton: _selectedIndex == 0
-          ? FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        CreateTaskScreen(listId: widget.listId),
-                  ),
+          ? FutureBuilder<bool>(
+              future: PermissionsHelper.isViewer(widget.listId),
+              builder: (context, snapshot) {
+                // Hide FAB for viewers
+                if (snapshot.hasData && snapshot.data == true) {
+                  return const SizedBox.shrink();
+                }
+                return FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            CreateTaskScreen(listId: widget.listId),
+                      ),
+                    );
+                  },
+                  backgroundColor:
+                      isDark ? Colors.green[700] : Colors.green[800],
+                  child:
+                      const FaIcon(FontAwesomeIcons.plus, color: Colors.white),
                 );
               },
-              backgroundColor: isDark ? Colors.green[700] : Colors.green[800],
-              child: const FaIcon(FontAwesomeIcons.plus, color: Colors.white),
             )
           : null,
     );
@@ -451,28 +463,41 @@ class _TasksTabState extends State<TasksTab> {
           child: Row(
             children: [
               // Checkbox
-              GestureDetector(
-                onTap: () => _toggleTaskCompletion(doc.id, isCompleted),
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color:
-                          isCompleted ? Colors.green[700]! : Colors.grey[400]!,
-                      width: 2,
+              FutureBuilder<bool>(
+                future: PermissionsHelper.isViewer(widget.listId),
+                builder: (context, snapshot) {
+                  final isViewerMode =
+                      snapshot.hasData && snapshot.data == true;
+
+                  return GestureDetector(
+                    onTap: isViewerMode
+                        ? null
+                        : () => _toggleTaskCompletion(doc.id, isCompleted),
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isCompleted
+                              ? Colors.green[700]!
+                              : Colors.grey[400]!,
+                          width: 2,
+                        ),
+                        color: isCompleted
+                            ? Colors.green[700]
+                            : Colors.transparent,
+                      ),
+                      child: isCompleted
+                          ? const Icon(
+                              Icons.check,
+                              size: 16,
+                              color: Colors.white,
+                            )
+                          : null,
                     ),
-                    color: isCompleted ? Colors.green[700] : Colors.transparent,
-                  ),
-                  child: isCompleted
-                      ? const Icon(
-                          Icons.check,
-                          size: 16,
-                          color: Colors.white,
-                        )
-                      : null,
-                ),
+                  );
+                },
               ),
               const SizedBox(width: 16),
 
@@ -624,14 +649,23 @@ class _TasksTabState extends State<TasksTab> {
               ),
 
               // Delete button
-              IconButton(
-                onPressed: () => _deleteTask(doc.id),
-                icon: FaIcon(
-                  FontAwesomeIcons.trash,
-                  size: 16,
-                  color: Colors.red[400],
-                ),
-                tooltip: 'Delete task',
+              FutureBuilder<bool>(
+                future: PermissionsHelper.isViewer(widget.listId),
+                builder: (context, snapshot) {
+                  // Hide delete button for viewers
+                  if (snapshot.hasData && snapshot.data == true) {
+                    return const SizedBox.shrink();
+                  }
+                  return IconButton(
+                    onPressed: () => _deleteTask(doc.id),
+                    icon: FaIcon(
+                      FontAwesomeIcons.trash,
+                      size: 16,
+                      color: Colors.red[400],
+                    ),
+                    tooltip: 'Delete task',
+                  );
+                },
               ),
             ],
           ),
