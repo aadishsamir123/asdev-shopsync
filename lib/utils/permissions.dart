@@ -8,8 +8,9 @@ class PermissionsHelper {
   /// Check if the current user is a viewer for a given list
   static Future<bool> isViewer(String listId) async {
     final currentUserId = _auth.currentUser?.uid;
-    if (currentUserId == null)
+    if (currentUserId == null) {
       return true; // Default to viewer if not authenticated
+    }
 
     try {
       final listDoc = await _firestore.collection('lists').doc(listId).get();

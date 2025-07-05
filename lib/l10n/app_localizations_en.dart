@@ -38,22 +38,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get returnMedium => 'medium';
 
   @override
-  String get returnNameMustBeAtLeast2Characters => 'Name must be at least 2 characters';
+  String get returnNameMustBeAtLeast2Characters =>
+      'Name must be at least 2 characters';
 
   @override
-  String get returnNetworkErrorCheckYourConnectionAndTryAgain => 'Network error. Check your connection and try again';
+  String get returnNetworkErrorCheckYourConnectionAndTryAgain =>
+      'Network error. Check your connection and try again';
 
   @override
-  String get returnNetworkErrorPleaseCheckYourInternetConnectionAndTryAgain => 'Network error. Please check your internet connection and try again';
+  String get returnNetworkErrorPleaseCheckYourInternetConnectionAndTryAgain =>
+      'Network error. Please check your internet connection and try again';
 
   @override
-  String get returnNoAccountFoundWithThisEmail => 'No account found with this email';
+  String get returnNoAccountFoundWithThisEmail =>
+      'No account found with this email';
 
   @override
-  String get returnNoUserFoundForThatEmailPleaseCheckYourEmailAndTryAgain => 'No user found for that email. Please check your email and try again';
+  String get returnNoUserFoundForThatEmailPleaseCheckYourEmailAndTryAgain =>
+      'No user found for that email. Please check your email and try again';
 
   @override
-  String get returnPasswordMustBeAtLeast6Characters => 'Password must be at least 6 characters';
+  String get returnPasswordMustBeAtLeast6Characters =>
+      'Password must be at least 6 characters';
 
   @override
   String get returnPleaseEnterADisplayName => 'Please enter a display name';
@@ -62,7 +68,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get returnPleaseEnterAPassword => 'Please enter a password';
 
   @override
-  String get returnPleaseEnterAValidEmailAddress => 'Please enter a valid email address';
+  String get returnPleaseEnterAValidEmailAddress =>
+      'Please enter a valid email address';
 
   @override
   String get returnPleaseEnterYourEmail => 'Please enter your email';
@@ -74,31 +81,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get returnPleaseEnterYourPassword => 'Please enter your password';
 
   @override
-  String get returnTheEmailAddressIsAlreadyInUseByAnotherAccount => 'The email address is already in use by another account';
+  String get returnTheEmailAddressIsAlreadyInUseByAnotherAccount =>
+      'The email address is already in use by another account';
 
   @override
-  String get returnTheOperationIsNotAllowedPleaseTryAgainLaterIfItDoesn => 'The operation is not allowed. Please try again later. If it doesn\'t';
+  String get returnTheOperationIsNotAllowedPleaseTryAgainLaterIfItDoesn =>
+      'The operation is not allowed. Please try again later. If it doesn\'t';
 
   @override
-  String get returnThePasswordIsInvalidOrTheUserDoesNotHaveAPassword => 'The password is invalid or the user does not have a password';
+  String get returnThePasswordIsInvalidOrTheUserDoesNotHaveAPassword =>
+      'The password is invalid or the user does not have a password';
 
   @override
-  String get returnTheProvidedCredentialsAreIncorrectPleaseCheckYourEmailAndPassword => 'The provided credentials are incorrect. Please check your email and password';
+  String
+  get returnTheProvidedCredentialsAreIncorrectPleaseCheckYourEmailAndPassword =>
+      'The provided credentials are incorrect. Please check your email and password';
 
   @override
-  String get returnThisEmailIsAlreadyRegisteredPleaseSignInInstead => 'This email is already registered. Please sign in instead';
+  String get returnThisEmailIsAlreadyRegisteredPleaseSignInInstead =>
+      'This email is already registered. Please sign in instead';
 
   @override
-  String get returnThisPasswordIsTooWeakPleaseChooseAStrongerOne => 'This password is too weak. Please choose a stronger one';
+  String get returnThisPasswordIsTooWeakPleaseChooseAStrongerOne =>
+      'This password is too weak. Please choose a stronger one';
 
   @override
-  String get returnThisUserHasBeenDisabledPleaseContact => 'This user has been disabled. Please contact asdev.feedback@gmail.com';
+  String get returnThisUserHasBeenDisabledPleaseContact =>
+      'This user has been disabled. Please contact asdev.feedback@gmail.com';
 
   @override
-  String get returnTooManyRequestsPleaseTryAgainLater => 'Too many requests. Please try again later';
+  String get returnTooManyRequestsPleaseTryAgainLater =>
+      'Too many requests. Please try again later';
 
   @override
-  String returnVersionPackageinfoversionPackageinfobuildnumber(String packageInfoVersion, String packageInfoBuildNumber) {
+  String returnVersionPackageinfoversionPackageinfobuildnumber(
+    String packageInfoVersion,
+    String packageInfoBuildNumber,
+  ) {
     return 'Version \$$packageInfoVersion (\$$packageInfoBuildNumber)';
   }
 
@@ -106,7 +125,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get textappLanguage => 'App Language';
 
   @override
-  String get textareYouSureYouWantToSignOut => 'Are you sure you want to sign out?';
+  String get textareYouSureYouWantToSignOut =>
+      'Are you sure you want to sign out?';
 
   @override
   String get textcancel => 'Cancel';
@@ -121,7 +141,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get textclearItems => 'Clear Items';
 
   @override
-  String textclearedCompleteditemsdocslengthCompletedItems(int completedItemsLength) {
+  String textclearedCompleteditemsdocslengthCompletedItems(
+    int completedItemsLength,
+  ) {
     return 'Cleared \$$completedItemsLength completed items';
   }
 
@@ -170,7 +192,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get textexportList => 'Export List';
 
   @override
-  String get textfailedToCreateListPleaseTryAgain => 'Failed to create list. Please try again.';
+  String get textfailedToCreateListPleaseTryAgain =>
+      'Failed to create list. Please try again.';
 
   @override
   String get textfailedToDeleteItem => 'Failed to delete item';
@@ -188,7 +211,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get textfailedToSignInWithGoogle => 'Failed to sign in with Google';
 
   @override
-  String get textfailedToSignOutPleaseTryAgain => 'Failed to sign out. Please try again.';
+  String get textfailedToSignOutPleaseTryAgain =>
+      'Failed to sign out. Please try again.';
 
   @override
   String get textfailedToUpdateTaskStatus => 'Failed to update task status';
@@ -236,7 +260,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get textuserAddedSuccessfully => 'User added successfully';
 
   @override
-  String get textuserAlreadyHasAccessToThisList => 'User already has access to this list';
+  String get textuserAlreadyHasAccessToThisList =>
+      'User already has access to this list';
 
   @override
   String get textuserRemoved => 'User removed';
@@ -251,7 +276,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get titleAbout => 'About';
 
   @override
-  String get titleAccessYourListsAndSettings => 'Access your lists and settings';
+  String get titleAccessYourListsAndSettings =>
+      'Access your lists and settings';
 
   @override
   String get titleAddItemsToYourList => 'Add items to your list';
