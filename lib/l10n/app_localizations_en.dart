@@ -93,8 +93,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'The password is invalid or the user does not have a password';
 
   @override
-  String
-  get returnTheProvidedCredentialsAreIncorrectPleaseCheckYourEmailAndPassword =>
+  String get returnTheProvidedCredentialsAreIncorrectPleaseCheckYourEmailAndPassword =>
       'The provided credentials are incorrect. Please check your email and password';
 
   @override
@@ -115,9 +114,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String returnVersionPackageinfoversionPackageinfobuildnumber(
-    String packageInfoVersion,
-    String packageInfoBuildNumber,
-  ) {
+      String packageInfoVersion, String packageInfoBuildNumber) {
     return 'Version \$$packageInfoVersion (\$$packageInfoBuildNumber)';
   }
 
@@ -142,8 +139,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String textclearedCompleteditemsdocslengthCompletedItems(
-    int completedItemsLength,
-  ) {
+      int completedItemsLength) {
     return 'Cleared \$$completedItemsLength completed items';
   }
 
