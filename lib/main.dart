@@ -14,11 +14,11 @@ import 'screens/maintenance_screen.dart';
 import 'screens/onboarding.dart';
 import 'screens/settings.dart';
 import 'screens/migration_screen.dart';
+import 'screens/feedback.dart';
 import 'services/update_service.dart';
 import 'services/maintenance_service.dart';
 import 'services/shared_prefs.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-
 import 'widgets/splash_screen.dart';
 
 // Uncomment the following line for testing purposes
@@ -113,6 +113,7 @@ class ShopSync extends StatelessWidget {
         '/settings': (context) => const SettingsScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
         '/migration': (context) => const MigrationScreen(),
+        '/feedback': (context) => const FeedbackScreen(),
       },
     );
   }
