@@ -31,7 +31,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
         if (!didPop) {
           final shouldPop = await _onWillPop();
           if (shouldPop && context.mounted) {
@@ -75,7 +75,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   final uri = navigationAction.request.url;
 
                   if (uri != null) {
-                    final url = uri.toString();
                     final host = uri.host;
 
                     // Allow navigation within the forms domain
