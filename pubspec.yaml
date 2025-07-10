@@ -37,6 +37,7 @@ dependencies:
   flutter_svg: ^2.1.0
   amplitude_flutter: ^4.0.0
   google_mobile_ads: ^6.0.0
+  flutter_inappwebview: ^6.1.5
 
 dev_dependencies:
   sentry_dart_plugin: ^2.4.1

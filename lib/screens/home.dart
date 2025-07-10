@@ -826,6 +826,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         },
                                       ),
                                       _buildDrawerItem(
+                                        icon: FontAwesomeIcons.comment,
+                                        title: 'Feedback',
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          Navigator.pushNamed(
+                                              context, '/feedback');
+                                        },
+                                      ),
+                                      _buildDrawerItem(
                                         icon: FontAwesomeIcons.scroll,
                                         title: 'Release Notes',
                                         onTap: () async {

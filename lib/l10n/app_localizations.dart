@@ -61,8 +61,7 @@ import 'app_localizations_en.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -70,8 +69,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -83,8 +81,7 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
     delegate,
     GlobalMaterialLocalizations.delegate,
     GlobalCupertinoLocalizations.delegate,
@@ -92,7 +89,9 @@ abstract class AppLocalizations {
   ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('en')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en')
+  ];
 
   /// No description provided for @returnClearedCountCompletedItems.
   ///
@@ -230,8 +229,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'The provided credentials are incorrect. Please check your email and password'**
-  String
-      get returnTheProvidedCredentialsAreIncorrectPleaseCheckYourEmailAndPassword;
+  String get returnTheProvidedCredentialsAreIncorrectPleaseCheckYourEmailAndPassword;
 
   /// No description provided for @returnThisEmailIsAlreadyRegisteredPleaseSignInInstead.
   ///
@@ -261,8 +259,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Version \${packageInfoVersion} (\${packageInfoBuildNumber})'**
-  String returnVersionPackageinfoversionPackageinfobuildnumber(
-      String packageInfoVersion, String packageInfoBuildNumber);
+  String returnVersionPackageinfoversionPackageinfobuildnumber(String packageInfoVersion, String packageInfoBuildNumber);
 
   /// No description provided for @textappLanguage.
   ///
@@ -304,8 +301,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Cleared \${completedItemsLength} completed items'**
-  String textclearedCompleteditemsdocslengthCompletedItems(
-      int completedItemsLength);
+  String textclearedCompleteditemsdocslengthCompletedItems(int completedItemsLength);
 
   /// No description provided for @textcouldNotOpenPlayStore.
   ///
@@ -674,8 +670,7 @@ abstract class AppLocalizations {
   String get titleWelcomeToShopsync;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -684,23 +679,24 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en':
-      return AppLocalizationsEn();
+    case 'en': return AppLocalizationsEn();
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.'
+  );
 }
