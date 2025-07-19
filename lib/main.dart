@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:shopsync/services/connectivity_service.dart';
 import 'firebase_options.dart';
 import 'screens/welcome.dart';
 import 'screens/login.dart';
@@ -21,14 +23,23 @@ import 'services/shared_prefs.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'widgets/splash_screen.dart';
 
-// Uncomment the following line for testing purposes
-// import 'screens/update_app.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Initialize connectivity service with error handling
+  try {
+    await ConnectivityService().initialize();
+  } catch (e) {
+    if (kDebugMode) {
+      // Log the error in debug mode
+      print('Failed to initialize ConnectivityService: $e');
+    }
+    // App will continue with fallback connectivity checks
+  }
+
   unawaited(MobileAds.instance.initialize());
 
   // Set system UI overlay style

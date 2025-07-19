@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shopsync/screens/sign_out.dart';
+import 'package:shopsync/services/connectivity_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -26,6 +27,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // Add GitHub and Crowdin URLs
   final String _githubUrl = 'https://github.com/aadishsamir123/asdev-shopsync';
   final String _crowdinUrl = 'https://crowdin.com/project/as-shopsync';
+
+  // Offline mode
+  final connectivityService = ConnectivityService();
 
   // Ad management
   BannerAd? _bannerAd;
@@ -153,10 +157,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (shouldSignOut) {
       try {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const SignOutScreen()),
-        );
+        if (await connectivityService.checkConnectivityAndShowDialog(context,
+            feature: 'the sign out option')) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const SignOutScreen()),
+          );
+        }
       } catch (e) {
         // Send sign out errors to Sentry
         await Sentry.captureException(
