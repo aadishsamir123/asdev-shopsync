@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -32,7 +33,10 @@ void main() async {
   try {
     await ConnectivityService().initialize();
   } catch (e) {
-    print('Failed to initialize ConnectivityService: $e');
+    if (kDebugMode) {
+      // Log the error in debug mode
+      print('Failed to initialize ConnectivityService: $e');
+    }
     // App will continue with fallback connectivity checks
   }
 

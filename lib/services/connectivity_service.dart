@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shopsync/widgets/offline_dialog.dart';
 
 class ConnectivityService {
@@ -37,7 +37,9 @@ class ConnectivityService {
       _isInitialized = true;
     } catch (e) {
       // If connectivity_plus fails, assume we're online and mark as initialized
-      print('ConnectivityService initialization failed: $e');
+      if (kDebugMode) {
+        print('ConnectivityService initialization failed: $e');
+      }
       _isOnline = true;
       _isInitialized = true;
       _connectionStatusController.add(_isOnline);
@@ -65,7 +67,9 @@ class ConnectivityService {
         _connectionStatusController.add(_isOnline);
       }
     } catch (e) {
-      print('Error updating connection status: $e');
+      if (kDebugMode) {
+        print('Error updating connection status: $e');
+      }
       // Fallback to assuming online if we can't check
       _isOnline = true;
       _connectionStatusController.add(_isOnline);
@@ -83,7 +87,9 @@ class ConnectivityService {
       _updateConnectionStatus(connectivityResult);
       return _isOnline;
     } catch (e) {
-      print('Error checking connectivity: $e');
+      if (kDebugMode) {
+        print('Error checking connectivity: $e');
+      }
       // Fallback: assume online if we can't check
       return true;
     }
