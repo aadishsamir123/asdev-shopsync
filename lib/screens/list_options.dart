@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:shopsync/services/connectivity_service.dart';
 import '/widgets/place_selector.dart';
 import '/widgets/loading_spinner.dart';
 import '/services/export_service.dart';
@@ -29,6 +30,8 @@ class ListOptionsScreen extends StatefulWidget {
 class _ListOptionsScreenState extends State<ListOptionsScreen> {
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
+
+  final connectivityService = ConnectivityService();
 
   // Ad management
   BannerAd? _bannerAd;
@@ -174,71 +177,77 @@ class _ListOptionsScreenState extends State<ListOptionsScreen> {
 
     if (!shouldDelete || !mounted) return;
 
-    try {
-      // Delete all items in the list
-      final itemsSnapshot = await _firestore
-          .collection('lists')
-          .doc(widget.listId)
-          .collection('items')
-          .get();
+    if (await connectivityService.checkConnectivityAndShowDialog(context,
+        feature: 'the list deletion option')) {
+      try {
+        // Delete all items in the list
+        final itemsSnapshot = await _firestore
+            .collection('lists')
+            .doc(widget.listId)
+            .collection('items')
+            .get();
 
-      final recycleBinSnapshot = await _firestore
-          .collection('lists')
-          .doc(widget.listId)
-          .collection('recycled_items')
-          .get();
+        final recycleBinSnapshot = await _firestore
+            .collection('lists')
+            .doc(widget.listId)
+            .collection('recycled_items')
+            .get();
 
-      final batch = _firestore.batch();
+        final batch = _firestore.batch();
 
-      // Delete items
-      for (var doc in itemsSnapshot.docs) {
-        batch.delete(doc.reference);
+        // Delete items
+        for (var doc in itemsSnapshot.docs) {
+          batch.delete(doc.reference);
+        }
+
+        // Delete recycled items
+        for (var doc in recycleBinSnapshot.docs) {
+          batch.delete(doc.reference);
+        }
+
+        // Delete the list document itself
+        batch.delete(_firestore.collection('lists').doc(widget.listId));
+
+        await batch.commit();
+
+        if (!mounted) return;
+        Navigator.pop(context); // Return to home screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('List deleted successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } catch (e, stackTrace) {
+        await Sentry.captureException(
+          e,
+          stackTrace: stackTrace,
+          hint: Hint.withMap({
+            'message': 'Failed to delete list',
+            'listId': widget.listId,
+          }),
+        );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to delete list')),
+        );
       }
-
-      // Delete recycled items
-      for (var doc in recycleBinSnapshot.docs) {
-        batch.delete(doc.reference);
-      }
-
-      // Delete the list document itself
-      batch.delete(_firestore.collection('lists').doc(widget.listId));
-
-      await batch.commit();
-
-      if (!mounted) return;
-      Navigator.pop(context); // Return to home screen
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('List deleted successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } catch (e, stackTrace) {
-      await Sentry.captureException(
-        e,
-        stackTrace: stackTrace,
-        hint: Hint.withMap({
-          'message': 'Failed to delete list',
-          'listId': widget.listId,
-        }),
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to delete list')),
-      );
     }
   }
 
-  void _showShareMenu() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ShareMenuScreen(
-          listId: widget.listId,
-          listName: widget.listName,
+  Future<void> _showShareMenu() async {
+    if (await connectivityService.checkConnectivityAndShowDialog(context,
+        feature: 'list sharing options')) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ShareMenuScreen(
+            listId: widget.listId,
+            listName: widget.listName,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   void _showSavedLocations() {

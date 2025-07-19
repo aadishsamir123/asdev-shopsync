@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:shopsync/services/connectivity_service.dart';
 import '/screens/sign_out.dart';
 import '/widgets/loading_spinner.dart';
 import '/widgets/advert.dart';
@@ -54,6 +55,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _firestore = FirebaseFirestore.instance;
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  final connectivityService = ConnectivityService();
 
   bool _isLoading = false;
   bool _isEditing = false;
@@ -182,10 +185,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (shouldSignOut) {
       try {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const SignOutScreen()),
-        );
+        if (await connectivityService.checkConnectivityAndShowDialog(context,
+            feature: 'the sign out option')) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const SignOutScreen()),
+          );
+        }
       } catch (e) {
         // Send sign out errors to Sentry
         await Sentry.captureException(

@@ -38,6 +38,8 @@ dependencies:
   amplitude_flutter: ^4.0.0
   google_mobile_ads: ^6.0.0
   flutter_inappwebview: ^6.1.5
+  lottie: ^3.1.2
+  connectivity_plus: ^5.0.2
 
 dev_dependencies:
   sentry_dart_plugin: ^2.4.1
@@ -71,6 +73,7 @@ flutter:
     - assets/icons/food_icons/seafood/
     - assets/icons/food_icons/vegetables/
     - assets/icons/food_icons/other/
+    - assets/animations/no_internet.json
 
 sentry:
   upload_debug_symbols: true

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:shopsync/services/connectivity_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -431,6 +432,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    final connectivityService = ConnectivityService();
+
     // final l10n = AppLocalizations.of(context);
 
     PreferredSize buildCustomAppBar(BuildContext context) {
@@ -828,30 +831,40 @@ class _HomeScreenState extends State<HomeScreen> {
                                       _buildDrawerItem(
                                         icon: FontAwesomeIcons.comment,
                                         title: 'Feedback',
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          Navigator.pushNamed(
-                                              context, '/feedback');
+                                        onTap: () async {
+                                          if (await connectivityService
+                                              .checkConnectivityAndShowDialog(
+                                                  context,
+                                                  feature: 'feedback')) {
+                                            Navigator.pop(context);
+                                            Navigator.pushNamed(
+                                                context, '/feedback');
+                                          }
                                         },
                                       ),
                                       _buildDrawerItem(
                                         icon: FontAwesomeIcons.scroll,
                                         title: 'Release Notes',
                                         onTap: () async {
-                                          final Uri url = Uri.parse(
-                                              'https://github.com/aadishsamir123/asdev-shopsync/releases');
-                                          if (!await launchUrl(url)) {
+                                          if (await connectivityService
+                                              .checkConnectivityAndShowDialog(
+                                                  context,
+                                                  feature: 'release notes')) {
+                                            final Uri url = Uri.parse(
+                                                'https://github.com/aadishsamir123/asdev-shopsync/releases');
+                                            if (!await launchUrl(url)) {
+                                              if (!mounted) return;
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                      'Could not open release notes'),
+                                                ),
+                                              );
+                                            }
                                             if (!mounted) return;
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                    'Could not open release notes'),
-                                              ),
-                                            );
+                                            Navigator.pop(context);
                                           }
-                                          if (!mounted) return;
-                                          Navigator.pop(context);
                                         },
                                       ),
                                       const SizedBox(height: 16),

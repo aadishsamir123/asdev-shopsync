@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shopsync/services/connectivity_service.dart';
 // import '/services/google_auth.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -39,6 +40,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final connectivityService = ConnectivityService();
+
     // final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -145,7 +149,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                 // Login Button
                 ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/login'),
+                  onPressed: () async {
+                    if (await connectivityService
+                        .checkConnectivityAndShowDialog(context,
+                            feature: 'ShopSync Authentication')) {
+                      Navigator.pushNamed(context, '/login');
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     foregroundColor:
                         isDarkMode ? Colors.white : Colors.green[800],
@@ -177,7 +187,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                 // Sign Up Button
                 OutlinedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/register'),
+                  onPressed: () async {
+                    if (await connectivityService
+                        .checkConnectivityAndShowDialog(context,
+                            feature: 'ShopSync Authentication')) {
+                      // Navigate to registration screen
+                      Navigator.pushNamed(context, '/register');
+                    }
+                  },
                   style: OutlinedButton.styleFrom(
                     foregroundColor:
                         isDarkMode ? Colors.green[300] : Colors.white,
