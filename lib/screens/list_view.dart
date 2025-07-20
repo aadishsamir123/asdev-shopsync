@@ -106,6 +106,40 @@ class _ListViewScreenState extends State<ListViewScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktopOrTablet = screenWidth >= 600; // Tablets and desktop
+
+    Widget body = IndexedStack(
+      index: _selectedIndex,
+      children: [
+        TasksTab(listId: widget.listId, listName: widget.listName),
+        ListOptionsScreen(listId: widget.listId, listName: widget.listName),
+      ],
+    );
+
+    Widget? fab = _selectedIndex == 0
+        ? FutureBuilder<bool>(
+            future: PermissionsHelper.isViewer(widget.listId),
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data == true) {
+                return const SizedBox.shrink();
+              }
+              return FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CreateTaskScreen(listId: widget.listId),
+                    ),
+                  );
+                },
+                backgroundColor: isDark ? Colors.green[700] : Colors.green[800],
+                child: const FaIcon(FontAwesomeIcons.plus, color: Colors.white),
+              );
+            },
+          )
+        : null;
 
     return Scaffold(
       backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
@@ -134,137 +168,231 @@ class _ListViewScreenState extends State<ListViewScreen>
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: [
-          TasksTab(listId: widget.listId, listName: widget.listName),
-          ListOptionsScreen(listId: widget.listId, listName: widget.listName),
-        ],
-      ),
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          navigationBarTheme: NavigationBarThemeData(
-            backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
-            indicatorColor: isDark ? Colors.green[800] : Colors.green[600],
-            labelTextStyle: WidgetStateProperty.resolveWith((states) {
-              if (states.contains(WidgetState.selected)) {
-                return TextStyle(
-                  color: isDark ? Colors.white : Colors.green[800],
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                );
-              }
-              return TextStyle(
-                color: isDark ? Colors.grey[400] : Colors.green[600],
-                fontWeight: FontWeight.w500,
-                fontSize: 12,
-              );
-            }),
-            iconTheme: WidgetStateProperty.resolveWith((states) {
-              if (states.contains(WidgetState.selected)) {
-                return const IconThemeData(
-                  color: Colors.white,
-                  size: 24,
-                );
-              }
-              return IconThemeData(
-                color: isDark ? Colors.grey[400] : Colors.green[600],
-                size: 20,
-              );
-            }),
-          ),
-        ),
-        child: NavigationBar(
-          selectedIndex: _selectedIndex,
-          onDestinationSelected: _onItemTapped,
-          destinations: [
-            NavigationDestination(
-              icon: AnimatedBuilder(
-                animation: _tasksAnimationController,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale:
-                        _selectedIndex == 0 ? _tasksBounceAnimation.value : 1.0,
-                    child: Transform.rotate(
-                      angle: _selectedIndex == 0
-                          ? _tasksRotateAnimation.value * 2 * 3.14159
-                          : 0.0,
-                      child: const Icon(Icons.checklist_outlined),
-                    ),
-                  );
-                },
-              ),
-              selectedIcon: AnimatedBuilder(
-                animation: _tasksAnimationController,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale:
-                        _selectedIndex == 0 ? _tasksBounceAnimation.value : 1.0,
-                    child: Transform.rotate(
-                      angle: _selectedIndex == 0
-                          ? _tasksRotateAnimation.value * 2 * 3.14159
-                          : 0.0,
-                      child: const Icon(Icons.checklist),
-                    ),
-                  );
-                },
-              ),
-              label: 'Tasks',
-            ),
-            NavigationDestination(
-              icon: AnimatedBuilder(
-                animation: _optionsSpinAnimation,
-                builder: (context, child) {
-                  return Transform.rotate(
-                    angle: _selectedIndex == 1
-                        ? _optionsSpinAnimation.value * 2 * 3.14159
-                        : 0.0,
-                    child: const Icon(Icons.settings_outlined),
-                  );
-                },
-              ),
-              selectedIcon: AnimatedBuilder(
-                animation: _optionsSpinAnimation,
-                builder: (context, child) {
-                  return Transform.rotate(
-                    angle: _selectedIndex == 1
-                        ? _optionsSpinAnimation.value * 2 * 3.14159
-                        : 0.0,
-                    child: const Icon(Icons.settings),
-                  );
-                },
-              ),
-              label: 'Options',
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: _selectedIndex == 0
-          ? FutureBuilder<bool>(
-              future: PermissionsHelper.isViewer(widget.listId),
-              builder: (context, snapshot) {
-                // Hide FAB for viewers
-                if (snapshot.hasData && snapshot.data == true) {
-                  return const SizedBox.shrink();
-                }
-                return FloatingActionButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            CreateTaskScreen(listId: widget.listId),
+      body: isDesktopOrTablet
+          ? Row(
+              children: [
+                // Navigation Rail for desktop/tablet
+                NavigationRail(
+                  selectedIndex: _selectedIndex,
+                  onDestinationSelected: _onItemTapped,
+                  backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
+                  indicatorColor:
+                      isDark ? Colors.green[800] : Colors.green[600],
+                  labelType: NavigationRailLabelType.all,
+                  groupAlignment: -0.8,
+                  destinations: [
+                    NavigationRailDestination(
+                      icon: AnimatedBuilder(
+                        animation: _tasksAnimationController,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: _selectedIndex == 0
+                                ? _tasksBounceAnimation.value
+                                : 1.0,
+                            child: Transform.rotate(
+                              angle: _selectedIndex == 0
+                                  ? _tasksRotateAnimation.value * 2 * 3.14159
+                                  : 0.0,
+                              child: Icon(
+                                Icons.checklist_outlined,
+                                color: _selectedIndex == 0
+                                    ? Colors.white
+                                    : (isDark
+                                        ? Colors.grey[400]
+                                        : Colors.green[600]),
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                  backgroundColor:
-                      isDark ? Colors.green[700] : Colors.green[800],
-                  child:
-                      const FaIcon(FontAwesomeIcons.plus, color: Colors.white),
-                );
-              },
+                      selectedIcon: AnimatedBuilder(
+                        animation: _tasksAnimationController,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: _selectedIndex == 0
+                                ? _tasksBounceAnimation.value
+                                : 1.0,
+                            child: Transform.rotate(
+                              angle: _selectedIndex == 0
+                                  ? _tasksRotateAnimation.value * 2 * 3.14159
+                                  : 0.0,
+                              child: const Icon(
+                                Icons.checklist,
+                                color: Colors.white,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      label: Text(
+                        'Tasks',
+                        style: TextStyle(
+                          color: _selectedIndex == 0
+                              ? (isDark ? Colors.white : Colors.green[800])
+                              : (isDark ? Colors.grey[400] : Colors.green[600]),
+                          fontWeight: _selectedIndex == 0
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    NavigationRailDestination(
+                      icon: AnimatedBuilder(
+                        animation: _optionsSpinAnimation,
+                        builder: (context, child) {
+                          return Transform.rotate(
+                            angle: _selectedIndex == 1
+                                ? _optionsSpinAnimation.value * 2 * 3.14159
+                                : 0.0,
+                            child: Icon(
+                              Icons.settings_outlined,
+                              color: _selectedIndex == 1
+                                  ? Colors.white
+                                  : (isDark
+                                      ? Colors.grey[400]
+                                      : Colors.green[600]),
+                            ),
+                          );
+                        },
+                      ),
+                      selectedIcon: AnimatedBuilder(
+                        animation: _optionsSpinAnimation,
+                        builder: (context, child) {
+                          return Transform.rotate(
+                            angle: _selectedIndex == 1
+                                ? _optionsSpinAnimation.value * 2 * 3.14159
+                                : 0.0,
+                            child: const Icon(
+                              Icons.settings,
+                              color: Colors.white,
+                            ),
+                          );
+                        },
+                      ),
+                      label: Text(
+                        'Options',
+                        style: TextStyle(
+                          color: _selectedIndex == 1
+                              ? (isDark ? Colors.white : Colors.green[800])
+                              : (isDark ? Colors.grey[400] : Colors.green[600]),
+                          fontWeight: _selectedIndex == 1
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const VerticalDivider(thickness: 1, width: 1),
+                // Main content
+                Expanded(child: body),
+              ],
             )
-          : null,
+          : body,
+      bottomNavigationBar: isDesktopOrTablet
+          ? null
+          : Theme(
+              data: Theme.of(context).copyWith(
+                navigationBarTheme: NavigationBarThemeData(
+                  backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
+                  indicatorColor:
+                      isDark ? Colors.green[800] : Colors.green[600],
+                  labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return TextStyle(
+                        color: isDark ? Colors.white : Colors.green[800],
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      );
+                    }
+                    return TextStyle(
+                      color: isDark ? Colors.grey[400] : Colors.green[600],
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    );
+                  }),
+                  iconTheme: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return const IconThemeData(
+                        color: Colors.white,
+                        size: 24,
+                      );
+                    }
+                    return IconThemeData(
+                      color: isDark ? Colors.grey[400] : Colors.green[600],
+                      size: 20,
+                    );
+                  }),
+                ),
+              ),
+              child: NavigationBar(
+                selectedIndex: _selectedIndex,
+                onDestinationSelected: _onItemTapped,
+                destinations: [
+                  NavigationDestination(
+                    icon: AnimatedBuilder(
+                      animation: _tasksAnimationController,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _selectedIndex == 0
+                              ? _tasksBounceAnimation.value
+                              : 1.0,
+                          child: Transform.rotate(
+                            angle: _selectedIndex == 0
+                                ? _tasksRotateAnimation.value * 2 * 3.14159
+                                : 0.0,
+                            child: const Icon(Icons.checklist_outlined),
+                          ),
+                        );
+                      },
+                    ),
+                    selectedIcon: AnimatedBuilder(
+                      animation: _tasksAnimationController,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _selectedIndex == 0
+                              ? _tasksBounceAnimation.value
+                              : 1.0,
+                          child: Transform.rotate(
+                            angle: _selectedIndex == 0
+                                ? _tasksRotateAnimation.value * 2 * 3.14159
+                                : 0.0,
+                            child: const Icon(Icons.checklist),
+                          ),
+                        );
+                      },
+                    ),
+                    label: 'Tasks',
+                  ),
+                  NavigationDestination(
+                    icon: AnimatedBuilder(
+                      animation: _optionsSpinAnimation,
+                      builder: (context, child) {
+                        return Transform.rotate(
+                          angle: _selectedIndex == 1
+                              ? _optionsSpinAnimation.value * 2 * 3.14159
+                              : 0.0,
+                          child: const Icon(Icons.settings_outlined),
+                        );
+                      },
+                    ),
+                    selectedIcon: AnimatedBuilder(
+                      animation: _optionsSpinAnimation,
+                      builder: (context, child) {
+                        return Transform.rotate(
+                          angle: _selectedIndex == 1
+                              ? _optionsSpinAnimation.value * 2 * 3.14159
+                              : 0.0,
+                          child: const Icon(Icons.settings),
+                        );
+                      },
+                    ),
+                    label: 'Options',
+                  ),
+                ],
+              ),
+            ),
+      floatingActionButton: fab,
     );
   }
 }
