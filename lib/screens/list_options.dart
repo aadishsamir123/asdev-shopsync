@@ -380,6 +380,8 @@ class _ListOptionsScreenState extends State<ListOptionsScreen> {
                         ],
                       ),
 
+                    if (!isViewer) const SizedBox(height: 16),
+
                     // Recycle Bin - Always visible but limited for viewers
                     _buildSectionCard(
                       title: 'Recycle Bin',
