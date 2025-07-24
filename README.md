@@ -3,6 +3,8 @@
 
 # ShopSync
 
+_Share shopping lists with family and friends_
+
 [![Code Style Check](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/check-code.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/check-code.yml)
 [![Play Store Deploy Production](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/play-deploy-prod.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/play-deploy-prod.yml)
 
@@ -17,13 +19,7 @@
 
 ![Hackatime Badge](https://hackatime-badge.hackclub.com/U08PXJW1H1R/shopsync)
 
-_Share shopping lists with family and friends_
-
 </div>
-
-> [!IMPORTANT]
-> ShopSync can now be localized by the public by going to our [Crowdin project](https://crowdin.com/project/as-shopsync).
-> This allows ShopSync to be available in multiple languages.
 
 ## 📱 Overview
 
