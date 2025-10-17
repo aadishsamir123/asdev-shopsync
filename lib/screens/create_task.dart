@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/loading_spinner.dart';
 import '/widgets/place_selector.dart';
+import '/widgets/category_picker.dart';
 import '/libraries/icons/food_icons_map.dart';
 import '/screens/choose_task_icon.dart';
 
@@ -26,6 +27,8 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   bool _isLoading = false;
   int _counter = 1;
   FoodIconMapping? _selectedIcon;
+  String? _selectedCategoryId;
+  String? _selectedCategoryName;
 
   Future<void> _createTask() async {
     if (_titleController.text.trim().isEmpty) {
@@ -56,11 +59,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         );
       }
 
-      await FirebaseFirestore.instance
-          .collection('lists')
-          .doc(widget.listId)
-          .collection('items')
-          .add({
+      final taskData = {
         'name': _titleController.text.trim(),
         'description': _descriptionController.text.trim(),
         'completed': false,
@@ -72,7 +71,19 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         'location': _location,
         'counter': _counter,
         'iconIdentifier': _selectedIcon?.identifier,
-      });
+      };
+
+      // Add category if selected
+      if (_selectedCategoryId != null) {
+        taskData['categoryId'] = _selectedCategoryId;
+        taskData['categoryName'] = _selectedCategoryName;
+      }
+
+      await FirebaseFirestore.instance
+          .collection('lists')
+          .doc(widget.listId)
+          .collection('items')
+          .add(taskData);
 
       if (!mounted) return;
       Navigator.pop(context);
@@ -173,6 +184,118 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                     ],
                   ),
                 ),
+              ),
+            ),
+
+            // Category Selection Card
+            _buildCard(
+              title: 'Category',
+              child: StreamBuilder<DocumentSnapshot>(
+                stream: _selectedCategoryId != null
+                    ? FirebaseFirestore.instance
+                        .collection('lists')
+                        .doc(widget.listId)
+                        .collection('categories')
+                        .doc(_selectedCategoryId)
+                        .snapshots()
+                    : null,
+                builder: (context, categorySnapshot) {
+                  Map<String, dynamic>? categoryData;
+                  if (categorySnapshot.hasData &&
+                      categorySnapshot.data!.exists) {
+                    categoryData =
+                        categorySnapshot.data!.data() as Map<String, dynamic>;
+                  }
+
+                  return Card(
+                    elevation: 8,
+                    shadowColor: Colors.black26,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    child: InkWell(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => CategoryPicker(
+                            listId: widget.listId,
+                            selectedCategoryId: _selectedCategoryId,
+                            onCategorySelected: (categoryId, categoryName) {
+                              setState(() {
+                                _selectedCategoryId = categoryId;
+                                _selectedCategoryName = categoryName;
+                              });
+                            },
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(15),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 48,
+                              height: 48,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.green[100],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: categoryData != null
+                                  ? () {
+                                      final iconIdentifier =
+                                          categoryData!['iconIdentifier']
+                                              as String?;
+                                      final categoryIcon = iconIdentifier !=
+                                              null
+                                          ? FoodIconMap.getIcon(iconIdentifier)
+                                          : null;
+
+                                      return categoryIcon != null
+                                          ? categoryIcon.buildIcon(
+                                              width: 24,
+                                              height: 24,
+                                              color: Colors.green[800],
+                                            )
+                                          : FaIcon(
+                                              FontAwesomeIcons.tag,
+                                              color: Colors.green[800],
+                                            );
+                                    }()
+                                  : FaIcon(
+                                      FontAwesomeIcons.tag,
+                                      color: Colors.green[800],
+                                    ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Category',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    _selectedCategoryName ??
+                                        'Select a category',
+                                    style: TextStyle(color: Colors.grey[600]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
 

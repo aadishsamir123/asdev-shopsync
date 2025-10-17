@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shopsync/screens/sign_out.dart';
+import 'package:shopsync/screens/widget_settings.dart';
 import 'package:shopsync/services/connectivity_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -318,6 +319,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           // Settings Section
           SectionHeader(title: 'Settings', color: iconColor),
+          // Only show Widget Settings in debug mode
+          if (kDebugMode)
+            buildSettingsTile(
+              icon: FontAwesomeIcons.mobile,
+              title: 'Widget Settings',
+              subtitle: 'Configure home screen widget (Debug Only)',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const WidgetSettingsScreen(),
+                  ),
+                );
+              },
+            ),
           buildSettingsTile(
             icon: FontAwesomeIcons.rightFromBracket,
             title: 'Sign Out',

@@ -412,7 +412,6 @@ class TasksTab extends StatefulWidget {
 }
 
 class _TasksTabState extends State<TasksTab> {
-  final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
 
   // String _standardizePriority(String? priority) {
@@ -427,83 +426,6 @@ class _TasksTabState extends State<TasksTab> {
   //       return 'low';
   //   }
   // }
-
-  void _toggleTaskCompletion(String taskId, bool currentStatus) async {
-    try {
-      await _firestore
-          .collection('lists')
-          .doc(widget.listId)
-          .collection('items')
-          .doc(taskId)
-          .update({
-        'completed': !currentStatus,
-      });
-    } catch (e, stackTrace) {
-      await Sentry.captureException(
-        e,
-        stackTrace: stackTrace,
-        hint: Hint.withMap({
-          'message': 'Failed to toggle task completion',
-          'listId': widget.listId,
-          'taskId': taskId,
-        }),
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update task status')),
-      );
-    }
-  }
-
-  void _deleteTask(String taskId) async {
-    try {
-      // Get the task data before deleting
-      final taskDoc = await _firestore
-          .collection('lists')
-          .doc(widget.listId)
-          .collection('items')
-          .doc(taskId)
-          .get();
-
-      if (!taskDoc.exists) return;
-
-      final batch = _firestore.batch();
-
-      // Move to recycled_items collection
-      batch.set(
-        _firestore
-            .collection('lists')
-            .doc(widget.listId)
-            .collection('recycled_items')
-            .doc(),
-        {
-          ...taskDoc.data()!,
-          'deletedAt': FieldValue.serverTimestamp(),
-          'deletedBy': _auth.currentUser!.uid,
-          'deletedByName': _auth.currentUser!.displayName,
-        },
-      );
-
-      // Delete from original collection
-      batch.delete(taskDoc.reference);
-
-      await batch.commit();
-    } catch (e, stackTrace) {
-      await Sentry.captureException(
-        e,
-        stackTrace: stackTrace,
-        hint: Hint.withMap({
-          'message': 'Failed to delete task',
-          'listId': widget.listId,
-          'taskId': taskId,
-        }),
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to delete task')),
-      );
-    }
-  }
 
   // Widget _buildPriorityBadge(String priority) {
   //   Color color;
@@ -550,10 +472,354 @@ class _TasksTabState extends State<TasksTab> {
   //   );
   // }
 
+  Widget _buildStatsCard(QuerySnapshot tasksSnapshot) {
+    final totalTasks = tasksSnapshot.docs.length;
+    final completedTasks = tasksSnapshot.docs.where((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return data['completed'] ?? false;
+    }).length;
+    final progress = totalTasks > 0 ? completedTasks / totalTasks : 0.0;
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey[800] : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Progress circle
+          SizedBox(
+            width: 60,
+            height: 60,
+            child: CircularProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.green[700]!),
+              strokeWidth: 6,
+            ),
+          ),
+          const SizedBox(width: 16),
+
+          // Stats text
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${(progress * 100).round()}% Complete',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+                Text(
+                  '$completedTasks of $totalTasks tasks completed',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: _firestore
+                .collection('lists')
+                .doc(widget.listId)
+                .collection('items')
+                .orderBy('addedAt', descending: true)
+                .snapshots(),
+            builder: (context, tasksSnapshot) {
+              if (tasksSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CustomLoadingSpinner());
+              }
+
+              if (tasksSnapshot.hasError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FaIcon(
+                        FontAwesomeIcons.triangleExclamation,
+                        size: 64,
+                        color: Colors.red[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Error loading tasks',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.red[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              if (!tasksSnapshot.hasData || tasksSnapshot.data!.docs.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FaIcon(
+                        FontAwesomeIcons.listCheck,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No tasks yet',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Add your first task to get started',
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              // Fetch categories
+              return StreamBuilder<QuerySnapshot>(
+                stream: _firestore
+                    .collection('lists')
+                    .doc(widget.listId)
+                    .collection('categories')
+                    .orderBy('order', descending: false)
+                    .snapshots(),
+                builder: (context, categoriesSnapshot) {
+                  final tasks = tasksSnapshot.data!.docs;
+
+                  // Group tasks by category and completion status
+                  final Map<String?, List<DocumentSnapshot>> tasksByCategory = {
+                    null: [], // Uncategorized tasks
+                  };
+
+                  // Initialize categories
+                  if (categoriesSnapshot.hasData) {
+                    for (var categoryDoc in categoriesSnapshot.data!.docs) {
+                      tasksByCategory[categoryDoc.id] = [];
+                    }
+                  }
+
+                  // Group tasks
+                  for (var task in tasks) {
+                    final data = task.data() as Map<String, dynamic>;
+                    final categoryId = data['categoryId'] as String?;
+                    if (!tasksByCategory.containsKey(categoryId)) {
+                      tasksByCategory[categoryId] = [];
+                    }
+                    tasksByCategory[categoryId]!.add(task);
+                  }
+
+                  // Separate incomplete and completed tasks within each category
+                  final Map<String?, Map<String, List<DocumentSnapshot>>>
+                      groupedTasks = {};
+
+                  tasksByCategory.forEach((categoryId, categoryTasks) {
+                    final incomplete = categoryTasks.where((doc) {
+                      final data = doc.data() as Map<String, dynamic>;
+                      return !(data['completed'] ?? false);
+                    }).toList();
+
+                    final completed = categoryTasks.where((doc) {
+                      final data = doc.data() as Map<String, dynamic>;
+                      return data['completed'] ?? false;
+                    }).toList();
+
+                    if (incomplete.isNotEmpty || completed.isNotEmpty) {
+                      groupedTasks[categoryId] = {
+                        'incomplete': incomplete,
+                        'completed': completed,
+                      };
+                    }
+                  });
+
+                  return ListView(
+                    children: [
+                      _buildStatsCard(tasksSnapshot.data!),
+
+                      // Build category sections
+                      ...groupedTasks.entries.map((entry) {
+                        final categoryId = entry.key;
+                        final categoryTaskGroups = entry.value;
+                        final incompleteTasks =
+                            categoryTaskGroups['incomplete']!;
+                        final completedTasks = categoryTaskGroups['completed']!;
+
+                        // Get category data
+                        Map<String, dynamic>? categoryData;
+                        if (categoryId != null && categoriesSnapshot.hasData) {
+                          try {
+                            final categoryDoc = categoriesSnapshot.data!.docs
+                                .firstWhere((doc) => doc.id == categoryId);
+                            categoryData =
+                                categoryDoc.data() as Map<String, dynamic>;
+                          } catch (e) {
+                            // Category not found
+                          }
+                        }
+
+                        return CategorySection(
+                          key: ValueKey(categoryId ?? 'uncategorized'),
+                          categoryId: categoryId,
+                          categoryData: categoryData,
+                          incompleteTasks: incompleteTasks,
+                          completedTasks: completedTasks,
+                          listId: widget.listId,
+                        );
+                      }),
+
+                      const SizedBox(height: 80), // Space for FAB
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Separate stateful widget for each category section to prevent full page rebuilds
+class CategorySection extends StatefulWidget {
+  final String? categoryId;
+  final Map<String, dynamic>? categoryData;
+  final List<DocumentSnapshot> incompleteTasks;
+  final List<DocumentSnapshot> completedTasks;
+  final String listId;
+
+  const CategorySection({
+    super.key,
+    required this.categoryId,
+    required this.categoryData,
+    required this.incompleteTasks,
+    required this.completedTasks,
+    required this.listId,
+  });
+
+  @override
+  State<CategorySection> createState() => _CategorySectionState();
+}
+
+class _CategorySectionState extends State<CategorySection> {
+  bool _isExpanded = true; // Default to expanded
+
+  void _toggleTaskCompletion(String taskId, bool currentStatus) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('lists')
+          .doc(widget.listId)
+          .collection('items')
+          .doc(taskId)
+          .update({
+        'completed': !currentStatus,
+      });
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+        hint: Hint.withMap({
+          'message': 'Failed to toggle task completion',
+          'listId': widget.listId,
+          'taskId': taskId,
+        }),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to update task status')),
+      );
+    }
+  }
+
+  void _deleteTask(String taskId) async {
+    try {
+      final auth = FirebaseAuth.instance;
+      final firestore = FirebaseFirestore.instance;
+
+      // Get the task data before deleting
+      final taskDoc = await firestore
+          .collection('lists')
+          .doc(widget.listId)
+          .collection('items')
+          .doc(taskId)
+          .get();
+
+      if (!taskDoc.exists) return;
+
+      final batch = firestore.batch();
+
+      // Move to recycled_items collection
+      batch.set(
+        firestore
+            .collection('lists')
+            .doc(widget.listId)
+            .collection('recycled_items')
+            .doc(),
+        {
+          ...taskDoc.data()!,
+          'deletedAt': FieldValue.serverTimestamp(),
+          'deletedBy': auth.currentUser!.uid,
+          'deletedByName': auth.currentUser!.displayName,
+        },
+      );
+
+      // Delete from original collection
+      batch.delete(taskDoc.reference);
+
+      await batch.commit();
+    } catch (e, stackTrace) {
+      await Sentry.captureException(
+        e,
+        stackTrace: stackTrace,
+        hint: Hint.withMap({
+          'message': 'Failed to delete task',
+          'listId': widget.listId,
+          'taskId': taskId,
+        }),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete task')),
+      );
+    }
+  }
+
   Widget _buildTaskCard(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     final isCompleted = data['completed'] ?? false;
-    // final priority = _standardizePriority(data['priority']);
     final deadline = data['deadline'] as Timestamp?;
     final location = data['location'] as Map<String, dynamic>?;
     final counter = data['counter'] ?? 1;
@@ -718,7 +984,6 @@ class _TasksTabState extends State<TasksTab> {
                       spacing: 8,
                       runSpacing: 4,
                       children: [
-                        // _buildPriorityBadge(priority),
                         if (deadline != null)
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -780,7 +1045,6 @@ class _TasksTabState extends State<TasksTab> {
               FutureBuilder<bool>(
                 future: PermissionsHelper.isViewer(widget.listId),
                 builder: (context, snapshot) {
-                  // Hide delete button for viewers
                   if (snapshot.hasData && snapshot.data == true) {
                     return const SizedBox.shrink();
                   }
@@ -802,198 +1066,201 @@ class _TasksTabState extends State<TasksTab> {
     );
   }
 
-  Widget _buildStatsCard(QuerySnapshot tasksSnapshot) {
-    final totalTasks = tasksSnapshot.docs.length;
-    final completedTasks = tasksSnapshot.docs.where((doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      return data['completed'] ?? false;
-    }).length;
-    final progress = totalTasks > 0 ? completedTasks / totalTasks : 0.0;
-
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.grey[800] : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Progress circle
-          SizedBox(
-            width: 60,
-            height: 60,
-            child: CircularProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.green[700]!),
-              strokeWidth: 6,
-            ),
-          ),
-          const SizedBox(width: 16),
-
-          // Stats text
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${(progress * 100).round()}% Complete',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-                Text(
-                  '$completedTasks of $totalTasks tasks completed',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: _firestore
-                .collection('lists')
-                .doc(widget.listId)
-                .collection('items')
-                .orderBy('addedAt', descending: true)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CustomLoadingSpinner());
-              }
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final categoryName = widget.categoryData?['name'] ?? 'Uncategorized';
+    final iconIdentifier = widget.categoryData?['iconIdentifier'] as String?;
+    final categoryIcon =
+        iconIdentifier != null ? FoodIconMap.getIcon(iconIdentifier) : null;
 
-              if (snapshot.hasError) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FaIcon(
-                        FontAwesomeIcons.triangleExclamation,
-                        size: 64,
-                        color: Colors.red[400],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Error loading tasks',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.red[700],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
+    final totalTasks =
+        widget.incompleteTasks.length + widget.completedTasks.length;
 
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FaIcon(
-                        FontAwesomeIcons.listCheck,
-                        size: 64,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No tasks yet',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Add your first task to get started',
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              final tasks = snapshot.data!.docs;
-              final incompleteTasks = tasks.where((doc) {
-                final data = doc.data() as Map<String, dynamic>;
-                return !(data['completed'] ?? false);
-              }).toList();
-              final completedTasks = tasks.where((doc) {
-                final data = doc.data() as Map<String, dynamic>;
-                return data['completed'] ?? false;
-              }).toList();
-
-              return ListView(
-                children: [
-                  _buildStatsCard(snapshot.data!),
-
-                  // Incomplete tasks
-                  if (incompleteTasks.isNotEmpty) ...[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      child: Text(
-                        'Pending Tasks',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                    ),
-                    ...incompleteTasks.map((doc) => _buildTaskCard(doc)),
-                  ],
-
-                  // Completed tasks
-                  if (completedTasks.isNotEmpty) ...[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      child: Text(
-                        'Completed Tasks',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                    ),
-                    ...completedTasks.map((doc) => _buildTaskCard(doc)),
-                  ],
-
-                  const SizedBox(height: 80), // Space for FAB
-                ],
-              );
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          // Category header
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isExpanded = !_isExpanded;
+              });
             },
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(12),
+              bottom: Radius.circular(12),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.grey[800] : Colors.green[50],
+                borderRadius: _isExpanded
+                    ? const BorderRadius.vertical(top: Radius.circular(12))
+                    : BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  // Category icon
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.green[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: categoryIcon != null
+                        ? categoryIcon.buildIcon(
+                            width: 24,
+                            height: 24,
+                            color: Colors.green[800],
+                          )
+                        : Icon(
+                            FontAwesomeIcons.tag,
+                            color: Colors.green[800],
+                            size: 20,
+                          ),
+                  ),
+                  const SizedBox(width: 12),
+
+                  // Category name and count
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          categoryName,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          '$totalTasks task${totalTasks != 1 ? 's' : ''}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Expansion icon with rotation animation
+                  AnimatedRotation(
+                    turns: _isExpanded ? 0.0 : 0.5,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: Icon(
+                      FontAwesomeIcons.chevronUp,
+                      size: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ],
+
+          // Tasks list with animated expansion
+          AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: _isExpanded
+                ? Column(
+                    children: [
+                      // Incomplete tasks
+                      if (widget.incompleteTasks.isNotEmpty) ...[
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16, right: 16, top: 12, bottom: 8),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Pending',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange[100],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  '${widget.incompleteTasks.length}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.orange[800],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ...widget.incompleteTasks
+                            .map((doc) => _buildTaskCard(doc)),
+                      ],
+
+                      // Completed tasks
+                      if (widget.completedTasks.isNotEmpty) ...[
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16, right: 16, top: 12, bottom: 8),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Completed',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.green[100],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  '${widget.completedTasks.length}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green[800],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ...widget.completedTasks
+                            .map((doc) => _buildTaskCard(doc)),
+                      ],
+
+                      const SizedBox(height: 8),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      ),
     );
   }
 }
