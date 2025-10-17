@@ -51,7 +51,7 @@ jobs:
 
       # Step 7: Build AAB (Android App Bundle) for release
       - name: Build AAB
-        run: flutter build appbundle --release --obfuscate --split-debug-info=build/symbols
+        run: flutter build appbundle --release
 
       # Step 8: Upload the generated AAB to Google Play Console
       - name: Upload to Google Play
@@ -64,6 +64,6 @@ jobs:
           status: inProgress
           userFraction: 0.3335
 
-      # Step 9: Upload debug symbols to Sentry
-      - name: Upload debug symbols to Sentry
+      # Step 9: Run Sentry plugin
+      - name: Sentry plugin run
         run: flutter pub run sentry_dart_plugin
