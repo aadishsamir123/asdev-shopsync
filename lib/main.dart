@@ -17,9 +17,11 @@ import 'screens/onboarding.dart';
 import 'screens/settings.dart';
 import 'screens/migration_screen.dart';
 import 'screens/feedback.dart';
+import 'screens/manage_categories.dart';
 import 'services/update_service.dart';
 import 'services/maintenance_service.dart';
 import 'services/shared_prefs.dart';
+import 'services/home_widget_service.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'widgets/splash_screen.dart';
 
@@ -38,6 +40,20 @@ void main() async {
       print('Failed to initialize ConnectivityService: $e');
     }
     // App will continue with fallback connectivity checks
+  }
+
+  // Initialize home widget service
+  try {
+    await HomeWidgetService.initialize();
+    // Initial update with system theme detection
+    final isDark =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+            Brightness.dark;
+    await HomeWidgetService.updateWidget(isDarkMode: isDark);
+  } catch (e) {
+    if (kDebugMode) {
+      print('Failed to initialize HomeWidgetService: $e');
+    }
   }
 
   unawaited(MobileAds.instance.initialize());
@@ -125,6 +141,15 @@ class ShopSync extends StatelessWidget {
         '/onboarding': (context) => const OnboardingScreen(),
         '/migration': (context) => const MigrationScreen(),
         '/feedback': (context) => const FeedbackScreen(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/manage-categories') {
+          final listId = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) => ManageCategoriesScreen(listId: listId),
+          );
+        }
+        return null;
       },
     );
   }

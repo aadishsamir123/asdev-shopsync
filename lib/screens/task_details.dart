@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/place_selector.dart';
+import '/widgets/category_picker.dart';
 import '/widgets/loading_spinner.dart';
 import '/libraries/icons/food_icons_map.dart';
 import '/screens/choose_task_icon.dart';
@@ -336,6 +337,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                     const SizedBox(height: 24),
                     _buildStatusCard(completed),
                     const SizedBox(height: 16),
+                    _buildCategoryCard(task),
+                    const SizedBox(height: 16),
                     _buildDeadlineCard(),
                     const SizedBox(height: 16),
                     _buildLocationCard(task),
@@ -407,6 +410,130 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryCard(Map<String, dynamic> task) {
+    final categoryId = task['categoryId'] as String?;
+
+    return Card(
+      elevation: 8,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: FutureBuilder<bool>(
+        future: PermissionsHelper.isViewer(widget.listId),
+        builder: (context, snapshot) {
+          final isViewer = snapshot.hasData && snapshot.data == true;
+
+          return StreamBuilder<DocumentSnapshot>(
+            stream: categoryId != null
+                ? _firestore
+                    .collection('lists')
+                    .doc(widget.listId)
+                    .collection('categories')
+                    .doc(categoryId)
+                    .snapshots()
+                : null,
+            builder: (context, categorySnapshot) {
+              Map<String, dynamic>? categoryData;
+              if (categorySnapshot.hasData && categorySnapshot.data!.exists) {
+                categoryData =
+                    categorySnapshot.data!.data() as Map<String, dynamic>;
+              }
+
+              return InkWell(
+                onTap: isViewer
+                    ? null
+                    : () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => CategoryPicker(
+                            listId: widget.listId,
+                            selectedCategoryId: categoryId,
+                            onCategorySelected: (newCategoryId, categoryName) {
+                              if (newCategoryId == null) {
+                                _updateTask({
+                                  'categoryId': FieldValue.delete(),
+                                  'categoryName': FieldValue.delete(),
+                                });
+                              } else {
+                                _updateTask({
+                                  'categoryId': newCategoryId,
+                                  'categoryName': categoryName,
+                                });
+                              }
+                            },
+                          ),
+                        );
+                      },
+                borderRadius: BorderRadius.circular(15),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: categoryData != null
+                              ? Colors.green[100]
+                              : Colors.green[100],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: categoryData != null
+                            ? () {
+                                final iconIdentifier =
+                                    categoryData!['iconIdentifier'] as String?;
+                                final categoryIcon = iconIdentifier != null
+                                    ? FoodIconMap.getIcon(iconIdentifier)
+                                    : null;
+
+                                return categoryIcon != null
+                                    ? categoryIcon.buildIcon(
+                                        width: 24,
+                                        height: 24,
+                                        color: Colors.green[800],
+                                      )
+                                    : FaIcon(FontAwesomeIcons.tag,
+                                        color: Colors.green[800]);
+                              }()
+                            : FaIcon(FontAwesomeIcons.tag,
+                                color: Colors.green[800]),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Category',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              categoryData != null
+                                  ? categoryData['name'] ?? 'Unnamed Category'
+                                  : 'No category',
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
