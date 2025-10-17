@@ -14,11 +14,10 @@
 ## ✅ Checklist
 
 <!-- Tick these using a [x] once done -->
+
 - [ ] My code follows the project's coding style
 - [ ] I have tested this on Android
 - [ ] I have tested this on Web
-- [ ] I have added necessary tests or explain why not
-- [ ] I have updated documentation if needed
 
 ---
 

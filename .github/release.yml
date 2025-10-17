@@ -2,18 +2,16 @@ changelog:
   exclude:
     labels:
       - ignore-for-release
-      
+
   categories:
-    - title: 🚀 Features
+    - title: 🚀 Major Updates and New Features
       labels:
-        - enhancement
+        - semver-major
 
-    - title: 🐛 Bug Fixes
+    - title: 🐛 Minor Updates and Changes
       labels:
-        - bug
+        - semver-minor
 
-    - title: 🧰 Maintenance
+    - title: 🧰 Maintenance and Bug Fixes
       labels:
-        - chore
-        - refactor
-        - maintenance
+        - semver-patch
