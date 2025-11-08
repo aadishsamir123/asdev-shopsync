@@ -117,7 +117,8 @@ class AppBarClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin {
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
   final _newListController = TextEditingController();
@@ -129,9 +130,18 @@ class _HomeScreenState extends State<HomeScreen> {
   BannerAd? _bannerAd;
   bool _isBannerAdLoaded = false;
 
-  // Splash screen management
+  // Splash screen management - static to persist across widget rebuilds
+  static bool _hasShownSplashThisSession = false;
   bool _showSplashScreen = true;
   bool _dataLoaded = false;
+
+  // Cached streams to prevent rebuild issues with PredictiveBackPageTransitionsBuilder
+  late final Stream<QuerySnapshot> _listGroupsStream;
+  late final Stream<List<QueryDocumentSnapshot>> _ungroupedListsStream;
+  late final Stream<QuerySnapshot> _drawerListsStream;
+
+  @override
+  bool get wantKeepAlive => true;
 
   void _handleDragStart(DragStartDetails details) {
     _dragStartX = details.globalPosition.dx;
@@ -347,10 +357,27 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Initialize cached streams to prevent rebuilds during predictive back animations
+    _listGroupsStream = ListGroupsService.getUserListGroups();
+    _ungroupedListsStream = ListGroupsService.getUngroupedLists();
+    _drawerListsStream = _firestore
+        .collection('lists')
+        .where('members', arrayContains: _auth.currentUser?.uid)
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+
     _loadBannerAd();
     _checkMigration();
     _cleanupOrphanedLists();
-    _startSplashTimer();
+
+    // Only show splash screen on first visit in this session
+    if (_hasShownSplashThisSession) {
+      _showSplashScreen = false;
+      _dataLoaded = true;
+    } else {
+      _startSplashTimer();
+    }
   }
 
   void _startSplashTimer() {
@@ -371,6 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (mounted) {
           setState(() {
             _showSplashScreen = false;
+            _hasShownSplashThisSession = true; // Mark as shown for this session
           });
         }
       });
@@ -431,9 +459,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final connectivityService = ConnectivityService();
+
+    // Wrap the entire content in RepaintBoundary to prevent unnecessary repaints
+    // during predictive back animations
 
     // final l10n = AppLocalizations.of(context);
 
@@ -473,548 +505,233 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    return Stack(
-      children: [
-        GestureDetector(
-          onHorizontalDragStart: _handleDragStart,
-          onHorizontalDragUpdate: _handleDragUpdate,
-          child: Scaffold(
-            key: _scaffoldKey,
-            backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
-            appBar: buildCustomAppBar(context),
-            drawer: Drawer(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: Theme.of(context).brightness == Brightness.dark
-                        ? [Colors.grey[900]!, Colors.grey[850]!]
-                        : [Colors.green[800]!, Colors.green[700]!],
+    return RepaintBoundary(
+      child: Stack(
+        children: [
+          GestureDetector(
+            onHorizontalDragStart: _handleDragStart,
+            onHorizontalDragUpdate: _handleDragUpdate,
+            child: Scaffold(
+              key: _scaffoldKey,
+              backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
+              appBar: buildCustomAppBar(context),
+              drawer: Drawer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: Theme.of(context).brightness == Brightness.dark
+                          ? [Colors.grey[900]!, Colors.grey[850]!]
+                          : [Colors.green[800]!, Colors.green[700]!],
+                    ),
                   ),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).padding.top + 24,
-                        bottom: 32,
-                        left: 20,
-                        right: 20,
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Colors.white.withAlpha(204),
-                                  Colors.white.withAlpha(127),
-                                ],
-                              ),
-                            ),
-                            child: CircleAvatar(
-                              radius: 40,
-                              backgroundColor:
-                                  isDark ? Colors.grey[800] : Colors.green[100],
-                              child: Text(
-                                (_auth.currentUser?.displayName?.isNotEmpty ==
-                                        true)
-                                    ? _auth.currentUser!.displayName![0]
-                                        .toUpperCase()
-                                    : 'U',
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      isDark ? Colors.white : Colors.green[800],
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            _auth.currentUser?.displayName ?? 'User',
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withAlpha(25),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              _auth.currentUser?.email ?? '',
-                              style: TextStyle(
-                                color: Colors.white.withAlpha(229),
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: isDark ? Colors.grey[900] : Colors.white,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(32),
-                            topRight: Radius.circular(32),
-                          ),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).padding.top + 24,
+                          bottom: 32,
+                          left: 20,
+                          right: 20,
                         ),
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: _firestore
-                              .collection('lists')
-                              .where('members',
-                                  arrayContains: _auth.currentUser?.uid)
-                              .orderBy('createdAt', descending: true)
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: CustomLoadingSpinner(
-                                  color: Colors.green,
-                                  size: 60.0,
-                                ),
-                              );
-                            }
-
-                            return CustomScrollView(
-                              slivers: [
-                                SliverToBoxAdapter(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(16),
-                                        child: Text(
-                                          'My Lists',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: isDark
-                                                ? Colors.grey[300]
-                                                : Colors.grey[800],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                if (!snapshot.hasData ||
-                                    snapshot.data!.docs.isEmpty)
-                                  SliverFillRemaining(
-                                    child: Center(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Spacer(flex: 1),
-                                          FaIcon(
-                                            FontAwesomeIcons.listUl,
-                                            size: 48,
-                                            color: Colors.grey[400],
-                                          ),
-                                          const SizedBox(height: 16),
-                                          Text(
-                                            'No lists yet',
-                                            style: TextStyle(
-                                              color: Colors.grey[600],
-                                            ),
-                                          ),
-                                          Spacer(flex: 1),
-                                          FaIcon(
-                                            FontAwesomeIcons.arrowDown,
-                                            size: 48,
-                                            color: Colors.grey[400],
-                                          ),
-                                          const SizedBox(height: 16),
-                                          Text(
-                                            'Swipe down to view options',
-                                            style: TextStyle(
-                                              color: Colors.grey[600],
-                                            ),
-                                          ),
-                                          const SizedBox(height: 32),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                else
-                                  SliverList(
-                                    delegate: SliverChildBuilderDelegate(
-                                      (context, index) {
-                                        final doc = snapshot.data!.docs[index];
-                                        final listName =
-                                            doc['name'] ?? 'Unnamed List';
-
-                                        return Container(
-                                          margin: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          child: ListTile(
-                                            leading: Container(
-                                              padding: const EdgeInsets.all(8),
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    Colors.grey.withAlpha(25),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              child: FaIcon(
-                                                FontAwesomeIcons.cartShopping,
-                                                color: Colors.grey[600],
-                                                size: 18,
-                                              ),
-                                            ),
-                                            title: Text(
-                                              listName,
-                                              style: TextStyle(
-                                                color: isDark
-                                                    ? Colors.grey[300]
-                                                    : Colors.grey[800],
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ListViewScreen(
-                                                    listId: doc.id,
-                                                    listName: listName,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        );
-                                      },
-                                      childCount: snapshot.data!.docs.length,
-                                    ),
-                                  ),
-                                SliverToBoxAdapter(
-                                  child: Column(
-                                    children: [
-                                      Divider(
-                                        height: 32,
-                                        color: isDark
-                                            ? Colors.grey[700]
-                                            : Colors.grey[300],
-                                        thickness: 2,
-                                      ),
-                                      _buildDrawerItem(
-                                        icon: FontAwesomeIcons.gear,
-                                        title: 'Settings',
-                                        onTap: () {
-                                          Navigator.popAndPushNamed(
-                                              context, '/settings');
-                                        },
-                                      ),
-                                      _buildDrawerItem(
-                                        icon: FontAwesomeIcons.user,
-                                        title: 'My Profile',
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          Navigator.pushNamed(
-                                              context, '/profile');
-                                        },
-                                      ),
-                                      _buildDrawerItem(
-                                        icon: FontAwesomeIcons.comment,
-                                        title: 'Feedback',
-                                        onTap: () async {
-                                          if (await connectivityService
-                                              .checkConnectivityAndShowDialog(
-                                                  context,
-                                                  feature: 'feedback')) {
-                                            Navigator.pop(context);
-                                            Navigator.pushNamed(
-                                                context, '/feedback');
-                                          }
-                                        },
-                                      ),
-                                      _buildDrawerItem(
-                                        icon: FontAwesomeIcons.scroll,
-                                        title: 'Release Notes',
-                                        onTap: () async {
-                                          if (await connectivityService
-                                              .checkConnectivityAndShowDialog(
-                                                  context,
-                                                  feature: 'release notes')) {
-                                            final Uri url = Uri.parse(
-                                                'https://github.com/aadishsamir123/asdev-shopsync/releases');
-                                            if (!await launchUrl(url)) {
-                                              if (!mounted) return;
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                      'Could not open release notes'),
-                                                ),
-                                              );
-                                            }
-                                            if (!mounted) return;
-                                            Navigator.pop(context);
-                                          }
-                                        },
-                                      ),
-                                      const SizedBox(height: 16),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            body: Column(
-              children: [
-                Expanded(
-                  child: CustomScrollView(
-                    slivers: [
-                      // List Groups Section
-                      SliverToBoxAdapter(
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: ListGroupsService.getUserListGroups(),
-                          builder: (context, groupSnapshot) {
-                            if (groupSnapshot.hasError) {
-                              Sentry.captureException(
-                                groupSnapshot.error,
-                                stackTrace: groupSnapshot.stackTrace,
-                                hint: Hint.withMap(
-                                    {'component': 'groups_stream'}),
-                              );
-                            }
-
-                            if (groupSnapshot.hasData &&
-                                groupSnapshot.data!.docs.isNotEmpty) {
-                              final groups = groupSnapshot.data!.docs;
-                              return Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'List Groups',
-                                          style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                            color: isDark
-                                                ? Colors.green[300]
-                                                : Colors.green[800],
-                                          ),
-                                        ),
-                                        const Spacer(),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: isDark
-                                                ? Colors.grey[800]
-                                                : Colors.grey[100],
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              FaIcon(
-                                                FontAwesomeIcons
-                                                    .upDownLeftRight,
-                                                size: 12,
-                                                color: isDark
-                                                    ? Colors.grey[400]
-                                                    : Colors.grey[600],
-                                              ),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                'Hold to reorder',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: isDark
-                                                      ? Colors.grey[400]
-                                                      : Colors.grey[600],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 16),
-                                    ReorderableListView.builder(
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemCount: groups.length,
-                                      onReorder: (oldIndex, newIndex) async {
-                                        if (oldIndex < newIndex) {
-                                          newIndex -= 1;
-                                        }
-
-                                        final reorderedGroups =
-                                            List<DocumentSnapshot>.from(groups);
-                                        final item =
-                                            reorderedGroups.removeAt(oldIndex);
-                                        reorderedGroups.insert(newIndex, item);
-
-                                        final groupIds = reorderedGroups
-                                            .map((doc) => doc.id)
-                                            .toList();
-                                        await ListGroupsService
-                                            .reorderListGroups(groupIds);
-                                      },
-                                      itemBuilder: (context, index) {
-                                        final groupDoc = groups[index];
-                                        return Container(
-                                          key: Key(groupDoc.id),
-                                          margin:
-                                              const EdgeInsets.only(bottom: 16),
-                                          child: ExpandableListGroupWidget(
-                                              groupDoc: groupDoc),
-                                        );
-                                      },
-                                    ),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Colors.white.withAlpha(204),
+                                    Colors.white.withAlpha(127),
                                   ],
                                 ),
-                              );
-                            }
-                            return const SizedBox.shrink();
-                          },
+                              ),
+                              child: CircleAvatar(
+                                radius: 40,
+                                backgroundColor: isDark
+                                    ? Colors.grey[800]
+                                    : Colors.green[100],
+                                child: Text(
+                                  (_auth.currentUser?.displayName?.isNotEmpty ==
+                                          true)
+                                      ? _auth.currentUser!.displayName![0]
+                                          .toUpperCase()
+                                      : 'U',
+                                  style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark
+                                        ? Colors.white
+                                        : Colors.green[800],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              _auth.currentUser?.displayName ?? 'User',
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withAlpha(25),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                _auth.currentUser?.email ?? '',
+                                style: TextStyle(
+                                  color: Colors.white.withAlpha(229),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-
-                      // Debug Lists Section
-                      // Ungrouped Lists Section
-                      SliverToBoxAdapter(
-                        child: StreamBuilder<List<QueryDocumentSnapshot>>(
-                          stream: ListGroupsService.getUngroupedLists(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasError) {
-                              Sentry.captureException(
-                                snapshot.error,
-                                stackTrace: snapshot.stackTrace,
-                                hint:
-                                    Hint.withMap({'component': 'lists_stream'}),
-                              );
-                              return Center(
-                                child: Text(
-                                    'Error loading lists: ${snapshot.error}'),
-                              );
-                            }
-
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(32.0),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isDark ? Colors.grey[900] : Colors.white,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(32),
+                              topRight: Radius.circular(32),
+                            ),
+                          ),
+                          child: StreamBuilder<QuerySnapshot>(
+                            stream: _drawerListsStream,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
                                   child: CustomLoadingSpinner(
                                     color: Colors.green,
                                     size: 60.0,
                                   ),
-                                ),
-                              );
-                            }
+                                );
+                              }
 
-                            // Show ungrouped lists if they exist
-                            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Ungrouped Lists',
-                                      style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                        color: isDark
-                                            ? Colors.green[300]
-                                            : Colors.green[800],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    ...snapshot.data!.map((doc) {
-                                      final listName =
-                                          doc['name'] ?? 'Unnamed List';
-                                      final timestamp =
-                                          doc['createdAt'] as Timestamp?;
-                                      final createdAt = timestamp != null
-                                          ? DateFormat('MMM dd, yyyy')
-                                              .format(timestamp.toDate())
-                                          : 'Unknown date';
-
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 12),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                              colors: isDark
-                                                  ? [
-                                                      Colors.grey[900]!,
-                                                      Colors.grey[850]!
-                                                    ]
-                                                  : [
-                                                      Colors.white,
-                                                      Colors.grey[50]!
-                                                    ],
-                                            ),
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color:
-                                                    Colors.black.withAlpha(25),
-                                                blurRadius: 8,
-                                                offset: const Offset(0, 4),
-                                              ),
-                                            ],
-                                            border: Border.all(
+                              return CustomScrollView(
+                                slivers: [
+                                  SliverToBoxAdapter(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(16),
+                                          child: Text(
+                                            'My Lists',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
                                               color: isDark
-                                                  ? Colors.grey[800]!
-                                                  : Colors.grey[200]!,
+                                                  ? Colors.grey[300]
+                                                  : Colors.grey[800],
                                             ),
                                           ),
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (!snapshot.hasData ||
+                                      snapshot.data!.docs.isEmpty)
+                                    SliverFillRemaining(
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Spacer(flex: 1),
+                                            FaIcon(
+                                              FontAwesomeIcons.listUl,
+                                              size: 48,
+                                              color: Colors.grey[400],
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Text(
+                                              'No lists yet',
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                            Spacer(flex: 1),
+                                            FaIcon(
+                                              FontAwesomeIcons.arrowDown,
+                                              size: 48,
+                                              color: Colors.grey[400],
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Text(
+                                              'Swipe down to view options',
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 32),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  else
+                                    SliverList(
+                                      delegate: SliverChildBuilderDelegate(
+                                        (context, index) {
+                                          final doc =
+                                              snapshot.data!.docs[index];
+                                          final listName =
+                                              doc['name'] ?? 'Unnamed List';
+
+                                          return Container(
+                                            margin: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.transparent,
                                               borderRadius:
-                                                  BorderRadius.circular(16),
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: ListTile(
+                                              leading: Container(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      Colors.grey.withAlpha(25),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                child: FaIcon(
+                                                  FontAwesomeIcons.cartShopping,
+                                                  color: Colors.grey[600],
+                                                  size: 18,
+                                                ),
+                                              ),
+                                              title: Text(
+                                                listName,
+                                                style: TextStyle(
+                                                  color: isDark
+                                                      ? Colors.grey[300]
+                                                      : Colors.grey[800],
+                                                ),
+                                              ),
                                               onTap: () {
+                                                Navigator.pop(context);
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
+                                                    maintainState: true,
                                                     builder: (context) =>
                                                         ListViewScreen(
                                                       listId: doc.id,
@@ -1023,147 +740,124 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   ),
                                                 );
                                               },
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(16),
-                                                child: Row(
-                                                  children: [
-                                                    Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              12),
-                                                      decoration: BoxDecoration(
-                                                        color: isDark
-                                                            ? Colors.green[900]
-                                                            : Colors.green[50],
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12),
-                                                      ),
-                                                      child: FaIcon(
-                                                        FontAwesomeIcons
-                                                            .cartShopping,
-                                                        color: isDark
-                                                            ? Colors.green[200]
-                                                            : Colors.green[700],
-                                                        size: 24,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 16),
-                                                    Expanded(
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            listName,
-                                                            style: TextStyle(
-                                                              fontSize: 18,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color: isDark
-                                                                  ? Colors.white
-                                                                  : Colors.grey[
-                                                                      800],
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                              height: 4),
-                                                          Row(
-                                                            children: [
-                                                              FaIcon(
-                                                                FontAwesomeIcons
-                                                                    .calendar,
-                                                                size: 14,
-                                                                color: isDark
-                                                                    ? Colors.grey[
-                                                                        400]
-                                                                    : Colors.grey[
-                                                                        600],
-                                                              ),
-                                                              const SizedBox(
-                                                                  width: 4),
-                                                              Text(
-                                                                createdAt,
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 14,
-                                                                  color: isDark
-                                                                      ? Colors.grey[
-                                                                          400]
-                                                                      : Colors.grey[
-                                                                          600],
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    FaIcon(
-                                                      FontAwesomeIcons
-                                                          .chevronRight,
-                                                      color: isDark
-                                                          ? Colors.grey[600]
-                                                          : Colors.grey[400],
-                                                      size: 16,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
                                             ),
-                                          ),
+                                          );
+                                        },
+                                        childCount: snapshot.data!.docs.length,
+                                      ),
+                                    ),
+                                  SliverToBoxAdapter(
+                                    child: Column(
+                                      children: [
+                                        Divider(
+                                          height: 32,
+                                          color: isDark
+                                              ? Colors.grey[700]
+                                              : Colors.grey[300],
+                                          thickness: 2,
                                         ),
-                                      );
-                                    }),
-                                  ],
-                                ),
+                                        _buildDrawerItem(
+                                          icon: FontAwesomeIcons.gear,
+                                          title: 'Settings',
+                                          onTap: () {
+                                            Navigator.popAndPushNamed(
+                                                context, '/settings');
+                                          },
+                                        ),
+                                        _buildDrawerItem(
+                                          icon: FontAwesomeIcons.user,
+                                          title: 'My Profile',
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                            Navigator.pushNamed(
+                                                context, '/profile');
+                                          },
+                                        ),
+                                        _buildDrawerItem(
+                                          icon: FontAwesomeIcons.comment,
+                                          title: 'Feedback',
+                                          onTap: () async {
+                                            if (await connectivityService
+                                                .checkConnectivityAndShowDialog(
+                                                    context,
+                                                    feature: 'feedback')) {
+                                              Navigator.pop(context);
+                                              Navigator.pushNamed(
+                                                  context, '/feedback');
+                                            }
+                                          },
+                                        ),
+                                        _buildDrawerItem(
+                                          icon: FontAwesomeIcons.scroll,
+                                          title: 'Release Notes',
+                                          onTap: () async {
+                                            if (await connectivityService
+                                                .checkConnectivityAndShowDialog(
+                                                    context,
+                                                    feature: 'release notes')) {
+                                              final Uri url = Uri.parse(
+                                                  'https://github.com/aadishsamir123/asdev-shopsync/releases');
+                                              if (!await launchUrl(url)) {
+                                                if (!mounted) return;
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                        'Could not open release notes'),
+                                                  ),
+                                                );
+                                              }
+                                              if (!mounted) return;
+                                              Navigator.pop(context);
+                                            }
+                                          },
+                                        ),
+                                        const SizedBox(height: 16),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               );
-                            }
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              body: Column(
+                children: [
+                  Expanded(
+                    child: CustomScrollView(
+                      slivers: [
+                        // List Groups Section
+                        SliverToBoxAdapter(
+                          child: StreamBuilder<QuerySnapshot>(
+                            stream: _listGroupsStream,
+                            builder: (context, groupSnapshot) {
+                              if (groupSnapshot.hasError) {
+                                Sentry.captureException(
+                                  groupSnapshot.error,
+                                  stackTrace: groupSnapshot.stackTrace,
+                                  hint: Hint.withMap(
+                                      {'component': 'groups_stream'}),
+                                );
+                              }
 
-                            // Check if we have any lists at all (for welcome screen)
-                            return StreamBuilder<QuerySnapshot>(
-                              stream: _firestore
-                                  .collection('lists')
-                                  .where('members',
-                                      arrayContains: _auth.currentUser?.uid)
-                                  .limit(1)
-                                  .snapshots(),
-                              builder: (context, allListsSnapshot) {
-                                final hasAnyLists = allListsSnapshot.hasData &&
-                                    allListsSnapshot.data!.docs.isNotEmpty;
-
-                                if (!hasAnyLists) {
-                                  // Show welcome screen if no lists exist
-                                  return Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(24.0),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                              if (groupSnapshot.hasData &&
+                                  groupSnapshot.data!.docs.isNotEmpty) {
+                                final groups = groupSnapshot.data!.docs;
+                                return Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
                                         children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(16),
-                                            decoration: BoxDecoration(
-                                              color: isDark
-                                                  ? Colors.green[900]
-                                                  : Colors.green[50],
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Icon(
-                                              Icons.check_circle_outline,
-                                              size: 64,
-                                              color: isDark
-                                                  ? Colors.green[100]
-                                                  : Colors.green[800]
-                                                      ?.withAlpha(178),
-                                            ),
-                                          ),
-                                          const SizedBox(height: 24),
                                           Text(
-                                            'Welcome to ShopSync',
+                                            'List Groups',
                                             style: TextStyle(
                                               fontSize: 24,
                                               fontWeight: FontWeight.bold,
@@ -1172,21 +866,154 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   : Colors.green[800],
                                             ),
                                           ),
-                                          const SizedBox(height: 12),
-                                          Text(
-                                            'Share shopping lists with family and friends',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontSize: 16,
+                                          const Spacer(),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
                                               color: isDark
-                                                  ? Colors.grey[300]
-                                                  : Colors.grey[700],
+                                                  ? Colors.grey[800]
+                                                  : Colors.grey[100],
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                FaIcon(
+                                                  FontAwesomeIcons
+                                                      .upDownLeftRight,
+                                                  size: 12,
+                                                  color: isDark
+                                                      ? Colors.grey[400]
+                                                      : Colors.grey[600],
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  'Hold to reorder',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: isDark
+                                                        ? Colors.grey[400]
+                                                        : Colors.grey[600],
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          const SizedBox(height: 32),
-                                          // Instructions Card with tutorial steps
-                                          Container(
-                                            padding: const EdgeInsets.all(20),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 16),
+                                      ReorderableListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount: groups.length,
+                                        onReorder: (oldIndex, newIndex) async {
+                                          if (oldIndex < newIndex) {
+                                            newIndex -= 1;
+                                          }
+
+                                          final reorderedGroups =
+                                              List<DocumentSnapshot>.from(
+                                                  groups);
+                                          final item = reorderedGroups
+                                              .removeAt(oldIndex);
+                                          reorderedGroups.insert(
+                                              newIndex, item);
+
+                                          final groupIds = reorderedGroups
+                                              .map((doc) => doc.id)
+                                              .toList();
+                                          await ListGroupsService
+                                              .reorderListGroups(groupIds);
+                                        },
+                                        itemBuilder: (context, index) {
+                                          final groupDoc = groups[index];
+                                          return Container(
+                                            key: Key(groupDoc.id),
+                                            margin: const EdgeInsets.only(
+                                                bottom: 16),
+                                            child: ExpandableListGroupWidget(
+                                                groupDoc: groupDoc),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                        ),
+
+                        // Debug Lists Section
+                        // Ungrouped Lists Section
+                        SliverToBoxAdapter(
+                          child: StreamBuilder<List<QueryDocumentSnapshot>>(
+                            stream: _ungroupedListsStream,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasError) {
+                                Sentry.captureException(
+                                  snapshot.error,
+                                  stackTrace: snapshot.stackTrace,
+                                  hint: Hint.withMap(
+                                      {'component': 'lists_stream'}),
+                                );
+                                return Center(
+                                  child: Text(
+                                      'Error loading lists: ${snapshot.error}'),
+                                );
+                              }
+
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(32.0),
+                                    child: CustomLoadingSpinner(
+                                      color: Colors.green,
+                                      size: 60.0,
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              // Show ungrouped lists if they exist
+                              if (snapshot.hasData &&
+                                  snapshot.data!.isNotEmpty) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Ungrouped Lists',
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDark
+                                              ? Colors.green[300]
+                                              : Colors.green[800],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      ...snapshot.data!.map((doc) {
+                                        final listName =
+                                            doc['name'] ?? 'Unnamed List';
+                                        final timestamp =
+                                            doc['createdAt'] as Timestamp?;
+                                        final createdAt = timestamp != null
+                                            ? DateFormat('MMM dd, yyyy')
+                                                .format(timestamp.toDate())
+                                            : 'Unknown date';
+
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 12),
+                                          child: Container(
                                             decoration: BoxDecoration(
                                               gradient: LinearGradient(
                                                 begin: Alignment.topLeft,
@@ -1197,8 +1024,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         Colors.grey[850]!
                                                       ]
                                                     : [
-                                                        Colors.green[50]!,
-                                                        Colors.green[100]!
+                                                        Colors.white,
+                                                        Colors.grey[50]!
                                                       ],
                                               ),
                                               borderRadius:
@@ -1214,328 +1041,563 @@ class _HomeScreenState extends State<HomeScreen> {
                                               border: Border.all(
                                                 color: isDark
                                                     ? Colors.grey[800]!
-                                                    : Colors.green[200]!,
+                                                    : Colors.grey[200]!,
                                               ),
                                             ),
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8),
-                                                      decoration: BoxDecoration(
-                                                        color: isDark
-                                                            ? Colors.green[800]
-                                                            : Colors.green[100],
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8),
-                                                      ),
-                                                      child: FaIcon(
-                                                        FontAwesomeIcons
-                                                            .graduationCap,
-                                                        color: isDark
-                                                            ? Colors.green[100]
-                                                            : Colors.green[800],
-                                                        size: 20,
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      maintainState: true,
+                                                      builder: (context) =>
+                                                          ListViewScreen(
+                                                        listId: doc.id,
+                                                        listName: listName,
                                                       ),
                                                     ),
-                                                    const SizedBox(width: 12),
-                                                    Text(
-                                                      'Quick Tutorial',
-                                                      style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: isDark
-                                                            ? Colors.green[100]
-                                                            : Colors.green[900],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 20),
-                                                AnimatedContainer(
-                                                  duration: const Duration(
-                                                      milliseconds: 300),
-                                                  curve: Curves.easeInOut,
+                                                  );
+                                                },
+                                                child: Padding(
                                                   padding:
                                                       const EdgeInsets.all(16),
-                                                  decoration: BoxDecoration(
-                                                    color: isDark
-                                                        ? Colors.grey[850]
-                                                        : Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                    border: Border.all(
-                                                      color: isDark
-                                                          ? Colors.grey[700]!
-                                                          : Colors.grey[200]!,
-                                                    ),
-                                                  ),
-                                                  child: Column(
+                                                  child: Row(
                                                     children: [
-                                                      TutorialStep(
-                                                        icon: FontAwesomeIcons
-                                                            .bars,
-                                                        title:
-                                                            'Open the drawer from the left',
-                                                        subtitle:
-                                                            'Access your lists and settings',
-                                                        color:
-                                                            Colors.green[800]!,
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(12),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: isDark
+                                                              ? Colors
+                                                                  .green[900]
+                                                              : Colors
+                                                                  .green[50],
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(12),
+                                                        ),
+                                                        child: FaIcon(
+                                                          FontAwesomeIcons
+                                                              .cartShopping,
+                                                          color: isDark
+                                                              ? Colors
+                                                                  .green[200]
+                                                              : Colors
+                                                                  .green[700],
+                                                          size: 24,
+                                                        ),
                                                       ),
-                                                      const SizedBox(
-                                                          height: 16),
-                                                      TutorialStep(
-                                                        icon: FontAwesomeIcons
-                                                            .layerGroup,
-                                                        title:
-                                                            'Create list groups',
-                                                        subtitle:
-                                                            'Organize your lists with the + button',
-                                                        color:
-                                                            Colors.green[800]!,
+                                                      const SizedBox(width: 16),
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              listName,
+                                                              style: TextStyle(
+                                                                fontSize: 18,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                color: isDark
+                                                                    ? Colors
+                                                                        .white
+                                                                    : Colors.grey[
+                                                                        800],
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                                height: 4),
+                                                            Row(
+                                                              children: [
+                                                                FaIcon(
+                                                                  FontAwesomeIcons
+                                                                      .calendar,
+                                                                  size: 14,
+                                                                  color: isDark
+                                                                      ? Colors.grey[
+                                                                          400]
+                                                                      : Colors.grey[
+                                                                          600],
+                                                                ),
+                                                                const SizedBox(
+                                                                    width: 4),
+                                                                Text(
+                                                                  createdAt,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        14,
+                                                                    color: isDark
+                                                                        ? Colors.grey[
+                                                                            400]
+                                                                        : Colors
+                                                                            .grey[600],
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
-                                                      const SizedBox(
-                                                          height: 16),
-                                                      TutorialStep(
-                                                        icon: FontAwesomeIcons
-                                                            .circlePlus,
-                                                        title:
-                                                            'Add items to your lists',
-                                                        subtitle:
-                                                            'Keep track of what you need to buy',
-                                                        color:
-                                                            Colors.green[800]!,
+                                                      FaIcon(
+                                                        FontAwesomeIcons
+                                                            .chevronRight,
+                                                        color: isDark
+                                                            ? Colors.grey[600]
+                                                            : Colors.grey[400],
+                                                        size: 16,
                                                       ),
                                                     ],
                                                   ),
                                                 ),
-                                              ],
+                                              ),
                                             ),
                                           ),
-                                        ],
+                                        );
+                                      }),
+                                    ],
+                                  ),
+                                );
+                              }
+
+                              // Check if we have any lists at all (for welcome screen)
+                              return StreamBuilder<QuerySnapshot>(
+                                stream: _firestore
+                                    .collection('lists')
+                                    .where('members',
+                                        arrayContains: _auth.currentUser?.uid)
+                                    .limit(1)
+                                    .snapshots(),
+                                builder: (context, allListsSnapshot) {
+                                  final hasAnyLists = allListsSnapshot
+                                          .hasData &&
+                                      allListsSnapshot.data!.docs.isNotEmpty;
+
+                                  if (!hasAnyLists) {
+                                    // Show welcome screen if no lists exist
+                                    return Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(24.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(16),
+                                              decoration: BoxDecoration(
+                                                color: isDark
+                                                    ? Colors.green[900]
+                                                    : Colors.green[50],
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Icon(
+                                                Icons.check_circle_outline,
+                                                size: 64,
+                                                color: isDark
+                                                    ? Colors.green[100]
+                                                    : Colors.green[800]
+                                                        ?.withAlpha(178),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 24),
+                                            Text(
+                                              'Welcome to ShopSync',
+                                              style: TextStyle(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                                color: isDark
+                                                    ? Colors.green[300]
+                                                    : Colors.green[800],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 12),
+                                            Text(
+                                              'Share shopping lists with family and friends',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: isDark
+                                                    ? Colors.grey[300]
+                                                    : Colors.grey[700],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 32),
+                                            // Instructions Card with tutorial steps
+                                            Container(
+                                              padding: const EdgeInsets.all(20),
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                  colors: isDark
+                                                      ? [
+                                                          Colors.grey[900]!,
+                                                          Colors.grey[850]!
+                                                        ]
+                                                      : [
+                                                          Colors.green[50]!,
+                                                          Colors.green[100]!
+                                                        ],
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withAlpha(25),
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 4),
+                                                  ),
+                                                ],
+                                                border: Border.all(
+                                                  color: isDark
+                                                      ? Colors.grey[800]!
+                                                      : Colors.green[200]!,
+                                                ),
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: isDark
+                                                              ? Colors
+                                                                  .green[800]
+                                                              : Colors
+                                                                  .green[100],
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(8),
+                                                        ),
+                                                        child: FaIcon(
+                                                          FontAwesomeIcons
+                                                              .graduationCap,
+                                                          color: isDark
+                                                              ? Colors
+                                                                  .green[100]
+                                                              : Colors
+                                                                  .green[800],
+                                                          size: 20,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 12),
+                                                      Text(
+                                                        'Quick Tutorial',
+                                                        style: TextStyle(
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: isDark
+                                                              ? Colors
+                                                                  .green[100]
+                                                              : Colors
+                                                                  .green[900],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 20),
+                                                  AnimatedContainer(
+                                                    duration: const Duration(
+                                                        milliseconds: 300),
+                                                    curve: Curves.easeInOut,
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            16),
+                                                    decoration: BoxDecoration(
+                                                      color: isDark
+                                                          ? Colors.grey[850]
+                                                          : Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
+                                                      border: Border.all(
+                                                        color: isDark
+                                                            ? Colors.grey[700]!
+                                                            : Colors.grey[200]!,
+                                                      ),
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        TutorialStep(
+                                                          icon: FontAwesomeIcons
+                                                              .bars,
+                                                          title:
+                                                              'Open the drawer from the left',
+                                                          subtitle:
+                                                              'Access your lists and settings',
+                                                          color: Colors
+                                                              .green[800]!,
+                                                        ),
+                                                        const SizedBox(
+                                                            height: 16),
+                                                        TutorialStep(
+                                                          icon: FontAwesomeIcons
+                                                              .layerGroup,
+                                                          title:
+                                                              'Create list groups',
+                                                          subtitle:
+                                                              'Organize your lists with the + button',
+                                                          color: Colors
+                                                              .green[800]!,
+                                                        ),
+                                                        const SizedBox(
+                                                            height: 16),
+                                                        TutorialStep(
+                                                          icon: FontAwesomeIcons
+                                                              .circlePlus,
+                                                          title:
+                                                              'Add items to your lists',
+                                                          subtitle:
+                                                              'Keep track of what you need to buy',
+                                                          color: Colors
+                                                              .green[800]!,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                }
+                                    );
+                                  }
 
-                                // If no ungrouped lists, just return empty
-                                return const SizedBox.shrink();
-                              },
-                            );
-                          },
-                        ),
-                      ),
-
-                      // Bottom padding for FAB
-                      const SliverToBoxAdapter(
-                        child: SizedBox(height: 100),
-                      ),
-                    ],
-                  ),
-                ),
-                // Viewer indicator
-                FutureBuilder<bool>(
-                  future: PermissionsHelper.hasViewerLists(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData && snapshot.data == true) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: isDark ? Colors.blue[900] : Colors.blue[50],
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color:
-                                isDark ? Colors.blue[700]! : Colors.blue[200]!,
+                                  // If no ungrouped lists, just return empty
+                                  return const SizedBox.shrink();
+                                },
+                              );
+                            },
                           ),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.eye,
-                              color:
-                                  isDark ? Colors.blue[300] : Colors.blue[700],
-                              size: 16,
+
+                        // Bottom padding for FAB
+                        const SliverToBoxAdapter(
+                          child: SizedBox(height: 100),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Viewer indicator
+                  FutureBuilder<bool>(
+                    future: PermissionsHelper.hasViewerLists(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData && snapshot.data == true) {
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: isDark ? Colors.blue[900] : Colors.blue[50],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isDark
+                                  ? Colors.blue[700]!
+                                  : Colors.blue[200]!,
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              "You're a viewer",
-                              style: TextStyle(
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.eye,
                                 color: isDark
                                     ? Colors.blue[300]
                                     : Colors.blue[700],
-                                fontWeight: FontWeight.w500,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "You're a viewer",
+                                style: TextStyle(
+                                  color: isDark
+                                      ? Colors.blue[300]
+                                      : Colors.blue[700],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                  // Advertisement at the bottom
+                  if (_isBannerAdLoaded && _bannerAd != null)
+                    Container(
+                      margin: const EdgeInsets.all(8.0),
+                      child: BannerAdvertWidget(
+                        bannerAd: _bannerAd,
+                        backgroundColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.grey[800]!
+                                : Colors.white,
+                      ),
+                    ),
+                ],
+              ),
+              floatingActionButtonLocation: ExpandableFab.location,
+              floatingActionButton: ExpandableFab(
+                type: ExpandableFabType.up,
+                distance: 70,
+                fanAngle: 0,
+                initialOpen: false,
+                duration: const Duration(milliseconds: 500),
+                childrenAnimation: ExpandableFabAnimation.none,
+                openButtonBuilder: RotateFloatingActionButtonBuilder(
+                  child: const Icon(Icons.add),
+                  fabSize: ExpandableFabSize.regular,
+                  backgroundColor:
+                      isDark ? Colors.green[700] : Colors.green[600],
+                  foregroundColor: Colors.white,
+                  angle: 45,
+                ),
+                closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+                  child: const Icon(Icons.close),
+                  fabSize: ExpandableFabSize.regular,
+                  backgroundColor:
+                      isDark ? Colors.green[700] : Colors.green[600],
+                  foregroundColor: Colors.white,
+                ),
+                overlayStyle: ExpandableFabOverlayStyle(
+                  color: Colors.black.withOpacity(0.5),
+                ),
+                children: [
+                  // First FAB - Create List (appears second with staggered delay)
+                  _AnimatedFabChild(
+                    delay: const Duration(milliseconds: 100),
+                    child: FloatingActionButton.extended(
+                      heroTag: 'createList',
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            backgroundColor:
+                                isDark ? Colors.black : Colors.white,
+                            title: Text(
+                              'Create New List',
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ],
-                        ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-                // Advertisement at the bottom
-                if (_isBannerAdLoaded && _bannerAd != null)
-                  Container(
-                    margin: const EdgeInsets.all(8.0),
-                    child: BannerAdvertWidget(
-                      bannerAd: _bannerAd,
+                            content: TextField(
+                              controller: _newListController,
+                              autofocus: true,
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.black,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'List name',
+                                hintStyle: TextStyle(
+                                  color: isDark
+                                      ? Colors.grey[400]
+                                      : Colors.grey[700],
+                                ),
+                                filled: true,
+                                fillColor: isDark
+                                    ? const Color(0xFF1E1E1E)
+                                    : const Color(0xFFF5F5F5),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: isDark
+                                        ? Colors.grey[600]!
+                                        : Colors.grey[400]!,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.green.shade400,
+                                    width: 2,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: isDark
+                                      ? Colors.grey[400]
+                                      : Colors.grey[700],
+                                ),
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                onPressed: _createList,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green[800],
+                                  foregroundColor: Colors.white,
+                                ),
+                                child: const Text('Create'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                       backgroundColor:
-                          Theme.of(context).brightness == Brightness.dark
-                              ? Colors.grey[800]!
-                              : Colors.white,
+                          isDark ? Colors.green[700] : Colors.green[600],
+                      foregroundColor: Colors.white,
+                      icon:
+                          const FaIcon(FontAwesomeIcons.cartShopping, size: 20),
+                      label: const Text('Create List'),
                     ),
                   ),
-              ],
-            ),
-            floatingActionButtonLocation: ExpandableFab.location,
-            floatingActionButton: ExpandableFab(
-              type: ExpandableFabType.up,
-              distance: 70,
-              fanAngle: 0,
-              initialOpen: false,
-              duration: const Duration(milliseconds: 500),
-              childrenAnimation: ExpandableFabAnimation.none,
-              openButtonBuilder: RotateFloatingActionButtonBuilder(
-                child: const Icon(Icons.add),
-                fabSize: ExpandableFabSize.regular,
-                backgroundColor: isDark ? Colors.green[700] : Colors.green[600],
-                foregroundColor: Colors.white,
-                angle: 45,
-              ),
-              closeButtonBuilder: DefaultFloatingActionButtonBuilder(
-                child: const Icon(Icons.close),
-                fabSize: ExpandableFabSize.regular,
-                backgroundColor: isDark ? Colors.green[700] : Colors.green[600],
-                foregroundColor: Colors.white,
-              ),
-              overlayStyle: ExpandableFabOverlayStyle(
-                color: Colors.black.withOpacity(0.5),
-              ),
-              children: [
-                // First FAB - Create List (appears second with staggered delay)
-                _AnimatedFabChild(
-                  delay: const Duration(milliseconds: 100),
-                  child: FloatingActionButton.extended(
-                    heroTag: 'createList',
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          backgroundColor: isDark ? Colors.black : Colors.white,
-                          title: Text(
-                            'Create New List',
-                            style: TextStyle(
-                              color: isDark ? Colors.white : Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          content: TextField(
-                            controller: _newListController,
-                            autofocus: true,
-                            style: TextStyle(
-                              color: isDark ? Colors.white : Colors.black,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: 'List name',
-                              hintStyle: TextStyle(
-                                color: isDark
-                                    ? Colors.grey[400]
-                                    : Colors.grey[700],
-                              ),
-                              filled: true,
-                              fillColor: isDark
-                                  ? const Color(0xFF1E1E1E)
-                                  : const Color(0xFFF5F5F5),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: isDark
-                                      ? Colors.grey[600]!
-                                      : Colors.grey[400]!,
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.green.shade400,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              style: TextButton.styleFrom(
-                                foregroundColor: isDark
-                                    ? Colors.grey[400]
-                                    : Colors.grey[700],
-                              ),
-                              child: const Text('Cancel'),
-                            ),
-                            ElevatedButton(
-                              onPressed: _createList,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green[800],
-                                foregroundColor: Colors.white,
-                              ),
-                              child: const Text('Create'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    backgroundColor:
-                        isDark ? Colors.green[700] : Colors.green[600],
-                    foregroundColor: Colors.white,
-                    icon: const FaIcon(FontAwesomeIcons.cartShopping, size: 20),
-                    label: const Text('Create List'),
+                  // Second FAB - Create List Group (appears first)
+                  _AnimatedFabChild(
+                    delay: Duration.zero,
+                    child: FloatingActionButton.extended(
+                      heroTag: 'createListGroup',
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => const AddListGroupBottomSheet(),
+                        ).then((result) {
+                          if (result == true) {
+                            // Refresh the UI or handle success
+                          }
+                        });
+                      },
+                      backgroundColor:
+                          isDark ? Colors.green[700] : Colors.green[600],
+                      foregroundColor: Colors.white,
+                      icon: const FaIcon(FontAwesomeIcons.layerGroup, size: 20),
+                      label: const Text('Create List Group'),
+                    ),
                   ),
-                ),
-                // Second FAB - Create List Group (appears first)
-                _AnimatedFabChild(
-                  delay: Duration.zero,
-                  child: FloatingActionButton.extended(
-                    heroTag: 'createListGroup',
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => const AddListGroupBottomSheet(),
-                      ).then((result) {
-                        if (result == true) {
-                          // Refresh the UI or handle success
-                        }
-                      });
-                    },
-                    backgroundColor:
-                        isDark ? Colors.green[700] : Colors.green[600],
-                    foregroundColor: Colors.white,
-                    icon: const FaIcon(FontAwesomeIcons.layerGroup, size: 20),
-                    label: const Text('Create List Group'),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-        // Splash screen overlay
-        _showSplashScreen
-            ? AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                child: const SplashScreen(),
-              )
-            : const SizedBox.shrink(),
-      ],
+          // Splash screen overlay
+          _showSplashScreen
+              ? AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  child: const SplashScreen(),
+                )
+              : const SizedBox.shrink(),
+        ],
+      ),
     );
   }
 }
