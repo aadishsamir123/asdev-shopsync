@@ -110,7 +110,8 @@ class ShopSync extends StatelessWidget {
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {
-            TargetPlatform.android: const FadeForwardsPageTransitionsBuilder(),
+            TargetPlatform.android:
+                const PredictiveBackPageTransitionsBuilder(),
             TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
             TargetPlatform.macOS: const ZoomPageTransitionsBuilder(),
             TargetPlatform.linux: const ZoomPageTransitionsBuilder(),
@@ -121,7 +122,8 @@ class ShopSync extends StatelessWidget {
       darkTheme: ThemeData.dark().copyWith(
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {
-            TargetPlatform.android: const FadeForwardsPageTransitionsBuilder(),
+            TargetPlatform.android:
+                const PredictiveBackPageTransitionsBuilder(),
             TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
             TargetPlatform.macOS: const ZoomPageTransitionsBuilder(),
             TargetPlatform.linux: const ZoomPageTransitionsBuilder(),
