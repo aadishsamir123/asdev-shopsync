@@ -1387,9 +1387,13 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                         ),
 
-                        // Bottom padding for FAB
-                        const SliverToBoxAdapter(
-                          child: SizedBox(height: 100),
+                        // Bottom padding for FAB and ad
+                        SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: _isBannerAdLoaded && _bannerAd != null
+                                ? 180
+                                : 100,
+                          ),
                         ),
                       ],
                     ),
@@ -1453,139 +1457,146 @@ class _HomeScreenState extends State<HomeScreen>
                 ],
               ),
               floatingActionButtonLocation: ExpandableFab.location,
-              floatingActionButton: ExpandableFab(
-                type: ExpandableFabType.up,
-                distance: 70,
-                fanAngle: 0,
-                initialOpen: false,
-                duration: const Duration(milliseconds: 500),
-                childrenAnimation: ExpandableFabAnimation.none,
-                openButtonBuilder: RotateFloatingActionButtonBuilder(
-                  child: const Icon(Icons.add),
-                  fabSize: ExpandableFabSize.regular,
-                  backgroundColor:
-                      isDark ? Colors.green[700] : Colors.green[600],
-                  foregroundColor: Colors.white,
-                  angle: 45,
+              floatingActionButton: Padding(
+                padding: EdgeInsets.only(
+                  bottom: _isBannerAdLoaded && _bannerAd != null ? 90.0 : 0.0,
                 ),
-                closeButtonBuilder: DefaultFloatingActionButtonBuilder(
-                  child: const Icon(Icons.close),
-                  fabSize: ExpandableFabSize.regular,
-                  backgroundColor:
-                      isDark ? Colors.green[700] : Colors.green[600],
-                  foregroundColor: Colors.white,
-                ),
-                overlayStyle: ExpandableFabOverlayStyle(
-                  color: Colors.black.withOpacity(0.5),
-                ),
-                children: [
-                  // First FAB - Create List (appears second with staggered delay)
-                  _AnimatedFabChild(
-                    delay: const Duration(milliseconds: 100),
-                    child: FloatingActionButton.extended(
-                      heroTag: 'createList',
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            backgroundColor:
-                                isDark ? Colors.black : Colors.white,
-                            title: Text(
-                              'Create New List',
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            content: TextField(
-                              controller: _newListController,
-                              autofocus: true,
-                              style: TextStyle(
-                                color: isDark ? Colors.white : Colors.black,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: 'List name',
-                                hintStyle: TextStyle(
-                                  color: isDark
-                                      ? Colors.grey[400]
-                                      : Colors.grey[700],
+                child: ExpandableFab(
+                  type: ExpandableFabType.up,
+                  distance: 70,
+                  fanAngle: 0,
+                  initialOpen: false,
+                  duration: const Duration(milliseconds: 500),
+                  childrenAnimation: ExpandableFabAnimation.none,
+                  openButtonBuilder: RotateFloatingActionButtonBuilder(
+                    child: const Icon(Icons.add),
+                    fabSize: ExpandableFabSize.regular,
+                    backgroundColor:
+                        isDark ? Colors.green[700] : Colors.green[600],
+                    foregroundColor: Colors.white,
+                    angle: 45,
+                  ),
+                  closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+                    child: const Icon(Icons.close),
+                    fabSize: ExpandableFabSize.regular,
+                    backgroundColor:
+                        isDark ? Colors.green[700] : Colors.green[600],
+                    foregroundColor: Colors.white,
+                  ),
+                  overlayStyle: ExpandableFabOverlayStyle(
+                    color: Colors.black.withOpacity(0.5),
+                  ),
+                  children: [
+                    // First FAB - Create List (appears second with staggered delay)
+                    _AnimatedFabChild(
+                      delay: const Duration(milliseconds: 100),
+                      child: FloatingActionButton.extended(
+                        heroTag: 'createList',
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              backgroundColor:
+                                  isDark ? Colors.black : Colors.white,
+                              title: Text(
+                                'Create New List',
+                                style: TextStyle(
+                                  color: isDark ? Colors.white : Colors.black,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                filled: true,
-                                fillColor: isDark
-                                    ? const Color(0xFF1E1E1E)
-                                    : const Color(0xFFF5F5F5),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
+                              ),
+                              content: TextField(
+                                controller: _newListController,
+                                autofocus: true,
+                                style: TextStyle(
+                                  color: isDark ? Colors.white : Colors.black,
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: 'List name',
+                                  hintStyle: TextStyle(
                                     color: isDark
-                                        ? Colors.grey[600]!
-                                        : Colors.grey[400]!,
+                                        ? Colors.grey[400]
+                                        : Colors.grey[700],
                                   ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.green.shade400,
-                                    width: 2,
+                                  filled: true,
+                                  fillColor: isDark
+                                      ? const Color(0xFF1E1E1E)
+                                      : const Color(0xFFF5F5F5),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: isDark
+                                          ? Colors.grey[600]!
+                                          : Colors.grey[400]!,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  borderRadius: BorderRadius.circular(8),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.green.shade400,
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                 ),
                               ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: isDark
+                                        ? Colors.grey[400]
+                                        : Colors.grey[700],
+                                  ),
+                                  child: const Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: _createList,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green[800],
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  child: const Text('Create'),
+                                ),
+                              ],
                             ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                style: TextButton.styleFrom(
-                                  foregroundColor: isDark
-                                      ? Colors.grey[400]
-                                      : Colors.grey[700],
-                                ),
-                                child: const Text('Cancel'),
-                              ),
-                              ElevatedButton(
-                                onPressed: _createList,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green[800],
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: const Text('Create'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      backgroundColor:
-                          isDark ? Colors.green[700] : Colors.green[600],
-                      foregroundColor: Colors.white,
-                      icon:
-                          const FaIcon(FontAwesomeIcons.cartShopping, size: 20),
-                      label: const Text('Create List'),
+                          );
+                        },
+                        backgroundColor:
+                            isDark ? Colors.green[700] : Colors.green[600],
+                        foregroundColor: Colors.white,
+                        icon: const FaIcon(FontAwesomeIcons.cartShopping,
+                            size: 20),
+                        label: const Text('Create List'),
+                      ),
                     ),
-                  ),
-                  // Second FAB - Create List Group (appears first)
-                  _AnimatedFabChild(
-                    delay: Duration.zero,
-                    child: FloatingActionButton.extended(
-                      heroTag: 'createListGroup',
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => const AddListGroupBottomSheet(),
-                        ).then((result) {
-                          if (result == true) {
-                            // Refresh the UI or handle success
-                          }
-                        });
-                      },
-                      backgroundColor:
-                          isDark ? Colors.green[700] : Colors.green[600],
-                      foregroundColor: Colors.white,
-                      icon: const FaIcon(FontAwesomeIcons.layerGroup, size: 20),
-                      label: const Text('Create List Group'),
+                    // Second FAB - Create List Group (appears first)
+                    _AnimatedFabChild(
+                      delay: Duration.zero,
+                      child: FloatingActionButton.extended(
+                        heroTag: 'createListGroup',
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) =>
+                                const AddListGroupBottomSheet(),
+                          ).then((result) {
+                            if (result == true) {
+                              // Refresh the UI or handle success
+                            }
+                          });
+                        },
+                        backgroundColor:
+                            isDark ? Colors.green[700] : Colors.green[600],
+                        foregroundColor: Colors.white,
+                        icon:
+                            const FaIcon(FontAwesomeIcons.layerGroup, size: 20),
+                        label: const Text('Create List Group'),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
