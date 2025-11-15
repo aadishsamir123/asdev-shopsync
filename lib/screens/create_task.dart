@@ -6,8 +6,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/loading_spinner.dart';
 import '/widgets/place_selector.dart';
 import '/widgets/category_picker.dart';
+import '/widgets/smart_suggestions_widget.dart';
 import '/libraries/icons/food_icons_map.dart';
 import '/screens/choose_task_icon.dart';
+import '/services/smart_suggestions_service.dart';
+import '/models/task_suggestion.dart';
 
 class CreateTaskScreen extends StatefulWidget {
   final String listId;
@@ -29,6 +32,74 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   FoodIconMapping? _selectedIcon;
   String? _selectedCategoryId;
   String? _selectedCategoryName;
+
+  // Smart suggestions
+  final _suggestionsService = SmartSuggestionsService();
+  List<TaskSuggestion> _suggestions = [];
+  bool _isLoadingSuggestions = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSuggestions();
+  }
+
+  Future<void> _loadSuggestions() async {
+    setState(() => _isLoadingSuggestions = true);
+    try {
+      final suggestions = await _suggestionsService.getSuggestions(
+        listId: widget.listId,
+      );
+      if (mounted) {
+        setState(() {
+          _suggestions = suggestions;
+          _isLoadingSuggestions = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingSuggestions = false);
+      }
+    }
+  }
+
+  void _applySuggestion(TaskSuggestion suggestion) {
+    // Capitalize first letter for display
+    final name = suggestion.name.isEmpty
+        ? ''
+        : '${suggestion.name[0].toUpperCase()}${suggestion.name.substring(1)}';
+
+    setState(() {
+      _titleController.text = name;
+
+      // Apply icon if available
+      if (suggestion.iconIdentifier != null) {
+        _selectedIcon = FoodIconMap.getIcon(suggestion.iconIdentifier!);
+      }
+
+      // Apply location if available
+      if (suggestion.location != null) {
+        _location = suggestion.location;
+      }
+
+      // Apply category if available
+      if (suggestion.categoryId != null) {
+        _selectedCategoryId = suggestion.categoryId;
+        _selectedCategoryName = suggestion.categoryName;
+      }
+    });
+
+    // Show feedback
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Applied suggestion: $name'),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: Colors.purple[800],
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
   Future<void> _createTask() async {
     if (_titleController.text.trim().isEmpty) {
@@ -118,6 +189,17 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Smart Suggestions
+            if (_suggestions.isNotEmpty || _isLoadingSuggestions)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: SmartSuggestionsWidget(
+                  suggestions: _suggestions,
+                  onSuggestionTapped: _applySuggestion,
+                  isLoading: _isLoadingSuggestions,
+                ),
+              ),
+
             // Task Name
             _buildCard(
               title: 'Task Name',
