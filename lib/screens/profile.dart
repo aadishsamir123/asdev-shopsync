@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -167,15 +168,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: const Text('Sign Out'),
             content: const Text('Are you sure you want to sign out?'),
             actions: [
-              TextButton(
+              ButtonM3E(
                 onPressed: () => Navigator.pop(context, false),
-                child:
-                    Text('Cancel', style: TextStyle(color: Colors.grey[700])),
+                label: const Text('Cancel'),
+                style: ButtonM3EStyle.text,
+                size: ButtonM3ESize.md,
               ),
-              TextButton(
+              ButtonM3E(
                 onPressed: () => Navigator.pop(context, true),
-                style: TextButton.styleFrom(foregroundColor: Colors.red[700]),
-                child: const Text('Sign Out'),
+                label: const Text('Sign Out'),
+                style: ButtonM3EStyle.text,
+                size: ButtonM3ESize.md,
               ),
             ],
           ),
@@ -620,39 +623,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: OutlinedButton(
+                            child: ButtonM3E(
                               onPressed: () =>
                                   setState(() => _isEditing = false),
-                              style: OutlinedButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                side: BorderSide(
-                                  color: isDark
-                                      ? Colors.grey[600]!
-                                      : Colors.grey[400]!,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: const Text('Cancel'),
+                              label: const Text('Cancel'),
+                              style: ButtonM3EStyle.outlined,
+                              size: ButtonM3ESize.lg,
                             ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: ElevatedButton(
+                            child: ButtonM3E(
                               onPressed: _isLoading ? null : _updateProfile,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green[700],
-                                foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                elevation: isDark ? 0 : 2,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: _isLoading
+                              enabled: !_isLoading,
+                              label: _isLoading
                                   ? const SizedBox(
                                       height: 24,
                                       width: 24,
@@ -662,6 +646,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                     )
                                   : const Text('Save Changes'),
+                              style: ButtonM3EStyle.filled,
+                              size: ButtonM3ESize.lg,
                             ),
                           ),
                         ],
@@ -672,21 +658,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton.icon(
+                      child: ButtonM3E(
                         onPressed: () => {_signOut()},
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: BorderSide(
-                            color: isDark ? Colors.red[300]! : Colors.red[300]!,
-                          ),
-                          foregroundColor:
-                              isDark ? Colors.red[300] : Colors.red[700],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
                         icon: const Icon(Icons.logout),
                         label: const Text('Sign Out'),
+                        style: ButtonM3EStyle.outlined,
+                        size: ButtonM3ESize.lg,
                       ),
                     ),
                     const SizedBox(height: 32),

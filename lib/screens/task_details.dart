@@ -400,6 +400,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                 onChanged: isViewer
                     ? null
                     : (value) => _updateTask({'completed': value}),
+                // ignore: deprecated_member_use
                 activeColor: Colors.white,
                 activeTrackColor: Colors.green[800],
                 inactiveThumbColor: isDark ? Colors.grey[300] : Colors.grey[50],

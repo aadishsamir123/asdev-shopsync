@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -140,15 +141,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: const Text('Sign Out'),
             content: const Text('Are you sure you want to sign out?'),
             actions: [
-              TextButton(
+              ButtonM3E(
                 onPressed: () => Navigator.pop(context, false),
-                child:
-                    Text('Cancel', style: TextStyle(color: Colors.grey[700])),
+                label: const Text('Cancel'),
+                style: ButtonM3EStyle.text,
+                size: ButtonM3ESize.md,
               ),
-              TextButton(
+              ButtonM3E(
                 onPressed: () => Navigator.pop(context, true),
-                style: TextButton.styleFrom(foregroundColor: Colors.red[700]),
-                child: const Text('Sign Out'),
+                label: const Text('Sign Out'),
+                style: ButtonM3EStyle.text,
+                size: ButtonM3ESize.md,
               ),
             ],
           ),

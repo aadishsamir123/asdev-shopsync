@@ -1477,7 +1477,7 @@ class _HomeScreenState extends State<HomeScreen>
                     foregroundColor: Colors.white,
                   ),
                   overlayStyle: ExpandableFabOverlayStyle(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withValues(alpha: 0.5),
                   ),
                   children: [
                     // First FAB - Create List (appears second with staggered delay)

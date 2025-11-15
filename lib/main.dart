@@ -6,7 +6,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shopsync/services/connectivity_service.dart';
-import 'package:shopsync/widgets/loading_spinner.dart';
 import 'firebase_options.dart';
 import 'screens/welcome.dart';
 import 'screens/login.dart';
@@ -108,7 +107,13 @@ class ShopSync extends StatelessWidget {
     return MaterialApp(
       title: 'ShopSync',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.green,
+          brightness: Brightness.light,
+        ).copyWith(
+          primary: Colors.green[900],
+          onPrimary: Colors.white,
+        ),
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {
             TargetPlatform.android:
@@ -121,6 +126,13 @@ class ShopSync extends StatelessWidget {
         ),
       ),
       darkTheme: ThemeData.dark().copyWith(
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.green,
+          brightness: Brightness.dark,
+        ).copyWith(
+          primary: Colors.green[800],
+          onPrimary: Colors.white,
+        ),
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {
             TargetPlatform.android:

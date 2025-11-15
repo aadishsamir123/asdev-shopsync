@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shopsync/services/connectivity_service.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 // import '/services/google_auth.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -147,7 +148,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 const Spacer(flex: 2),
 
                 // Login Button
-                ElevatedButton(
+                ButtonM3E(
                   onPressed: () async {
                     if (await connectivityService
                         .checkConnectivityAndShowDialog(context,
@@ -155,18 +156,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       Navigator.pushNamed(context, '/login');
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor:
-                        isDarkMode ? Colors.white : Colors.green[800],
-                    backgroundColor: isDarkMode ? Colors.green : Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16, horizontal: 32),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 4,
-                  ),
-                  child: const Row(
+                  label: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.login, size: 24),
@@ -180,12 +170,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                     ],
                   ),
+                  style: ButtonM3EStyle.filled,
+                  size: ButtonM3ESize.lg,
                 ),
 
                 const SizedBox(height: 20),
 
                 // Sign Up Button
-                OutlinedButton(
+                ButtonM3E(
                   onPressed: () async {
                     if (await connectivityService
                         .checkConnectivityAndShowDialog(context,
@@ -194,20 +186,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       Navigator.pushNamed(context, '/register');
                     }
                   },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor:
-                        isDarkMode ? Colors.green[300] : Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16, horizontal: 32),
-                    side: BorderSide(
-                      color: isDarkMode ? Colors.green[300]! : Colors.white,
-                      width: 2,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: const Row(
+                  label: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.person_add, size: 24),
@@ -221,6 +200,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                     ],
                   ),
+                  style: ButtonM3EStyle.outlined,
+                  size: ButtonM3ESize.lg,
                 ),
 
                 // const SizedBox(height: 20),
