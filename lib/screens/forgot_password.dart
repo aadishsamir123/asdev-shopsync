@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import '/widgets/loading_spinner.dart';
 import '/utils/sentry_auth_utils.dart';
 
@@ -281,26 +282,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           SizedBox(
                             width: double.infinity,
                             height: 56,
-                            child: ElevatedButton(
+                            child: ButtonM3E(
                               onPressed: (_isLoading || !_isEmailValid)
                                   ? null
                                   : _resetPassword,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: isDarkMode
-                                    ? Colors.green
-                                    : Colors.green.shade800,
-                                foregroundColor: Colors.white,
-                                disabledBackgroundColor: isDarkMode
-                                    ? Colors.green.withValues(alpha: 0.3)
-                                    : Colors.green.shade300,
-                                disabledForegroundColor:
-                                    Colors.white.withValues(alpha: 0.6),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: _isLoading ? 0 : 3,
-                              ),
-                              child: _isLoading
+                              enabled: !_isLoading && _isEmailValid,
+                              label: _isLoading
                                   ? const CustomLoadingSpinner(
                                       color: Colors.white,
                                       size: 24.0,
@@ -313,6 +300,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                         letterSpacing: 0.5,
                                       ),
                                     ),
+                              style: ButtonM3EStyle.filled,
+                              size: ButtonM3ESize.lg,
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -330,19 +319,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   fontSize: 15,
                                 ),
                               ),
-                              TextButton(
+                              ButtonM3E(
                                 onPressed: () {
                                   Navigator.pushReplacementNamed(
                                       context, '/login');
                                 },
-                                style: TextButton.styleFrom(
-                                  foregroundColor: isDarkMode
-                                      ? Colors.green[300]
-                                      : Colors.green[800],
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 8),
-                                ),
-                                child: const Text(
+                                label: const Text(
                                   'Sign In',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
@@ -350,6 +332,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                     decoration: TextDecoration.underline,
                                   ),
                                 ),
+                                style: ButtonM3EStyle.text,
+                                size: ButtonM3ESize.sm,
                               ),
                             ],
                           ),

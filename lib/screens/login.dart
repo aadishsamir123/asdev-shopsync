@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import 'forgot_password.dart';
 import '/widgets/loading_spinner.dart';
 import '/utils/sentry_auth_utils.dart';
@@ -357,28 +358,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(
                             width: double.infinity,
                             height: 56,
-                            child: ElevatedButton(
+                            child: ButtonM3E(
                               onPressed: (_isLoading ||
                                       !_isEmailValid ||
                                       !_isPasswordValid)
                                   ? null
                                   : _login,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: isDarkMode
-                                    ? Colors.green
-                                    : Colors.green.shade800,
-                                foregroundColor: Colors.white,
-                                disabledBackgroundColor: isDarkMode
-                                    ? Colors.green.withValues(alpha: 0.3)
-                                    : Colors.green.shade300,
-                                disabledForegroundColor:
-                                    Colors.white.withValues(alpha: 0.6),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: _isLoading ? 0 : 3,
-                              ),
-                              child: _isLoading
+                              enabled: !_isLoading &&
+                                  _isEmailValid &&
+                                  _isPasswordValid,
+                              label: _isLoading
                                   ? const CustomLoadingSpinner(
                                       color: Colors.white,
                                       size: 24.0,
@@ -391,10 +380,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                         letterSpacing: 0.5,
                                       ),
                                     ),
+                              style: ButtonM3EStyle.filled,
+                              size: ButtonM3ESize.lg,
                             ),
                           ),
                           const SizedBox(height: 16),
-                          TextButton(
+                          ButtonM3E(
                             onPressed: () {
                               Navigator.pushReplacement(
                                 context,
@@ -404,23 +395,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               );
                             },
-                            style: TextButton.styleFrom(
-                              foregroundColor: isDarkMode
-                                  ? Colors.green[300]
-                                  : Colors.green[800],
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                            ),
-                            child: Text(
+                            label: const Text(
                               'Forgot Password?',
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: isDarkMode
-                                    ? Colors.green[300]
-                                    : Colors.green.shade800,
                                 decoration: TextDecoration.underline,
                               ),
                             ),
+                            style: ButtonM3EStyle.text,
+                            size: ButtonM3ESize.md,
                           ),
                         ],
                       ),
@@ -439,16 +423,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 15,
                         ),
                       ),
-                      TextButton(
+                      ButtonM3E(
                         onPressed: () {
                           Navigator.pushReplacementNamed(context, '/register');
                         },
-                        style: TextButton.styleFrom(
-                          foregroundColor:
-                              isDarkMode ? Colors.green[300] : Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                        ),
-                        child: const Text(
+                        label: const Text(
                           'Sign Up',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -456,6 +435,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             decoration: TextDecoration.underline,
                           ),
                         ),
+                        style: ButtonM3EStyle.text,
+                        size: ButtonM3ESize.sm,
                       ),
                     ],
                   ),

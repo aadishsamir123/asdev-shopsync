@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import 'package:shopsync/widgets/loading_spinner.dart';
 import '/utils/sentry_auth_utils.dart';
 
@@ -450,29 +451,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           SizedBox(
                             width: double.infinity,
                             height: 56,
-                            child: ElevatedButton(
+                            child: ButtonM3E(
                               onPressed: (_isLoading ||
                                       !_isNameValid ||
                                       !_isEmailValid ||
                                       !_isPasswordValid)
                                   ? null
                                   : _register,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: isDarkMode
-                                    ? Colors.green
-                                    : Colors.green.shade800,
-                                foregroundColor: Colors.white,
-                                disabledBackgroundColor: isDarkMode
-                                    ? Colors.green.withValues(alpha: 0.3)
-                                    : Colors.green.shade300,
-                                disabledForegroundColor:
-                                    Colors.white.withValues(alpha: 0.6),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: _isLoading ? 0 : 3,
-                              ),
-                              child: _isLoading
+                              enabled: !_isLoading &&
+                                  _isNameValid &&
+                                  _isEmailValid &&
+                                  _isPasswordValid,
+                              label: _isLoading
                                   ? const CustomLoadingSpinner(
                                       color: Colors.white,
                                       size: 24.0,
@@ -485,6 +475,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         letterSpacing: 0.5,
                                       ),
                                     ),
+                              style: ButtonM3EStyle.filled,
+                              size: ButtonM3ESize.lg,
                             ),
                           ),
                         ],
@@ -504,16 +496,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           fontSize: 15,
                         ),
                       ),
-                      TextButton(
+                      ButtonM3E(
                         onPressed: () {
                           Navigator.pushReplacementNamed(context, '/login');
                         },
-                        style: TextButton.styleFrom(
-                          foregroundColor:
-                              isDarkMode ? Colors.green[300] : Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                        ),
-                        child: const Text(
+                        label: const Text(
                           'Sign In',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -521,6 +508,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             decoration: TextDecoration.underline,
                           ),
                         ),
+                        style: ButtonM3EStyle.text,
+                        size: ButtonM3ESize.sm,
                       ),
                     ],
                   ),

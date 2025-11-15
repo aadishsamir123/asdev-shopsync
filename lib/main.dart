@@ -108,7 +108,13 @@ class ShopSync extends StatelessWidget {
     return MaterialApp(
       title: 'ShopSync',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green),
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.green,
+          brightness: Brightness.light,
+        ).copyWith(
+          primary: Colors.green[900],
+          onPrimary: Colors.white,
+        ),
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {
             TargetPlatform.android:
@@ -121,6 +127,13 @@ class ShopSync extends StatelessWidget {
         ),
       ),
       darkTheme: ThemeData.dark().copyWith(
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.green,
+          brightness: Brightness.dark,
+        ).copyWith(
+          primary: Colors.green[800],
+          onPrimary: Colors.white,
+        ),
         pageTransitionsTheme: PageTransitionsTheme(
           builders: {
             TargetPlatform.android:
