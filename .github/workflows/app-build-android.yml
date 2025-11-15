@@ -1,4 +1,4 @@
-name: Code Check
+name: Build app for Android
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
     types: [ opened, edited, synchronize ]
 
 jobs:
-  code-style:
-    name: Analyze and Format Flutter Code
+  build-android-aab:
+    name: Build Android App Bundle
     runs-on: ubuntu-latest
 
     steps:
@@ -23,5 +23,5 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Run Flutter analyze
-        run: flutter analyze --no-fatal-infos
+      - name: Build AAB
+        run: flutter build appbundle --release

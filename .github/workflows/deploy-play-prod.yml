@@ -4,7 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-upload:
+    name: Build and Upload to Google Play Store Production
     environment: google-play-deployment
     runs-on: ubuntu-latest
 
