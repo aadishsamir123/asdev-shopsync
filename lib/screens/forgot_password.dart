@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/loading_spinner.dart';
 import '/utils/sentry_auth_utils.dart';
 
@@ -116,7 +115,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   IconButton(
-                    icon: Icon(FontAwesomeIcons.arrowLeft,
+                    icon: Icon(Icons.arrow_back,
                         color: isDarkMode ? Colors.green[300] : Colors.white,
                         size: 28),
                     onPressed: () => Navigator.pop(context),
@@ -190,7 +189,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 fontSize: 15,
                               ),
                               prefixIcon: Icon(
-                                FontAwesomeIcons.envelope,
+                                Icons.email,
                                 color: isDarkMode
                                     ? Colors.green[300]
                                     : Colors.green[800],
@@ -257,8 +256,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 children: [
                                   Icon(
                                     _isSuccess
-                                        ? FontAwesomeIcons.circleCheck
-                                        : FontAwesomeIcons.circleExclamation,
+                                        ? Icons.check_circle
+                                        : Icons.error,
                                     color:
                                         _isSuccess ? Colors.green : Colors.red,
                                     size: 20,

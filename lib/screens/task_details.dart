@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/widgets/place_selector.dart';
 import '/widgets/category_picker.dart';
 import '/widgets/loading_spinner.dart';
@@ -181,7 +180,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
         backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
         elevation: 0,
         leading: IconButton(
-          icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -269,7 +268,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                                           ),
                                         ),
                                         child: const Icon(
-                                          FontAwesomeIcons.pen,
+                                          Icons.edit,
                                           size: 11,
                                           color: Colors.white,
                                         ),
@@ -499,11 +498,10 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                                         height: 24,
                                         color: Colors.green[800],
                                       )
-                                    : FaIcon(FontAwesomeIcons.tag,
+                                    : Icon(Icons.label,
                                         color: Colors.green[800]);
                               }()
-                            : FaIcon(FontAwesomeIcons.tag,
-                                color: Colors.green[800]),
+                            : Icon(Icons.label, color: Colors.green[800]),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -550,8 +548,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
         color: Colors.green[800],
       );
     } else {
-      return FaIcon(
-        FontAwesomeIcons.check,
+      return Icon(
+        Icons.check,
         color: Colors.green[800],
         size: 28,
       );
@@ -605,8 +603,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                       color: Colors.green[100],
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: FaIcon(FontAwesomeIcons.calendar,
-                        color: Colors.green[800]),
+                    child: Icon(Icons.calendar_today, color: Colors.green[800]),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -633,7 +630,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                   ),
                   if (_selectedDeadline != null && !isViewer)
                     IconButton(
-                      icon: const FaIcon(FontAwesomeIcons.xmark),
+                      icon: const Icon(Icons.close),
                       onPressed: () =>
                           _updateTask({'deadline': FieldValue.delete()}),
                     ),
@@ -689,8 +686,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                       color: Colors.green[100],
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: FaIcon(FontAwesomeIcons.locationDot,
-                        color: Colors.green[800]),
+                    child: Icon(Icons.location_on, color: Colors.green[800]),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -744,8 +740,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                     color: Colors.green[100],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: FaIcon(FontAwesomeIcons.fileLines,
-                      color: Colors.green[800]),
+                  child: Icon(Icons.description, color: Colors.green[800]),
                 ),
                 const SizedBox(width: 16),
                 const Text(
@@ -823,7 +818,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                 color: Colors.green[100],
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: FaIcon(FontAwesomeIcons.user, color: Colors.green[800]),
+              child: Icon(Icons.person, color: Colors.green[800]),
             ),
             const SizedBox(width: 16),
             Column(
@@ -870,7 +865,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                 color: Colors.green[100],
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: FaIcon(FontAwesomeIcons.clock, color: Colors.green[800]),
+              child: Icon(Icons.access_time, color: Colors.green[800]),
             ),
             const SizedBox(width: 16),
             Column(
@@ -919,8 +914,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                     color: Colors.green[100],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: FaIcon(FontAwesomeIcons.hashtag,
-                      color: Colors.green[800]),
+                  child: Icon(Icons.tag, color: Colors.green[800]),
                 ),
                 const SizedBox(width: 16),
                 const Text(
@@ -945,8 +939,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                       onPressed: !isViewer && counter > 1
                           ? () => _updateTask({'counter': counter - 1})
                           : null,
-                      icon: FaIcon(
-                        FontAwesomeIcons.minus,
+                      icon: Icon(
+                        Icons.remove,
                         color: (!isViewer && counter > 1)
                             ? Colors.green[800]
                             : Colors.grey[400],
@@ -985,8 +979,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen>
                       onPressed: !isViewer && counter < 99
                           ? () => _updateTask({'counter': counter + 1})
                           : null,
-                      icon: FaIcon(
-                        FontAwesomeIcons.plus,
+                      icon: Icon(
+                        Icons.add,
                         color: (!isViewer && counter < 99)
                             ? Colors.green[800]
                             : Colors.grey[400],

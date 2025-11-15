@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shopsync/services/connectivity_service.dart';
@@ -348,30 +347,30 @@ class _ListOptionsScreenState extends State<ListOptionsScreen> {
                     if (!isViewer)
                       _buildSectionCard(
                         title: 'List Management',
-                        icon: FontAwesomeIcons.listCheck,
+                        icon: Icons.checklist,
                         children: [
                           if (isOwner)
                             _buildOptionTile(
-                              icon: FontAwesomeIcons.pen,
+                              icon: Icons.edit,
                               title: 'Edit List Name',
                               subtitle: 'Change the name of this list',
                               onTap: () => _editListName(listData['name']),
                             ),
                           _buildOptionTile(
-                            icon: FontAwesomeIcons.share,
+                            icon: Icons.share,
                             title: 'Share List',
                             subtitle: 'Share this list with others',
                             onTap: _showShareMenu,
                           ),
                           _buildOptionTile(
-                            icon: FontAwesomeIcons.trashCan,
+                            icon: Icons.delete_outline,
                             title: 'Clear Completed',
                             subtitle: 'Remove all completed items',
                             onTap: _clearCompletedTasks,
                           ),
                           if (isOwner)
                             _buildOptionTile(
-                              icon: FontAwesomeIcons.trash,
+                              icon: Icons.delete,
                               title: 'Delete List',
                               subtitle: 'Permanently delete this list',
                               onTap: _deleteList,
@@ -385,10 +384,10 @@ class _ListOptionsScreenState extends State<ListOptionsScreen> {
                     // Recycle Bin - Always visible but limited for viewers
                     _buildSectionCard(
                       title: 'Recycle Bin',
-                      icon: FontAwesomeIcons.recycle,
+                      icon: Icons.restore_from_trash,
                       children: [
                         _buildOptionTile(
-                          icon: FontAwesomeIcons.recycle,
+                          icon: Icons.restore_from_trash,
                           title: 'Recycle Bin',
                           subtitle: 'View deleted items',
                           onTap: () => Navigator.push(
@@ -409,16 +408,16 @@ class _ListOptionsScreenState extends State<ListOptionsScreen> {
                       // Templates Section - Hidden for viewers
                       _buildSectionCard(
                         title: 'Templates & Shortcuts',
-                        icon: FontAwesomeIcons.bookmark,
+                        icon: Icons.bookmark,
                         children: [
                           _buildOptionTile(
-                            icon: FontAwesomeIcons.locationDot,
+                            icon: Icons.location_on,
                             title: 'Saved Locations',
                             subtitle: 'Manage your frequently used locations',
                             onTap: _showSavedLocations,
                           ),
                           _buildOptionTile(
-                            icon: FontAwesomeIcons.clone,
+                            icon: Icons.content_copy,
                             title: 'Saved Tasks',
                             subtitle: 'Create tasks from saved templates',
                             onTap: _showSavedTasks,
@@ -433,10 +432,10 @@ class _ListOptionsScreenState extends State<ListOptionsScreen> {
                       // Export Section - Hidden for viewers
                       _buildSectionCard(
                         title: 'Export & Backup',
-                        icon: FontAwesomeIcons.download,
+                        icon: Icons.download,
                         children: [
                           _buildOptionTile(
-                            icon: FontAwesomeIcons.fileExport,
+                            icon: Icons.file_upload,
                             title: 'Export List',
                             subtitle: 'Export list as a CSV',
                             onTap: () async {
@@ -495,7 +494,7 @@ class _ListOptionsScreenState extends State<ListOptionsScreen> {
                     color: Colors.green[100],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: FaIcon(icon, color: Colors.green[800], size: 20),
+                  child: Icon(icon, color: Colors.green[800], size: 20),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -532,7 +531,7 @@ class _ListOptionsScreenState extends State<ListOptionsScreen> {
           color: isDestructive ? Colors.red[50] : Colors.green[50],
           borderRadius: BorderRadius.circular(8),
         ),
-        child: FaIcon(icon, color: iconColor, size: 18),
+        child: Icon(icon, color: iconColor, size: 18),
       ),
       title: Text(
         title,
@@ -542,8 +541,8 @@ class _ListOptionsScreenState extends State<ListOptionsScreen> {
         ),
       ),
       subtitle: Text(subtitle),
-      trailing: FaIcon(
-        FontAwesomeIcons.chevronRight,
+      trailing: Icon(
+        Icons.chevron_right,
         size: 14,
         color: Colors.grey[400],
       ),
@@ -692,8 +691,8 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
             RadioListTile<String>(
               title: Row(
                 children: [
-                  FaIcon(
-                    FontAwesomeIcons.penToSquare,
+                  Icon(
+                    Icons.edit_square,
                     size: 16,
                     color: Colors.blue[700],
                   ),
@@ -720,8 +719,8 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
             RadioListTile<String>(
               title: Row(
                 children: [
-                  FaIcon(
-                    FontAwesomeIcons.eye,
+                  Icon(
+                    Icons.visibility,
                     size: 16,
                     color: Colors.grey[600],
                   ),
@@ -800,7 +799,7 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
         backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
         elevation: 0,
         leading: IconButton(
-          icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -827,8 +826,8 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
                             color: Colors.green[100],
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: FaIcon(
-                            FontAwesomeIcons.envelope,
+                          child: Icon(
+                            Icons.email,
                             color: Colors.green[800],
                           ),
                         ),
@@ -855,7 +854,7 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: Colors.green[800]!),
                         ),
-                        prefixIcon: const Icon(FontAwesomeIcons.at),
+                        prefixIcon: const Icon(Icons.alternate_email),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -970,8 +969,8 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
                                 color: Colors.blue[100],
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: FaIcon(
-                                FontAwesomeIcons.users,
+                              child: Icon(
+                                Icons.group,
                                 color: Colors.blue[800],
                               ),
                             ),
@@ -1018,10 +1017,8 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
                                     backgroundColor: isOwner
                                         ? Colors.amber[100]
                                         : Colors.green[100],
-                                    child: FaIcon(
-                                      isOwner
-                                          ? FontAwesomeIcons.crown
-                                          : FontAwesomeIcons.user,
+                                    child: Icon(
+                                      isOwner ? Icons.star : Icons.person,
                                       color: isOwner
                                           ? Colors.amber[800]
                                           : Colors.green[800],
@@ -1059,9 +1056,8 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
                                             children: [
                                               Icon(
                                                 userRole == 'editor'
-                                                    ? FontAwesomeIcons
-                                                        .penToSquare
-                                                    : FontAwesomeIcons.eye,
+                                                    ? Icons.edit_square
+                                                    : Icons.visibility,
                                                 size: 12,
                                                 color: userRole == 'editor'
                                                     ? Colors.blue[700]
@@ -1080,7 +1076,7 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
                                               if (currentUserId == ownerId) ...[
                                                 const SizedBox(width: 4),
                                                 Icon(
-                                                  FontAwesomeIcons.pen,
+                                                  Icons.edit,
                                                   size: 10,
                                                   color: Colors.grey[500],
                                                 ),
@@ -1094,8 +1090,8 @@ class _ShareMenuScreenState extends State<ShareMenuScreen> {
                                           (currentUserId == ownerId ||
                                               currentUserId == userId)
                                       ? IconButton(
-                                          icon: FaIcon(
-                                            FontAwesomeIcons.trash,
+                                          icon: Icon(
+                                            Icons.delete,
                                             color: Colors.red[700],
                                             size: 16,
                                           ),
@@ -1240,12 +1236,12 @@ class _SavedLocationsScreenState extends State<SavedLocationsScreen> {
         backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
         elevation: 0,
         leading: IconButton(
-          icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const FaIcon(FontAwesomeIcons.plus, color: Colors.white),
+            icon: const Icon(Icons.add, color: Colors.white),
             onPressed: _addLocation,
           ),
         ],
@@ -1267,8 +1263,8 @@ class _SavedLocationsScreenState extends State<SavedLocationsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FaIcon(
-                    FontAwesomeIcons.locationDot,
+                  Icon(
+                    Icons.location_on,
                     size: 64,
                     color: Colors.grey[400],
                   ),
@@ -1312,8 +1308,8 @@ class _SavedLocationsScreenState extends State<SavedLocationsScreen> {
                       color: Colors.green[100],
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: FaIcon(
-                      FontAwesomeIcons.locationDot,
+                    child: Icon(
+                      Icons.location_on,
                       color: Colors.green[800],
                     ),
                   ),
@@ -1338,7 +1334,7 @@ class _SavedLocationsScreenState extends State<SavedLocationsScreen> {
                         value: 'delete',
                         child: Row(
                           children: [
-                            FaIcon(FontAwesomeIcons.trash, size: 16),
+                            Icon(Icons.delete, size: 16),
                             SizedBox(width: 8),
                             Text('Delete'),
                           ],
@@ -1449,12 +1445,12 @@ class _SavedTasksScreenState extends State<SavedTasksScreen> {
         backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
         elevation: 0,
         leading: IconButton(
-          icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const FaIcon(FontAwesomeIcons.plus, color: Colors.white),
+            icon: const Icon(Icons.add, color: Colors.white),
             onPressed: _addTaskTemplate,
           ),
         ],
@@ -1476,8 +1472,8 @@ class _SavedTasksScreenState extends State<SavedTasksScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FaIcon(
-                    FontAwesomeIcons.clone,
+                  Icon(
+                    Icons.content_copy,
                     size: 64,
                     color: Colors.grey[400],
                   ),
@@ -1521,8 +1517,8 @@ class _SavedTasksScreenState extends State<SavedTasksScreen> {
                       color: Colors.blue[100],
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: FaIcon(
-                      FontAwesomeIcons.clone,
+                    child: Icon(
+                      Icons.content_copy,
                       color: Colors.blue[800],
                     ),
                   ),
@@ -1547,8 +1543,8 @@ class _SavedTasksScreenState extends State<SavedTasksScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: FaIcon(
-                          FontAwesomeIcons.plus,
+                        icon: Icon(
+                          Icons.add,
                           color: Colors.green[800],
                           size: 16,
                         ),
@@ -1570,7 +1566,7 @@ class _SavedTasksScreenState extends State<SavedTasksScreen> {
                             value: 'delete',
                             child: Row(
                               children: [
-                                FaIcon(FontAwesomeIcons.trash, size: 16),
+                                Icon(Icons.delete, size: 16),
                                 SizedBox(width: 8),
                                 Text('Delete'),
                               ],
@@ -1626,7 +1622,7 @@ class _CreateTaskTemplateScreenState extends State<CreateTaskTemplateScreen> {
         backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
         elevation: 0,
         leading: IconButton(
-          icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -1652,8 +1648,8 @@ class _CreateTaskTemplateScreenState extends State<CreateTaskTemplateScreen> {
                     ),
                     hintText: 'Enter template name',
                     hintStyle: TextStyle(color: Colors.grey[600]),
-                    prefixIcon: const Icon(FontAwesomeIcons.listCheck,
-                        color: Colors.green),
+                    prefixIcon:
+                        const Icon(Icons.checklist, color: Colors.green),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -1694,7 +1690,7 @@ class _CreateTaskTemplateScreenState extends State<CreateTaskTemplateScreen> {
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      FaIcon(FontAwesomeIcons.locationDot, color: Colors.green),
+                      Icon(Icons.location_on, color: Colors.green),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
@@ -1734,7 +1730,7 @@ class _CreateTaskTemplateScreenState extends State<CreateTaskTemplateScreen> {
                   children: [
                     Row(
                       children: [
-                        FaIcon(FontAwesomeIcons.hashtag, color: Colors.green),
+                        Icon(Icons.tag, color: Colors.green),
                         const SizedBox(width: 16),
                         const Text(
                           'Default Counter',
@@ -1750,7 +1746,7 @@ class _CreateTaskTemplateScreenState extends State<CreateTaskTemplateScreen> {
                           onPressed: _counter > 1
                               ? () => setState(() => _counter--)
                               : null,
-                          icon: const FaIcon(FontAwesomeIcons.minus),
+                          icon: const Icon(Icons.remove),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -1767,7 +1763,7 @@ class _CreateTaskTemplateScreenState extends State<CreateTaskTemplateScreen> {
                           onPressed: _counter < 99
                               ? () => setState(() => _counter++)
                               : null,
-                          icon: const FaIcon(FontAwesomeIcons.plus),
+                          icon: const Icon(Icons.add),
                         ),
                       ],
                     ),
@@ -1798,7 +1794,7 @@ class _CreateTaskTemplateScreenState extends State<CreateTaskTemplateScreen> {
                     hintText: 'Enter template description',
                     hintStyle: TextStyle(color: Colors.grey[600]),
                     prefixIcon: const Icon(
-                      FontAwesomeIcons.penToSquare,
+                      Icons.edit_square,
                       color: Colors.green,
                     ),
                     border: OutlineInputBorder(

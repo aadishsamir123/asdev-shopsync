@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'task_details.dart';
 import 'create_task.dart';
@@ -135,7 +134,7 @@ class _ListViewScreenState extends State<ListViewScreen>
                   );
                 },
                 backgroundColor: isDark ? Colors.green[700] : Colors.green[800],
-                child: const FaIcon(FontAwesomeIcons.plus, color: Colors.white),
+                child: const Icon(Icons.add, color: Colors.white),
               );
             },
           )
@@ -164,7 +163,7 @@ class _ListViewScreenState extends State<ListViewScreen>
         backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
         elevation: 0,
         leading: IconButton(
-          icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -561,8 +560,8 @@ class _TasksTabState extends State<TasksTab> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      FaIcon(
-                        FontAwesomeIcons.triangleExclamation,
+                      Icon(
+                        Icons.warning,
                         size: 64,
                         color: Colors.red[400],
                       ),
@@ -584,8 +583,8 @@ class _TasksTabState extends State<TasksTab> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      FaIcon(
-                        FontAwesomeIcons.listCheck,
+                      Icon(
+                        Icons.checklist,
                         size: 64,
                         color: Colors.grey[400],
                       ),
@@ -995,7 +994,7 @@ class _CategorySectionState extends State<CategorySection> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                FaIcon(FontAwesomeIcons.clock,
+                                Icon(Icons.access_time,
                                     size: 10, color: Colors.orange[800]),
                                 const SizedBox(width: 4),
                                 Text(
@@ -1021,7 +1020,7 @@ class _CategorySectionState extends State<CategorySection> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                FaIcon(FontAwesomeIcons.locationDot,
+                                Icon(Icons.location_on,
                                     size: 10, color: Colors.purple[800]),
                                 const SizedBox(width: 4),
                                 Text(
@@ -1050,8 +1049,8 @@ class _CategorySectionState extends State<CategorySection> {
                   }
                   return IconButton(
                     onPressed: () => _deleteTask(doc.id),
-                    icon: FaIcon(
-                      FontAwesomeIcons.trash,
+                    icon: Icon(
+                      Icons.delete,
                       size: 16,
                       color: Colors.red[400],
                     ),
@@ -1122,7 +1121,7 @@ class _CategorySectionState extends State<CategorySection> {
                             color: Colors.green[800],
                           )
                         : Icon(
-                            FontAwesomeIcons.tag,
+                            Icons.label,
                             color: Colors.green[800],
                             size: 20,
                           ),
@@ -1159,7 +1158,7 @@ class _CategorySectionState extends State<CategorySection> {
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                     child: Icon(
-                      FontAwesomeIcons.chevronUp,
+                      Icons.expand_less,
                       size: 16,
                       color: Colors.grey[600],
                     ),
@@ -1289,7 +1288,7 @@ class TasksScreenWithFAB extends StatelessWidget {
           );
         },
         backgroundColor: Colors.green[800],
-        child: const FaIcon(FontAwesomeIcons.plus, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -164,8 +163,8 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
-              child: FaIcon(
-                FontAwesomeIcons.trashCan,
+              child: Icon(
+                Icons.delete_outline,
                 size: 28,
                 color: Colors.red[700],
               ),
@@ -319,7 +318,7 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            FaIcon(FontAwesomeIcons.user,
+                            Icon(Icons.person,
                                 size: 10, color: Colors.grey[600]),
                             const SizedBox(width: 4),
                             Text(
@@ -345,7 +344,7 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              FaIcon(FontAwesomeIcons.clock,
+                              Icon(Icons.access_time,
                                   size: 10, color: Colors.red[800]),
                               const SizedBox(width: 4),
                               Text(
@@ -370,7 +369,7 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              FaIcon(FontAwesomeIcons.clock,
+                              Icon(Icons.access_time,
                                   size: 10, color: Colors.orange[800]),
                               const SizedBox(width: 4),
                               Text(
@@ -396,7 +395,7 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              FaIcon(FontAwesomeIcons.locationDot,
+                              Icon(Icons.location_on,
                                   size: 10, color: Colors.purple[800]),
                               const SizedBox(width: 4),
                               Text(
@@ -429,8 +428,8 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
                   children: [
                     IconButton(
                       onPressed: () => _restoreItem(doc.id, itemData),
-                      icon: FaIcon(
-                        FontAwesomeIcons.arrowRotateLeft,
+                      icon: Icon(
+                        Icons.restore,
                         size: 16,
                         color: Colors.green[600],
                       ),
@@ -438,8 +437,8 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
                     ),
                     IconButton(
                       onPressed: () => _deletePermanently(doc.id),
-                      icon: FaIcon(
-                        FontAwesomeIcons.trash,
+                      icon: Icon(
+                        Icons.delete,
                         size: 16,
                         color: Colors.red[400],
                       ),
@@ -467,7 +466,7 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
           backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
           elevation: 0,
           leading: IconButton(
-            icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.pop(context),
           ),
           title: const Text(
@@ -512,8 +511,8 @@ class _RecycleBinScreenState extends State<RecycleBinScreen>
                         color: isDark ? Colors.grey[800] : Colors.grey[100],
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: FaIcon(
-                        FontAwesomeIcons.trashCan,
+                      child: Icon(
+                        Icons.delete_outline,
                         size: 48,
                         color: isDark ? Colors.grey[400] : Colors.grey[600],
                       ),

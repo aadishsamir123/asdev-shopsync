@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/services/task_categories_service.dart';
 import '/widgets/loading_spinner.dart';
 import '/libraries/icons/food_icons_map.dart';
@@ -156,7 +155,7 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
                                       color: Colors.green[800],
                                     )
                                   : Icon(
-                                      FontAwesomeIcons.icons,
+                                      Icons.category,
                                       color: Colors.green[800],
                                     ),
                             ),
@@ -171,7 +170,7 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
                               ),
                             ),
                             Icon(
-                              FontAwesomeIcons.chevronRight,
+                              Icons.chevron_right,
                               size: 16,
                               color: Colors.grey[600],
                             ),
@@ -299,7 +298,7 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
         backgroundColor: isDark ? Colors.grey[800] : Colors.green[800],
         elevation: 0,
         leading: IconButton(
-          icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -337,7 +336,7 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     prefixIcon: Icon(
-                      FontAwesomeIcons.tag,
+                      Icons.label,
                       color: Colors.green[800],
                     ),
                   ),
@@ -385,7 +384,7 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
                                   color: Colors.green[800],
                                 )
                               : Icon(
-                                  FontAwesomeIcons.icons,
+                                  Icons.category,
                                   color: Colors.green[800],
                                 ),
                         ),
@@ -413,7 +412,7 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
                           ),
                         ),
                         Icon(
-                          FontAwesomeIcons.chevronRight,
+                          Icons.chevron_right,
                           size: 16,
                           color: Colors.grey[600],
                         ),
@@ -426,7 +425,7 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _createCategory,
-                    icon: const FaIcon(FontAwesomeIcons.plus),
+                    icon: const Icon(Icons.add),
                     label: const Text('Create Category'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green[800],
@@ -461,8 +460,8 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        FaIcon(
-                          FontAwesomeIcons.folderOpen,
+                        Icon(
+                          Icons.folder_open,
                           size: 64,
                           color: Colors.grey[400],
                         ),
@@ -521,7 +520,7 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
                                   color: Colors.green[800],
                                 )
                               : Icon(
-                                  FontAwesomeIcons.tag,
+                                  Icons.label,
                                   color: Colors.green[800],
                                 ),
                         ),
@@ -535,16 +534,16 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: const FaIcon(
-                                FontAwesomeIcons.pen,
+                              icon: const Icon(
+                                Icons.edit,
                                 size: 16,
                               ),
                               onPressed: () => _editCategory(doc.id, category),
                               tooltip: 'Edit',
                             ),
                             IconButton(
-                              icon: FaIcon(
-                                FontAwesomeIcons.trash,
+                              icon: Icon(
+                                Icons.delete,
                                 size: 16,
                                 color: Colors.red[800],
                               ),
