@@ -62,4 +62,4 @@ jobs:
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           track: production
           status: inProgress
-          userFraction: 0.3335
+          userFraction: 1
