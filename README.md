@@ -5,8 +5,9 @@
 
 _Share shopping lists with family and friends_
 
-[![Code Style Check](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/check-code.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/check-code.yml)
-[![Play Store Deploy Production](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/play-deploy-prod.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/play-deploy-prod.yml)
+[![Code Check](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/code-check.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/code-check.yml)
+[![App Build Check](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/app-build-android.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/app-build-android.yml)
+[![Play Store Production Deployment](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/deploy-play-prod.yml/badge.svg)](https://github.com/aadishsamir123/asdev-shopsync/actions/workflows/deploy-play-prod.yml)
 
 [![Flutter Version](https://img.shields.io/badge/Flutter-^3.29.2-blue?logo=flutter)](https://flutter.dev)
 
