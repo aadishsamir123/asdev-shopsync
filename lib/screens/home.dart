@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:shopsync/services/connectivity_service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -653,8 +652,8 @@ class _HomeScreenState extends State<HomeScreen>
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Spacer(flex: 1),
-                                            FaIcon(
-                                              FontAwesomeIcons.listUl,
+                                            Icon(
+                                              Icons.list,
                                               size: 48,
                                               color: Colors.grey[400],
                                             ),
@@ -666,8 +665,8 @@ class _HomeScreenState extends State<HomeScreen>
                                               ),
                                             ),
                                             Spacer(flex: 1),
-                                            FaIcon(
-                                              FontAwesomeIcons.arrowDown,
+                                            Icon(
+                                              Icons.arrow_downward,
                                               size: 48,
                                               color: Colors.grey[400],
                                             ),
@@ -712,8 +711,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                   borderRadius:
                                                       BorderRadius.circular(8),
                                                 ),
-                                                child: FaIcon(
-                                                  FontAwesomeIcons.cartShopping,
+                                                child: Icon(
+                                                  Icons.shopping_cart,
                                                   color: Colors.grey[600],
                                                   size: 18,
                                                 ),
@@ -757,7 +756,7 @@ class _HomeScreenState extends State<HomeScreen>
                                           thickness: 2,
                                         ),
                                         _buildDrawerItem(
-                                          icon: FontAwesomeIcons.gear,
+                                          icon: Icons.settings,
                                           title: 'Settings',
                                           onTap: () {
                                             Navigator.popAndPushNamed(
@@ -765,7 +764,7 @@ class _HomeScreenState extends State<HomeScreen>
                                           },
                                         ),
                                         _buildDrawerItem(
-                                          icon: FontAwesomeIcons.user,
+                                          icon: Icons.person,
                                           title: 'My Profile',
                                           onTap: () {
                                             Navigator.pop(context);
@@ -774,7 +773,7 @@ class _HomeScreenState extends State<HomeScreen>
                                           },
                                         ),
                                         _buildDrawerItem(
-                                          icon: FontAwesomeIcons.comment,
+                                          icon: Icons.comment,
                                           title: 'Feedback',
                                           onTap: () async {
                                             if (await connectivityService
@@ -788,7 +787,7 @@ class _HomeScreenState extends State<HomeScreen>
                                           },
                                         ),
                                         _buildDrawerItem(
-                                          icon: FontAwesomeIcons.scroll,
+                                          icon: Icons.article,
                                           title: 'Release Notes',
                                           onTap: () async {
                                             if (await connectivityService
@@ -880,9 +879,8 @@ class _HomeScreenState extends State<HomeScreen>
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                FaIcon(
-                                                  FontAwesomeIcons
-                                                      .upDownLeftRight,
+                                                Icon(
+                                                  Icons.open_with,
                                                   size: 12,
                                                   color: isDark
                                                       ? Colors.grey[400]
@@ -1082,9 +1080,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                               BorderRadius
                                                                   .circular(12),
                                                         ),
-                                                        child: FaIcon(
-                                                          FontAwesomeIcons
-                                                              .cartShopping,
+                                                        child: Icon(
+                                                          Icons.shopping_cart,
                                                           color: isDark
                                                               ? Colors
                                                                   .green[200]
@@ -1118,9 +1115,9 @@ class _HomeScreenState extends State<HomeScreen>
                                                                 height: 4),
                                                             Row(
                                                               children: [
-                                                                FaIcon(
-                                                                  FontAwesomeIcons
-                                                                      .calendar,
+                                                                Icon(
+                                                                  Icons
+                                                                      .calendar_today,
                                                                   size: 14,
                                                                   color: isDark
                                                                       ? Colors.grey[
@@ -1148,9 +1145,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                           ],
                                                         ),
                                                       ),
-                                                      FaIcon(
-                                                        FontAwesomeIcons
-                                                            .chevronRight,
+                                                      Icon(
+                                                        Icons.chevron_right,
                                                         color: isDark
                                                             ? Colors.grey[600]
                                                             : Colors.grey[400],
@@ -1283,9 +1279,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                               BorderRadius
                                                                   .circular(8),
                                                         ),
-                                                        child: FaIcon(
-                                                          FontAwesomeIcons
-                                                              .graduationCap,
+                                                        child: Icon(
+                                                          Icons.school,
                                                           color: isDark
                                                               ? Colors
                                                                   .green[100]
@@ -1334,8 +1329,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                     child: Column(
                                                       children: [
                                                         TutorialStep(
-                                                          icon: FontAwesomeIcons
-                                                              .bars,
+                                                          icon: Icons.menu,
                                                           title:
                                                               'Open the drawer from the left',
                                                           subtitle:
@@ -1346,8 +1340,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                         const SizedBox(
                                                             height: 16),
                                                         TutorialStep(
-                                                          icon: FontAwesomeIcons
-                                                              .layerGroup,
+                                                          icon: Icons.layers,
                                                           title:
                                                               'Create list groups',
                                                           subtitle:
@@ -1358,8 +1351,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                         const SizedBox(
                                                             height: 16),
                                                         TutorialStep(
-                                                          icon: FontAwesomeIcons
-                                                              .circlePlus,
+                                                          icon:
+                                                              Icons.add_circle,
                                                           title:
                                                               'Add items to your lists',
                                                           subtitle:
@@ -1419,7 +1412,7 @@ class _HomeScreenState extends State<HomeScreen>
                           child: Row(
                             children: [
                               Icon(
-                                FontAwesomeIcons.eye,
+                                Icons.visibility,
                                 color: isDark
                                     ? Colors.blue[300]
                                     : Colors.blue[700],
@@ -1564,8 +1557,7 @@ class _HomeScreenState extends State<HomeScreen>
                         backgroundColor:
                             isDark ? Colors.green[700] : Colors.green[600],
                         foregroundColor: Colors.white,
-                        icon: const FaIcon(FontAwesomeIcons.cartShopping,
-                            size: 20),
+                        icon: const Icon(Icons.shopping_cart, size: 20),
                         label: const Text('Create List'),
                       ),
                     ),
@@ -1590,8 +1582,7 @@ class _HomeScreenState extends State<HomeScreen>
                         backgroundColor:
                             isDark ? Colors.green[700] : Colors.green[600],
                         foregroundColor: Colors.white,
-                        icon:
-                            const FaIcon(FontAwesomeIcons.layerGroup, size: 20),
+                        icon: const Icon(Icons.layers, size: 20),
                         label: const Text('Create List Group'),
                       ),
                     ),

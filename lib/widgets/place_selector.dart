@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LocationSelector extends StatefulWidget {
@@ -101,10 +100,8 @@ class _LocationSelectorState extends State<LocationSelector>
                         _showSavedLocations = !_showSavedLocations;
                       });
                     },
-                    icon: FaIcon(
-                      _showSavedLocations
-                          ? FontAwesomeIcons.keyboard
-                          : FontAwesomeIcons.bookmark,
+                    icon: Icon(
+                      _showSavedLocations ? Icons.keyboard : Icons.bookmark,
                       size: 16,
                     ),
                     label: Text(_showSavedLocations ? 'Manual' : 'Saved'),
@@ -147,8 +144,8 @@ class _LocationSelectorState extends State<LocationSelector>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FaIcon(
-                    FontAwesomeIcons.locationDot,
+                  Icon(
+                    Icons.location_on,
                     size: 48,
                     color: Colors.grey[400],
                   ),
@@ -187,8 +184,8 @@ class _LocationSelectorState extends State<LocationSelector>
                       color: Colors.green[100],
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: FaIcon(
-                      FontAwesomeIcons.locationDot,
+                    child: Icon(
+                      Icons.location_on,
                       color: Colors.green[800],
                       size: 16,
                     ),
@@ -229,7 +226,7 @@ class _LocationSelectorState extends State<LocationSelector>
             color: Colors.green[100],
             borderRadius: BorderRadius.circular(12),
           ),
-          child: FaIcon(FontAwesomeIcons.shop, color: Colors.green[800]),
+          child: Icon(Icons.store, color: Colors.green[800]),
         ),
         title: TextField(
           controller: _storeNameController,
@@ -259,7 +256,7 @@ class _LocationSelectorState extends State<LocationSelector>
             color: Colors.green[100],
             borderRadius: BorderRadius.circular(12),
           ),
-          child: FaIcon(FontAwesomeIcons.locationDot, color: Colors.green[800]),
+          child: Icon(Icons.location_on, color: Colors.green[800]),
         ),
         title: TextField(
           controller: _addressController,
@@ -302,7 +299,7 @@ class _LocationSelectorState extends State<LocationSelector>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: const [
-          FaIcon(FontAwesomeIcons.floppyDisk, size: 18),
+          Icon(Icons.save, size: 18),
           SizedBox(width: 8),
           Text('Save Changes'),
         ],

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:shopsync/widgets/loading_spinner.dart';
@@ -246,8 +245,8 @@ class _MigrationScreenState extends State<MigrationScreen> {
             color: Colors.blue[100],
             borderRadius: BorderRadius.circular(6),
           ),
-          child: FaIcon(
-            FontAwesomeIcons.cartShopping,
+          child: Icon(
+            Icons.shopping_cart,
             color: Colors.blue[700],
             size: 14,
           ),
@@ -446,8 +445,8 @@ class _MigrationScreenState extends State<MigrationScreen> {
                     color: isDark ? Colors.orange[800] : Colors.orange[100],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: FaIcon(
-                    FontAwesomeIcons.listUl,
+                  child: Icon(
+                    Icons.list,
                     color: isDark ? Colors.orange[200] : Colors.orange[700],
                     size: 20,
                   ),
@@ -540,8 +539,8 @@ class _MigrationScreenState extends State<MigrationScreen> {
                           color: isDark ? Colors.green[900] : Colors.green[50],
                           shape: BoxShape.circle,
                         ),
-                        child: FaIcon(
-                          FontAwesomeIcons.layerGroup,
+                        child: Icon(
+                          Icons.layers,
                           size: 32,
                           color: isDark ? Colors.green[200] : Colors.green[700],
                         ),
@@ -641,7 +640,7 @@ class _MigrationScreenState extends State<MigrationScreen> {
                                 _showCustomGroupForm = true;
                               });
                             },
-                            icon: const FaIcon(FontAwesomeIcons.plus, size: 16),
+                            icon: const Icon(Icons.add, size: 16),
                             label: const Text('Add Custom Group'),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(

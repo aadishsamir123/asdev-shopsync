@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shopsync/widgets/loading_spinner.dart';
 import '/services/list_groups_service.dart';
 
@@ -103,8 +102,8 @@ class _AddListGroupBottomSheetState extends State<AddListGroupBottomSheet> {
                     color: isDark ? Colors.green[900] : Colors.green[50],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: FaIcon(
-                    FontAwesomeIcons.layerGroup,
+                  child: Icon(
+                    Icons.layers,
                     color: isDark ? Colors.green[200] : Colors.green[700],
                     size: 20,
                   ),

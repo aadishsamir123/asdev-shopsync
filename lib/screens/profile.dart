@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shopsync/services/connectivity_service.dart';
@@ -249,8 +248,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               elevation: 0,
               leading: !_isEditing
                   ? IconButton(
-                      icon: const FaIcon(FontAwesomeIcons.arrowLeft,
-                          color: Colors.white),
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () => Navigator.pop(context),
                       tooltip: 'Go Back',
                     )
@@ -374,8 +372,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       child: IconButton(
-                        icon: const FaIcon(FontAwesomeIcons.pen,
-                            color: Colors.white),
+                        icon: const Icon(Icons.edit, color: Colors.white),
                         onPressed: () => setState(() => _isEditing = true),
                         tooltip: 'Edit Profile',
                       ),
@@ -404,7 +401,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         child: Row(
                           children: [
-                            FaIcon(FontAwesomeIcons.squareXmark,
+                            Icon(Icons.cancel,
                                 color:
                                     isDark ? Colors.red[300] : Colors.red[700]),
                             const SizedBox(width: 12),
@@ -466,7 +463,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       controller: _nameController,
                                       decoration: InputDecoration(
                                         hintText: 'Enter your name',
-                                        suffixIcon: Icon(FontAwesomeIcons.user,
+                                        suffixIcon: Icon(Icons.person,
                                             color: isDark
                                                 ? Colors.white70
                                                 : Colors.green[800]),
@@ -485,7 +482,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         backgroundColor: isDark
                                             ? Colors.green[900]
                                             : Colors.green[50],
-                                        child: FaIcon(FontAwesomeIcons.user,
+                                        child: Icon(Icons.person,
                                             color: isDark
                                                 ? Colors.green[200]
                                                 : Colors.green[800]),
@@ -523,7 +520,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   backgroundColor: isDark
                                       ? Colors.blue[900]
                                       : Colors.blue[50],
-                                  child: FaIcon(FontAwesomeIcons.envelope,
+                                  child: Icon(Icons.email,
                                       color: isDark
                                           ? Colors.blue[200]
                                           : Colors.blue[800]),
@@ -591,7 +588,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     backgroundColor: isDark
                                         ? Colors.amber[900]
                                         : Colors.amber[50],
-                                    child: FaIcon(FontAwesomeIcons.listUl,
+                                    child: Icon(Icons.list,
                                         color: isDark
                                             ? Colors.amber[200]
                                             : Colors.amber[800]),
@@ -688,7 +685,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        icon: const FaIcon(FontAwesomeIcons.rightFromBracket),
+                        icon: const Icon(Icons.logout),
                         label: const Text('Sign Out'),
                       ),
                     ),

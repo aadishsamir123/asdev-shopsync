@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:shopsync/widgets/loading_spinner.dart';
@@ -97,8 +96,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                     color: isDark ? Colors.green[900] : Colors.green[50],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: FaIcon(
-                    FontAwesomeIcons.cartShopping,
+                  child: Icon(
+                    Icons.shopping_cart,
                     color: isDark ? Colors.green[200] : Colors.green[700],
                     size: 16,
                   ),
@@ -119,8 +118,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                       const SizedBox(height: 2),
                       Row(
                         children: [
-                          FaIcon(
-                            FontAwesomeIcons.calendar,
+                          Icon(
+                            Icons.calendar_today,
                             size: 12,
                             color: isDark ? Colors.grey[400] : Colors.grey[600],
                           ),
@@ -155,8 +154,8 @@ class _ListItemWidgetState extends State<ListItemWidget> {
                             ),
                           ),
                         )
-                      : FaIcon(
-                          FontAwesomeIcons.arrowRight,
+                      : Icon(
+                          Icons.arrow_forward,
                           size: 12,
                           color: isDark ? Colors.grey[400] : Colors.grey[600],
                         ),
@@ -316,8 +315,8 @@ class _ExpandableListGroupWidgetState extends State<ExpandableListGroupWidget>
                                   isDark ? Colors.green[900] : Colors.green[50],
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: FaIcon(
-                              FontAwesomeIcons.chevronDown,
+                            child: Icon(
+                              Icons.expand_more,
                               color: isDark
                                   ? Colors.green[200]
                                   : Colors.green[700],
@@ -364,8 +363,8 @@ class _ExpandableListGroupWidgetState extends State<ExpandableListGroupWidget>
                           color: isDark ? Colors.grey[800] : Colors.grey[100],
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: FaIcon(
-                          FontAwesomeIcons.ellipsisVertical,
+                        child: Icon(
+                          Icons.more_vert,
                           size: 14,
                           color: isDark ? Colors.grey[400] : Colors.grey[600],
                         ),
@@ -409,8 +408,8 @@ class _ExpandableListGroupWidgetState extends State<ExpandableListGroupWidget>
                         padding: const EdgeInsets.all(24),
                         child: Column(
                           children: [
-                            FaIcon(
-                              FontAwesomeIcons.folderOpen,
+                            Icon(
+                              Icons.folder_open,
                               size: 32,
                               color: Colors.grey[400],
                             ),

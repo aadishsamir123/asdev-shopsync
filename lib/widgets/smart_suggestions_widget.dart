@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/models/task_suggestion.dart';
 import '/libraries/icons/food_icons_map.dart';
 
@@ -40,8 +39,8 @@ class SmartSuggestionsWidget extends StatelessWidget {
                       color: Colors.purple[100],
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: FaIcon(
-                      FontAwesomeIcons.wandMagicSparkles,
+                    child: Icon(
+                      Icons.auto_awesome,
                       color: Colors.purple[800],
                       size: 18,
                     ),
@@ -89,8 +88,8 @@ class SmartSuggestionsWidget extends StatelessWidget {
                     color: Colors.purple[100],
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: FaIcon(
-                    FontAwesomeIcons.wandMagicSparkles,
+                  child: Icon(
+                    Icons.auto_awesome,
                     color: Colors.purple[800],
                     size: 18,
                   ),
@@ -303,8 +302,8 @@ class _SuggestionChipState extends State<_SuggestionChip>
                             child: iconWidget != null
                                 ? Center(child: iconWidget)
                                 : Center(
-                                    child: FaIcon(
-                                      FontAwesomeIcons.bagShopping,
+                                    child: Icon(
+                                      Icons.shopping_bag,
                                       color: Colors.purple[700],
                                       size: 18,
                                     ),

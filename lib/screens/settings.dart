@@ -7,7 +7,6 @@ import 'package:shopsync/screens/sign_out.dart';
 import 'package:shopsync/screens/widget_settings.dart';
 import 'package:shopsync/services/connectivity_service.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '/widgets/advert.dart';
 
@@ -235,7 +234,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               color: (iconColorOverride ?? iconColor).withAlpha(30),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: FaIcon(
+            child: Icon(
               icon,
               color: iconColorOverride ?? iconColor,
               size: 20,
@@ -284,7 +283,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
         leading: IconButton(
-          icon: const FaIcon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -294,20 +293,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // About App Section
           SectionHeader(title: 'About App', color: iconColor),
           buildSettingsTile(
-            icon: FontAwesomeIcons.circleInfo,
+            icon: Icons.info,
             title: 'App Version',
             subtitle: _appVersion,
             iconColorOverride: iconColor,
           ),
           buildSettingsTile(
-            icon: FontAwesomeIcons.github,
+            icon: Icons.code,
             title: 'GitHub Repository',
             subtitle: 'View source code',
             // iconColorOverride: Colors.black,
             onTap: () => _launchUrl(_githubUrl),
           ),
           buildSettingsTile(
-            icon: FontAwesomeIcons.language,
+            icon: Icons.language,
             title: 'Help Translate',
             subtitle: 'Contribute on Crowdin',
             iconColorOverride: Colors.blue[700],
@@ -322,7 +321,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // Only show Widget Settings in debug mode
           if (kDebugMode)
             buildSettingsTile(
-              icon: FontAwesomeIcons.mobile,
+              icon: Icons.smartphone,
               title: 'Widget Settings',
               subtitle: 'Configure home screen widget (Debug Only)',
               onTap: () {
@@ -335,7 +334,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
           buildSettingsTile(
-            icon: FontAwesomeIcons.rightFromBracket,
+            icon: Icons.logout,
             title: 'Sign Out',
             iconColorOverride: Colors.red,
             textColorOverride: Colors.red,
@@ -348,7 +347,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           SectionHeader(title: 'Language', color: iconColor),
           buildSettingsTile(
-            icon: FontAwesomeIcons.language,
+            icon: Icons.language,
             title: 'App Language',
             subtitle: _selectedLanguage,
             onTap: () async {

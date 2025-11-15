@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shopsync/services/connectivity_service.dart';
 // import '/services/google_auth.dart';
@@ -170,7 +169,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      FaIcon(FontAwesomeIcons.rightToBracket, size: 24),
+                      Icon(Icons.login, size: 24),
                       SizedBox(width: 12),
                       Text(
                         'Sign In',
@@ -211,7 +210,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      FaIcon(FontAwesomeIcons.userPlus, size: 24),
+                      Icon(Icons.person_add, size: 24),
                       SizedBox(width: 12),
                       Text(
                         'Sign Up',

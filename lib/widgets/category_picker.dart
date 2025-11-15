@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/services/task_categories_service.dart';
 import '/widgets/loading_spinner.dart';
 import '/libraries/icons/food_icons_map.dart';
@@ -58,7 +57,7 @@ class _CategoryPickerState extends State<CategoryPicker> {
               const Spacer(),
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const FaIcon(FontAwesomeIcons.xmark),
+                icon: const Icon(Icons.close),
               ),
             ],
           ),
@@ -74,7 +73,7 @@ class _CategoryPickerState extends State<CategoryPicker> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
-                FontAwesomeIcons.ban,
+                Icons.block,
                 color: Colors.grey[600],
                 size: 20,
               ),
@@ -82,7 +81,7 @@ class _CategoryPickerState extends State<CategoryPicker> {
             title: const Text('No Category'),
             trailing: _selectedCategoryId == null
                 ? Icon(
-                    FontAwesomeIcons.check,
+                    Icons.check,
                     color: Colors.green[800],
                   )
                 : null,
@@ -144,7 +143,7 @@ class _CategoryPickerState extends State<CategoryPicker> {
                               color: Colors.green[800],
                             )
                           : Icon(
-                              FontAwesomeIcons.tag,
+                              Icons.label,
                               color: Colors.green[800],
                               size: 20,
                             ),
@@ -152,7 +151,7 @@ class _CategoryPickerState extends State<CategoryPicker> {
                     title: Text(categoryName),
                     trailing: isSelected
                         ? Icon(
-                            FontAwesomeIcons.check,
+                            Icons.check,
                             color: Colors.green[800],
                           )
                         : null,
@@ -183,7 +182,7 @@ class _CategoryPickerState extends State<CategoryPicker> {
                   arguments: widget.listId,
                 );
               },
-              icon: const FaIcon(FontAwesomeIcons.gear),
+              icon: const Icon(Icons.settings),
               label: const Text('Manage Categories'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green[800],

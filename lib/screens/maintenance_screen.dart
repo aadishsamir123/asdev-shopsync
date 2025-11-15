@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 class MaintenanceScreen extends StatelessWidget {
@@ -81,10 +80,8 @@ class MaintenanceScreen extends StatelessWidget {
                           end: Alignment.bottomRight,
                         ),
                       ),
-                      child: FaIcon(
-                        isPredictive
-                            ? FontAwesomeIcons.triangleExclamation
-                            : FontAwesomeIcons.screwdriverWrench,
+                      child: Icon(
+                        isPredictive ? Icons.warning : Icons.build,
                         size: 48,
                         color: Colors.white,
                       ),
@@ -133,8 +130,8 @@ class MaintenanceScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        icon: const FaIcon(
-                          FontAwesomeIcons.circleCheck,
+                        icon: const Icon(
+                          Icons.check_circle,
                           size: 18,
                           color: Colors.black,
                         ),
@@ -187,8 +184,8 @@ class MaintenanceScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              FaIcon(
-                FontAwesomeIcons.arrowRight,
+              Icon(
+                Icons.arrow_forward,
                 color: isDark ? Colors.white70 : Colors.black54,
               ),
               const SizedBox(width: 12),

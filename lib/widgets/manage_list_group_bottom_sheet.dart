@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shopsync/widgets/loading_spinner.dart';
 import '/services/list_groups_service.dart';
@@ -267,7 +266,7 @@ class _ManageListGroupBottomSheetState
                       width: 16,
                       child: CustomLoadingSpinner(),
                     )
-                  : const FaIcon(FontAwesomeIcons.trash, size: 16),
+                  : const Icon(Icons.delete, size: 16),
               label: Text(
                 _isDeleting ? 'Deleting...' : 'Delete Group',
                 style: const TextStyle(
@@ -359,16 +358,16 @@ class _ManageListGroupBottomSheetState
                               color: Colors.green[100],
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: FaIcon(
-                              FontAwesomeIcons.cartShopping,
+                            child: Icon(
+                              Icons.shopping_cart,
                               color: Colors.green[700],
                               size: 16,
                             ),
                           ),
                           title: Text(listName),
                           trailing: IconButton(
-                            icon: const FaIcon(
-                              FontAwesomeIcons.xmark,
+                            icon: const Icon(
+                              Icons.close,
                               size: 16,
                               color: Colors.red,
                             ),
@@ -445,16 +444,16 @@ class _ManageListGroupBottomSheetState
                             color: Colors.blue[100],
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: FaIcon(
-                            FontAwesomeIcons.cartShopping,
+                          child: Icon(
+                            Icons.shopping_cart,
                             color: Colors.blue[700],
                             size: 16,
                           ),
                         ),
                         title: Text(listName),
                         trailing: IconButton(
-                          icon: const FaIcon(
-                            FontAwesomeIcons.plus,
+                          icon: const Icon(
+                            Icons.add,
                             size: 16,
                             color: Colors.green,
                           ),
@@ -524,8 +523,8 @@ class _ManageListGroupBottomSheetState
                     color: isDark ? Colors.green[900] : Colors.green[50],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: FaIcon(
-                    FontAwesomeIcons.layerGroup,
+                  child: Icon(
+                    Icons.layers,
                     color: isDark ? Colors.green[200] : Colors.green[700],
                     size: 20,
                   ),
