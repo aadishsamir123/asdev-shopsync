@@ -30,19 +30,21 @@ class SmartSuggestionsService {
     bool forceRefresh = false,
   }) async {
     try {
-      // Check if we need to retrain
-      final shouldRetrain = await _shouldRetrain();
-
-      if (forceRefresh || shouldRetrain || _cachedSuggestions == null) {
-        await _trainModel(listId: listId);
-      }
-
-      // Load cached suggestions if not in memory
+      // Load cached suggestions first for fast response
       if (_cachedSuggestions == null) {
         await _loadCachedSuggestions();
       }
 
-      // Filter and rank suggestions based on current context
+      // Check if we need to retrain
+      final shouldRetrain = await _shouldRetrain();
+
+      // Train in background if needed (don't await to avoid blocking UI)
+      if (forceRefresh || shouldRetrain) {
+        // Fire and forget - train without blocking
+        unawaited(_trainModel(listId: listId));
+      }
+
+      // Return cached suggestions immediately
       final contextRankedSuggestions = _rankSuggestionsByContext(
         _cachedSuggestions ?? [],
       );
@@ -78,14 +80,22 @@ class SmartSuggestionsService {
 
   /// Train the model by analyzing user's task history
   Future<void> _trainModel({String? listId}) async {
-    if (_isTraining) return;
+    if (_isTraining) {
+      if (kDebugMode) {
+        print('Training already in progress, skipping');
+      }
+      return;
+    }
     _isTraining = true;
 
     try {
       final user = _auth.currentUser;
-      if (user == null) return;
+      if (user == null) {
+        _isTraining = false;
+        return;
+      }
 
-      // Collect learning data from user's tasks
+      // Collect learning data from user's tasks (with limit to prevent blocking)
       final learningData = await _collectLearningData(user.uid, listId);
 
       if (learningData.length < _minTasksForSuggestions) {
@@ -94,6 +104,10 @@ class SmartSuggestionsService {
         }
         _isTraining = false;
         return;
+      }
+
+      if (kDebugMode) {
+        print('Training with ${learningData.length} task samples');
       }
 
       // Generate suggestions from learning data

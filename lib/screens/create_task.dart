@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
@@ -45,11 +46,25 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   }
 
   Future<void> _loadSuggestions() async {
+    if (!mounted) return;
     setState(() => _isLoadingSuggestions = true);
+
     try {
-      final suggestions = await _suggestionsService.getSuggestions(
+      // Add timeout to prevent blocking UI indefinitely
+      final suggestions = await _suggestionsService
+          .getSuggestions(
         listId: widget.listId,
+      )
+          .timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          if (kDebugMode) {
+            print('Suggestions loading timed out');
+          }
+          return <TaskSuggestion>[];
+        },
       );
+
       if (mounted) {
         setState(() {
           _suggestions = suggestions;
@@ -57,6 +72,9 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         });
       }
     } catch (e) {
+      if (kDebugMode) {
+        print('Error loading suggestions: $e');
+      }
       if (mounted) {
         setState(() => _isLoadingSuggestions = false);
       }
@@ -88,17 +106,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         _selectedCategoryName = suggestion.categoryName;
       }
     });
-
-    // Show feedback
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Applied suggestion: $name'),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor: Colors.purple[800],
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    // Note: Visual feedback is now handled by the animation in the suggestion chip
   }
 
   Future<void> _createTask() async {

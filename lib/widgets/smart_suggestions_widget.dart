@@ -150,11 +150,12 @@ class SmartSuggestionsWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            SizedBox(
-              height: 100,
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 100),
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: suggestions.length,
+                physics: const BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
                   final suggestion = suggestions[index];
                   return _SuggestionChip(
@@ -172,7 +173,7 @@ class SmartSuggestionsWidget extends StatelessWidget {
   }
 }
 
-class _SuggestionChip extends StatelessWidget {
+class _SuggestionChip extends StatefulWidget {
   final TaskSuggestion suggestion;
   final VoidCallback onTap;
   final bool isDark;
@@ -184,11 +185,58 @@ class _SuggestionChip extends StatelessWidget {
   });
 
   @override
+  State<_SuggestionChip> createState() => _SuggestionChipState();
+}
+
+class _SuggestionChipState extends State<_SuggestionChip>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  bool _isAdded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+
+    // Fade in "Added" overlay
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeIn,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    setState(() => _isAdded = true);
+    _controller.forward().then((_) {
+      widget.onTap();
+      // Reset after a delay
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          setState(() => _isAdded = false);
+          _controller.reset();
+        }
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Get icon if available
     Widget? iconWidget;
-    if (suggestion.iconIdentifier != null) {
-      final foodIcon = FoodIconMap.getIcon(suggestion.iconIdentifier!);
+    if (widget.suggestion.iconIdentifier != null) {
+      final foodIcon = FoodIconMap.getIcon(widget.suggestion.iconIdentifier!);
       if (foodIcon != null) {
         iconWidget = foodIcon.buildIcon(
           width: 24,
@@ -200,94 +248,154 @@ class _SuggestionChip extends StatelessWidget {
 
     // Confidence indicator color
     Color confidenceColor;
-    if (suggestion.confidence >= 0.7) {
+    if (widget.suggestion.confidence >= 0.7) {
       confidenceColor = Colors.green;
-    } else if (suggestion.confidence >= 0.5) {
+    } else if (widget.suggestion.confidence >= 0.5) {
       confidenceColor = Colors.orange;
     } else {
       confidenceColor = Colors.grey;
     }
 
-    return Container(
-      width: 140,
-      margin: const EdgeInsets.only(right: 12),
-      child: Material(
-        color: isDark ? Colors.grey[850] : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        elevation: 2,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Container(
+          width: 130,
+          margin: const EdgeInsets.only(right: 12),
+          child: Material(
+            color: _isAdded
+                ? (widget.isDark ? Colors.green[900] : Colors.green[50])
+                : (widget.isDark ? Colors.grey[850] : Colors.white),
+            borderRadius: BorderRadius.circular(12),
+            elevation: 2,
+            child: InkWell(
+              onTap: _handleTap,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.purple[200]!,
-                width: 1.5,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Icon or placeholder
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.purple[50],
-                    borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _isAdded ? Colors.green[400]! : Colors.purple[200]!,
+                    width: 1.5,
                   ),
-                  child: iconWidget != null
-                      ? Center(child: iconWidget)
-                      : Center(
-                          child: FaIcon(
-                            FontAwesomeIcons.bagShopping,
-                            color: Colors.purple[700],
-                            size: 18,
+                ),
+                child: Stack(
+                  children: [
+                    // Original content - fades out
+                    Opacity(
+                      opacity: 1.0 - _controller.value,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Icon or placeholder
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: _isAdded
+                                  ? Colors.green[50]
+                                  : Colors.purple[50],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: iconWidget != null
+                                ? Center(child: iconWidget)
+                                : Center(
+                                    child: FaIcon(
+                                      FontAwesomeIcons.bagShopping,
+                                      color: Colors.purple[700],
+                                      size: 18,
+                                    ),
+                                  ),
+                          ),
+                          const SizedBox(height: 6),
+                          // Task name - capitalized first letter
+                          Flexible(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4),
+                              child: Text(
+                                widget.suggestion.name.isEmpty
+                                    ? ''
+                                    : '${widget.suggestion.name[0].toUpperCase()}${widget.suggestion.name.substring(1)}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          // Confidence indicator
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 6,
+                                height: 6,
+                                decoration: BoxDecoration(
+                                  color: confidenceColor,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${widget.suggestion.frequency}x',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: widget.isDark
+                                      ? Colors.grey[400]
+                                      : Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    // "Added" overlay with checkmark - fades in
+                    if (_isAdded)
+                      Opacity(
+                        opacity: _fadeAnimation.value,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.check_circle,
+                                color: widget.isDark
+                                    ? Colors.green[400]
+                                    : Colors.green[700],
+                                size: 40,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Added',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: widget.isDark
+                                      ? Colors.green[300]
+                                      : Colors.green[800],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                ),
-                const SizedBox(height: 8),
-                // Task name
-                Text(
-                  suggestion.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                // Confidence indicator
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: confidenceColor,
-                        shape: BoxShape.circle,
                       ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${suggestion.frequency}x',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: isDark ? Colors.grey[400] : Colors.grey[600],
-                      ),
-                    ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
