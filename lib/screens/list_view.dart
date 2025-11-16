@@ -123,18 +123,45 @@ class _ListViewScreenState extends State<ListViewScreen>
               if (snapshot.hasData && snapshot.data == true) {
                 return const SizedBox.shrink();
               }
-              return FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          CreateTaskScreen(listId: widget.listId),
+              return Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.green[700] : Colors.green[600],
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
                     ),
-                  );
-                },
-                backgroundColor: isDark ? Colors.green[700] : Colors.green[800],
-                child: const Icon(Icons.add, color: Colors.white),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              CreateTaskScreen(listId: widget.listId),
+                        ),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(20),
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    child: const Center(
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
               );
             },
           )
