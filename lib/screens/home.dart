@@ -8,7 +8,7 @@ import 'package:shopsync/services/connectivity_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 
 import '/screens/list_view.dart';
 import '/widgets/loading_spinner.dart';
@@ -122,6 +122,7 @@ class _HomeScreenState extends State<HomeScreen>
   final _firestore = FirebaseFirestore.instance;
   final _newListController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _fabMenuController = FabMenuController();
 
   double _dragStartX = 0;
 
@@ -1449,142 +1450,148 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                 ],
               ),
-              floatingActionButtonLocation: ExpandableFab.location,
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.endFloat,
               floatingActionButton: Padding(
                 padding: EdgeInsets.only(
                   bottom: _isBannerAdLoaded && _bannerAd != null ? 90.0 : 0.0,
                 ),
-                child: ExpandableFab(
-                  type: ExpandableFabType.up,
-                  distance: 70,
-                  fanAngle: 0,
-                  initialOpen: false,
-                  duration: const Duration(milliseconds: 500),
-                  childrenAnimation: ExpandableFabAnimation.none,
-                  openButtonBuilder: RotateFloatingActionButtonBuilder(
-                    child: const Icon(Icons.add),
-                    fabSize: ExpandableFabSize.regular,
-                    backgroundColor:
-                        isDark ? Colors.green[700] : Colors.green[600],
-                    foregroundColor: Colors.white,
-                    angle: 45,
-                  ),
-                  closeButtonBuilder: DefaultFloatingActionButtonBuilder(
-                    child: const Icon(Icons.close),
-                    fabSize: ExpandableFabSize.regular,
-                    backgroundColor:
-                        isDark ? Colors.green[700] : Colors.green[600],
-                    foregroundColor: Colors.white,
-                  ),
-                  overlayStyle: ExpandableFabOverlayStyle(
-                    color: Colors.black.withValues(alpha: 0.5),
-                  ),
-                  children: [
-                    // First FAB - Create List (appears second with staggered delay)
-                    _AnimatedFabChild(
-                      delay: const Duration(milliseconds: 100),
-                      child: FloatingActionButton.extended(
-                        heroTag: 'createList',
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              backgroundColor:
-                                  isDark ? Colors.black : Colors.white,
-                              title: Text(
-                                'Create New List',
-                                style: TextStyle(
-                                  color: isDark ? Colors.white : Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              content: TextField(
-                                controller: _newListController,
-                                autofocus: true,
-                                style: TextStyle(
-                                  color: isDark ? Colors.white : Colors.black,
-                                ),
-                                decoration: InputDecoration(
-                                  hintText: 'List name',
-                                  hintStyle: TextStyle(
-                                    color: isDark
-                                        ? Colors.grey[400]
-                                        : Colors.grey[700],
-                                  ),
-                                  filled: true,
-                                  fillColor: isDark
-                                      ? const Color(0xFF1E1E1E)
-                                      : const Color(0xFFF5F5F5),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: isDark
-                                          ? Colors.grey[600]!
-                                          : Colors.grey[400]!,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.green.shade400,
-                                      width: 2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: isDark
-                                        ? Colors.grey[400]
-                                        : Colors.grey[700],
-                                  ),
-                                  child: const Text('Cancel'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: _createList,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green[800],
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  child: const Text('Create'),
-                                ),
-                              ],
+                child: FabMenuM3E(
+                  controller: _fabMenuController,
+                  alignment: Alignment.bottomRight,
+                  direction: FabMenuDirection.up,
+                  overlay: false,
+                  primaryFab: AnimatedBuilder(
+                    animation: _fabMenuController,
+                    builder: (context, child) {
+                      final isOpen = _fabMenuController.isOpen;
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeInOutCubicEmphasized,
+                        width: isOpen ? 56 : 64,
+                        height: isOpen ? 56 : 64,
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.green[700] : Colors.green[600],
+                          borderRadius: BorderRadius.circular(isOpen ? 28 : 20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
                             ),
-                          );
-                        },
-                        backgroundColor:
-                            isDark ? Colors.green[700] : Colors.green[600],
-                        foregroundColor: Colors.white,
-                        icon: const Icon(Icons.shopping_cart, size: 20),
-                        label: const Text('Create List'),
-                      ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: _fabMenuController.toggle,
+                            borderRadius:
+                                BorderRadius.circular(isOpen ? 28 : 20),
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: AnimatedRotation(
+                                duration: const Duration(milliseconds: 250),
+                                curve: Curves.easeInOutCubicEmphasized,
+                                turns: isOpen ? 0.125 : 0.0,
+                                child: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  items: [
+                    FabMenuItem(
+                      icon: const Icon(Icons.layers),
+                      label: const Text('Create List Group'),
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => const AddListGroupBottomSheet(),
+                        ).then((result) {
+                          if (result == true) {
+                            // Refresh the UI or handle success
+                          }
+                        });
+                      },
                     ),
-                    // Second FAB - Create List Group (appears first)
-                    _AnimatedFabChild(
-                      delay: Duration.zero,
-                      child: FloatingActionButton.extended(
-                        heroTag: 'createListGroup',
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (context) =>
-                                const AddListGroupBottomSheet(),
-                          ).then((result) {
-                            if (result == true) {
-                              // Refresh the UI or handle success
-                            }
-                          });
-                        },
-                        backgroundColor:
-                            isDark ? Colors.green[700] : Colors.green[600],
-                        foregroundColor: Colors.white,
-                        icon: const Icon(Icons.layers, size: 20),
-                        label: const Text('Create List Group'),
-                      ),
+                    FabMenuItem(
+                      icon: const Icon(Icons.shopping_cart),
+                      label: const Text('Create List'),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            backgroundColor:
+                                isDark ? Colors.black : Colors.white,
+                            title: Text(
+                              'Create New List',
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content: TextField(
+                              controller: _newListController,
+                              autofocus: true,
+                              style: TextStyle(
+                                color: isDark ? Colors.white : Colors.black,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'List name',
+                                hintStyle: TextStyle(
+                                  color: isDark
+                                      ? Colors.grey[400]
+                                      : Colors.grey[700],
+                                ),
+                                filled: true,
+                                fillColor: isDark
+                                    ? const Color(0xFF1E1E1E)
+                                    : const Color(0xFFF5F5F5),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: isDark
+                                        ? Colors.grey[600]!
+                                        : Colors.grey[400]!,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.green.shade400,
+                                    width: 2,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                            actions: [
+                              ButtonM3E(
+                                onPressed: () => Navigator.pop(context),
+                                label: const Text('Cancel'),
+                                style: ButtonM3EStyle.text,
+                                size: ButtonM3ESize.md,
+                              ),
+                              ButtonM3E(
+                                onPressed: _createList,
+                                label: const Text('Create'),
+                                style: ButtonM3EStyle.filled,
+                                size: ButtonM3ESize.md,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -1599,93 +1606,6 @@ class _HomeScreenState extends State<HomeScreen>
                 )
               : const SizedBox.shrink(),
         ],
-      ),
-    );
-  }
-}
-
-// Custom animated FAB child with M3 expressive bouncy entrance and fade-out exit
-class _AnimatedFabChild extends StatefulWidget {
-  final Widget child;
-  final Duration delay;
-
-  const _AnimatedFabChild({
-    required this.child,
-    this.delay = Duration.zero,
-  });
-
-  @override
-  State<_AnimatedFabChild> createState() => _AnimatedFabChildState();
-}
-
-class _AnimatedFabChildState extends State<_AnimatedFabChild>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-  bool _hasAnimated = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-
-    // Bouncy scale animation for entrance (M3 expressive style)
-    _scaleAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut, // Creates the bounce effect
-    ));
-
-    // Fade in animation
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
-    ));
-
-    // Slide up animation from bottom
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    ));
-
-    // Start animation after staggered delay
-    Future.delayed(widget.delay, () {
-      if (mounted && !_hasAnimated) {
-        _controller.forward();
-        _hasAnimated = true;
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SlideTransition(
-      position: _slideAnimation,
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: widget.child,
-        ),
       ),
     );
   }

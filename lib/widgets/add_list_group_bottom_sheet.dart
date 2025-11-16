@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import 'package:shopsync/widgets/loading_spinner.dart';
 import '/services/list_groups_service.dart';
 
@@ -193,40 +194,25 @@ class _AddListGroupBottomSheetState extends State<AddListGroupBottomSheet> {
             Row(
               children: [
                 Expanded(
-                  child: TextButton(
+                  child: ButtonM3E(
                     onPressed:
                         _isCreating ? null : () => Navigator.pop(context),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      foregroundColor:
-                          isDark ? Colors.grey[400] : Colors.grey[600],
-                    ),
-                    child: const Text(
+                    label: const Text(
                       'Cancel',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                    style: ButtonM3EStyle.text,
+                    size: ButtonM3ESize.lg,
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: ElevatedButton(
+                  child: ButtonM3E(
                     onPressed: _isCreating ? null : _createGroup,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[700],
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: _isCreating
+                    label: _isCreating
                         ? const SizedBox(
                             height: 20,
                             width: 20,
@@ -239,6 +225,8 @@ class _AddListGroupBottomSheetState extends State<AddListGroupBottomSheet> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                    style: ButtonM3EStyle.filled,
+                    size: ButtonM3ESize.lg,
                   ),
                 ),
               ],
