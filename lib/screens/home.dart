@@ -1576,22 +1576,17 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                             ),
                             actions: [
-                              TextButton(
+                              ButtonM3E(
                                 onPressed: () => Navigator.pop(context),
-                                style: TextButton.styleFrom(
-                                  foregroundColor: isDark
-                                      ? Colors.grey[400]
-                                      : Colors.grey[700],
-                                ),
-                                child: const Text('Cancel'),
+                                label: const Text('Cancel'),
+                                style: ButtonM3EStyle.text,
+                                size: ButtonM3ESize.md,
                               ),
-                              ElevatedButton(
+                              ButtonM3E(
                                 onPressed: _createList,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green[800],
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: const Text('Create'),
+                                label: const Text('Create'),
+                                style: ButtonM3EStyle.filled,
+                                size: ButtonM3ESize.md,
                               ),
                             ],
                           ),

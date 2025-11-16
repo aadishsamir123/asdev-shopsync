@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 
 class OfflineDialog extends StatefulWidget {
   final String featureName;
@@ -96,16 +97,11 @@ class _OfflineDialogState extends State<OfflineDialog>
         ],
       ),
       actions: [
-        TextButton(
+        ButtonM3E(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(
-            'OK',
-            style: TextStyle(
-              color: isDark
-                  ? const Color.fromARGB(255, 100, 246, 151)
-                  : const Color.fromARGB(255, 25, 210, 81),
-            ),
-          ),
+          label: const Text('OK'),
+          style: ButtonM3EStyle.text,
+          size: ButtonM3ESize.md,
         ),
       ],
     );

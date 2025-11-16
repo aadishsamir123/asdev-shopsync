@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import 'package:shopsync/widgets/loading_spinner.dart';
 import '/services/list_groups_service.dart';
 
@@ -92,14 +93,17 @@ class _ManageListGroupBottomSheetState
           'Are you sure you want to delete "${widget.groupName}"? The lists will not be deleted, just ungrouped.',
         ),
         actions: [
-          TextButton(
+          ButtonM3E(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            label: const Text('Cancel'),
+            style: ButtonM3EStyle.text,
+            size: ButtonM3ESize.md,
           ),
-          TextButton(
+          ButtonM3E(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            label: const Text('Delete'),
+            style: ButtonM3EStyle.text,
+            size: ButtonM3ESize.md,
           ),
         ],
       ),
@@ -197,39 +201,24 @@ class _ManageListGroupBottomSheetState
           Row(
             children: [
               Expanded(
-                child: TextButton(
+                child: ButtonM3E(
                   onPressed: _isUpdating ? null : () => Navigator.pop(context),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    foregroundColor:
-                        isDark ? Colors.grey[400] : Colors.grey[600],
-                  ),
-                  child: const Text(
+                  label: const Text(
                     'Cancel',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  style: ButtonM3EStyle.text,
+                  size: ButtonM3ESize.lg,
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: ElevatedButton(
+                child: ButtonM3E(
                   onPressed: _isUpdating ? null : _updateGroupName,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green[700],
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: _isUpdating
+                  label: _isUpdating
                       ? const SizedBox(
                           height: 20,
                           width: 20,
@@ -242,6 +231,8 @@ class _ManageListGroupBottomSheetState
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                  style: ButtonM3EStyle.filled,
+                  size: ButtonM3ESize.lg,
                 ),
               ),
             ],
@@ -251,15 +242,8 @@ class _ManageListGroupBottomSheetState
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
-            child: TextButton.icon(
+            child: ButtonM3E(
               onPressed: _isDeleting ? null : _deleteGroup,
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                foregroundColor: Colors.red[600],
-              ),
               icon: _isDeleting
                   ? const SizedBox(
                       height: 16,
@@ -274,6 +258,8 @@ class _ManageListGroupBottomSheetState
                   fontWeight: FontWeight.w600,
                 ),
               ),
+              style: ButtonM3EStyle.text,
+              size: ButtonM3ESize.lg,
             ),
           ),
         ],
@@ -558,61 +544,182 @@ class _ManageListGroupBottomSheetState
           ),
 
           // Tab bar
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.grey[800] : Colors.grey[100],
-              borderRadius: BorderRadius.circular(12),
-            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             child: Row(
               children: [
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _selectedTab = 0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: _selectedTab == 0
-                            ? Colors.green[600]
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Edit',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: _selectedTab == 0
-                              ? Colors.white
-                              : (isDark ? Colors.grey[300] : Colors.grey[700]),
+                  child: _selectedTab == 0
+                      // Selected: Fully pill-shaped (rounded on all edges)
+                      ? Container(
+                          decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () => setState(() => _selectedTab = 0),
+                              borderRadius: BorderRadius.circular(100),
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 16),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Edit',
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryContainer,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Icon(
+                                      Icons.check,
+                                      size: 18,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryContainer,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      // Unselected: Pill-shaped on outer (left) edge, square on inner (right) edge
+                      : Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
+                            borderRadius: const BorderRadius.horizontal(
+                              left: Radius.circular(100),
+                              right: Radius.circular(32),
+                            ),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () => setState(() => _selectedTab = 0),
+                              borderRadius: const BorderRadius.horizontal(
+                                left: Radius.circular(100),
+                              ),
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 16),
+                                child: Center(
+                                  child: Text(
+                                    'Edit',
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
                 ),
+                const SizedBox(width: 2),
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _selectedTab = 1),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: _selectedTab == 1
-                            ? Colors.green[600]
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Lists',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: _selectedTab == 1
-                              ? Colors.white
-                              : (isDark ? Colors.grey[300] : Colors.grey[700]),
+                  child: _selectedTab == 1
+                      // Selected: Fully pill-shaped (rounded on all edges)
+                      ? Container(
+                          decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () => setState(() => _selectedTab = 1),
+                              borderRadius: BorderRadius.circular(100),
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 16),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Lists',
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryContainer,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Icon(
+                                      Icons.check,
+                                      size: 18,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryContainer,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      // Unselected: Pill-shaped on outer (right) edge, square on inner (left) edge
+                      : Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
+                            borderRadius: const BorderRadius.horizontal(
+                              right: Radius.circular(100),
+                              left: Radius.circular(32),
+                            ),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () => setState(() => _selectedTab = 1),
+                              borderRadius: const BorderRadius.horizontal(
+                                right: Radius.circular(100),
+                              ),
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 16),
+                                child: Center(
+                                  child: Text(
+                                    'Lists',
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
                 ),
               ],
             ),
