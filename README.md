@@ -18,8 +18,6 @@ _Share shopping lists with family and friends_
 
 [![Crowdin](https://badges.crowdin.net/as-shopsync/localized.svg)](https://crowdin.com/project/as-shopsync)
 
-![Hackatime Badge](https://hackatime-badge.hackclub.com/U08PXJW1H1R/shopsync)
-
 </div>
 
 ## 📱 Overview
