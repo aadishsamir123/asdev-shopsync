@@ -849,10 +849,10 @@ packages:
     dependency: "direct main"
     description:
       name: lottie
-      sha256: "586554b887a00bbec87aa6ec0f69a47af95873b809478192f6c5d61250be5474"
+      sha256: "58dda9eee3f1b1fb9d490b0161635cffe93022b3b8ca0687e3df33a53620ead2"
       url: "https://pub.dev"
     source: hosted
-    version: "3.5.0"
+    version: "3.5.1"
   m3e_collection:
     dependency: "direct main"
     description:
