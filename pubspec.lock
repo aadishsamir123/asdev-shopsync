@@ -277,26 +277,26 @@ packages:
     dependency: "direct main"
     description:
       name: credential_manager
-      sha256: "3d09d3a753e9975f07dd8d4ba777ce33dbd0269d5196fc1bc3c349da84b1ff5b"
+      sha256: "1854934f55fbb15d8ee5ebd54b10e282d2ec8d79d36884634e90cb4eda0a6442"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.8"
+    version: "3.0.1"
   credential_manager_android:
     dependency: transitive
     description:
       name: credential_manager_android
-      sha256: cac9b34efc2629fb927ed565795d1e324dbd942d7e6c39e97ed090b5f0ce5f3e
+      sha256: "9337fdc52aa53532beee55d15f4ec26e8e47767030e73a75bb1d3637eb8ac6ac"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.8"
+    version: "3.0.1"
   credential_manager_ios:
     dependency: transitive
     description:
       name: credential_manager_ios
-      sha256: f174ec4b9a98c893ed79fc2149e4d703b3c04ba2168ba7d8e06b9715ff52f154
+      sha256: "01a078276532f7d2476bbe72e5c4a10f35b6d60ae7c25f9168bee5b936027773"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.8"
+    version: "3.0.1"
   credential_manager_platform_interface:
     dependency: transitive
     description:
