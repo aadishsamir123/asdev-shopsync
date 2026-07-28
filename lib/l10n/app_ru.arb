@@ -1106,5 +1106,6 @@
     "smartItemSuggestions": "Умные подсказки товаров",
     "aiPreferenceChangeNote": "Вы сможете изменить эту настройку позже в профиле.",
     "enableSmartSuggestions": "Включить умные подсказки",
-    "aiFeaturesDisabledMessage": "Функции ИИ отключены"
+    "aiFeaturesDisabledMessage": "Функции ИИ отключены",
+    "outageImpactCritical": "Критический"
 }
