@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  firebase_core: ^4.12.1
+  firebase_core: ^4.13.0
   firebase_auth: ^6.5.4
   cloud_firestore: ^6.7.1
   package_info_plus: ^10.1.0
