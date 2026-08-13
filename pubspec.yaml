@@ -19,7 +19,7 @@ dependencies:
   package_info_plus: ^10.1.0
   url_launcher: ^6.3.2
   in_app_update: ^4.2.5
-  intl: 0.20.2
+  intl: 0.20.3
   shared_preferences: ^2.5.5
   path_provider: ^2.1.6
   share_plus: ^13.1.0
