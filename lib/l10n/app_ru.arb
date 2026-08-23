@@ -1107,5 +1107,15 @@
     "aiPreferenceChangeNote": "Вы сможете изменить эту настройку позже в профиле.",
     "enableSmartSuggestions": "Включить умные подсказки",
     "aiFeaturesDisabledMessage": "Функции ИИ отключены",
-    "outageImpactCritical": "Критический"
+    "outageImpactCritical": "Критический",
+    "manageAccounts": "Аккаунты ShopSync",
+    "accountManagerSubtitle": "Аккаунты на этом устройстве",
+    "switchAccount": "Изменить аккаунт",
+    "addGoogleAccount": "Добавить Google аккаунт",
+    "addEmailPasswordAccount": "Добавить аккаунт",
+    "removeAccounts": "Удалить аккаунты",
+    "removeAccountSuccess": "Аккаунт удален с этого устройства.",
+    "removeCurrentAccount": "Удалить этот аккаунт",
+    "googleAccountAdded": "Google аккаунт добавлен.",
+    "removeAccountConfirm": "Удалить этот аккаунт с этого устройства?"
 }
